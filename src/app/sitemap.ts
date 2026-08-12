@@ -1,0 +1,66 @@
+import type { MetadataRoute } from "next";
+import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
+
+function asDate(value: string | null | undefined) {
+  return value ? new Date(value) : new Date();
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com").replace(/\/$/, "");
+  const staticRoutes: MetadataRoute.Sitemap = [
+    { url: `${siteUrl}/`, changeFrequency: "weekly", priority: 1 },
+    { url: `${siteUrl}/guided-implants`, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${siteUrl}/doctors`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${siteUrl}/cases`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${siteUrl}/journal`, changeFrequency: "weekly", priority: 0.8 },
+  ];
+
+  try {
+    const supabase = await createClient();
+    const [doctorsResult, postsResult, casesResult] = await Promise.all([
+      supabase
+        .from("doctor_profiles")
+        .select("slug,updated_at")
+        .eq("status", "published")
+        .order("display_order"),
+      supabase
+        .from("blog_posts")
+        .select("slug,updated_at")
+        .eq("status", "published")
+        .not("published_at", "is", null)
+        .lte("published_at", new Date().toISOString()),
+      supabase
+        .from("signature_cases")
+        .select("slug,updated_at")
+        .eq("publication_status", "published")
+        .eq("consent_for_website", true),
+    ]);
+
+    const doctorRoutes: MetadataRoute.Sitemap = (doctorsResult.data ?? []).map((doctor) => ({
+      url: `${siteUrl}/doctors/${doctor.slug}`,
+      lastModified: asDate(doctor.updated_at),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    }));
+
+    const journalRoutes: MetadataRoute.Sitemap = (postsResult.data ?? []).map((post) => ({
+      url: `${siteUrl}/journal/${post.slug}`,
+      lastModified: asDate(post.updated_at),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    }));
+
+    const caseRoutes: MetadataRoute.Sitemap = (casesResult.data ?? []).map((caseRecord) => ({
+      url: `${siteUrl}/cases/${caseRecord.slug}`,
+      lastModified: asDate(caseRecord.updated_at),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    }));
+
+    return [...staticRoutes, ...doctorRoutes, ...caseRoutes, ...journalRoutes];
+  } catch {
+    return staticRoutes;
+  }
+}
