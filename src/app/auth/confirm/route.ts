@@ -25,5 +25,6 @@ export async function GET(request: Request) {
     if (!error) return NextResponse.redirect(new URL(next, url.origin));
   }
 
-  return NextResponse.redirect(new URL("/patient/login?error=confirmation", url.origin));
+  const errorPath = type === "invite" ? "/staff/login?error=confirmation" : "/patient/login?error=confirmation";
+  return NextResponse.redirect(new URL(errorPath, url.origin));
 }
