@@ -19,6 +19,16 @@ function positiveInteger(value: string) {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
 }
 
+async function getEditablePlan(supabase: Awaited<ReturnType<typeof requireClinicalPublisher>>["supabase"], planId: string) {
+  const { data: plan } = await supabase
+    .from("treatment_plans")
+    .select("id,case_id,status")
+    .eq("id", planId)
+    .maybeSingle();
+  if (!plan || !["draft", "preliminary"].includes(plan.status)) return null;
+  return plan;
+}
+
 export async function scheduleVideoConsultation(formData: FormData) {
   const { supabase, user } = await requireClinicalPublisher();
   const caseId = text(formData, "case_id");
@@ -35,9 +45,10 @@ export async function scheduleVideoConsultation(formData: FormData) {
     .maybeSingle();
   if (!caseRecord) redirect("/clinic/reviews?error=case");
 
-  // Consultation times are entered in clinic-local India time.
   const startsAt = new Date(`${rawStart}:00+05:30`);
-  if (Number.isNaN(startsAt.getTime())) redirect(`/clinic/reviews/${caseId}?error=consultation`);
+  if (Number.isNaN(startsAt.getTime()) || startsAt.getTime() <= Date.now()) {
+    redirect(`/clinic/commercial/${caseId}?error=consultation_time`);
+  }
   const endsAt = new Date(startsAt.getTime() + 30 * 60 * 1000);
 
   const { error } = await supabase.from("appointments").insert({
@@ -52,11 +63,31 @@ export async function scheduleVideoConsultation(formData: FormData) {
     notes,
     status: "scheduled",
   });
-  if (error) redirect(`/clinic/reviews/${caseId}?error=consultation`);
+  if (error) redirect(`/clinic/commercial/${caseId}?error=consultation`);
 
   await supabase.from("patient_cases").update({ status: "consultation_scheduled" }).eq("id", caseId);
   revalidatePath(`/clinic/reviews/${caseId}`);
+  revalidatePath(`/clinic/commercial/${caseId}`);
   revalidatePath("/clinic/commercial");
+  revalidatePath("/patient");
+  revalidatePath("/patient/plan");
+}
+
+export async function cancelConsultation(formData: FormData) {
+  const { supabase } = await requireClinicalPublisher();
+  const appointmentId = text(formData, "appointment_id");
+  const caseId = text(formData, "case_id");
+  if (!appointmentId || !caseId) redirect("/clinic/commercial?error=appointment");
+
+  const { error } = await supabase
+    .from("appointments")
+    .update({ status: "cancelled" })
+    .eq("id", appointmentId)
+    .eq("case_id", caseId)
+    .eq("status", "scheduled");
+  if (error) redirect(`/clinic/commercial/${caseId}?error=appointment`);
+
+  revalidatePath(`/clinic/commercial/${caseId}`);
   revalidatePath("/patient");
   revalidatePath("/patient/plan");
 }
@@ -106,6 +137,25 @@ export async function createTreatmentPlan(formData: FormData) {
   redirect(`/clinic/plans/${plan.id}`);
 }
 
+export async function updateTreatmentPlanDetails(formData: FormData) {
+  const { supabase } = await requireClinicalPublisher();
+  const planId = text(formData, "plan_id");
+  const plan = planId ? await getEditablePlan(supabase, planId) : null;
+  if (!plan) redirect(`/clinic/plans/${planId}?error=locked`);
+
+  const { error } = await supabase.from("treatment_plans").update({
+    title: text(formData, "title") || "Preliminary implant treatment plan",
+    summary: nullableText(formData, "summary"),
+    doctor_message: nullableText(formData, "doctor_message"),
+    estimated_stay_days_min: positiveInteger(text(formData, "stay_min")),
+    estimated_stay_days_max: positiveInteger(text(formData, "stay_max")),
+    second_visit_required: formData.get("second_visit_required") === "on",
+    valid_until: nullableText(formData, "valid_until"),
+  }).eq("id", planId);
+  if (error) redirect(`/clinic/plans/${planId}?error=details`);
+  revalidatePath(`/clinic/plans/${planId}`);
+}
+
 export async function addTreatmentPlanItem(formData: FormData) {
   const { supabase } = await requireClinicalPublisher();
   const planId = text(formData, "plan_id");
@@ -117,11 +167,17 @@ export async function addTreatmentPlanItem(formData: FormData) {
   if (!planId || !description || !Number.isFinite(quantity) || quantity <= 0 || !Number.isFinite(unitPrice) || unitPrice < 0) {
     redirect(`/clinic/plans/${planId}?error=item`);
   }
+  const plan = await getEditablePlan(supabase, planId);
+  if (!plan) redirect(`/clinic/plans/${planId}?error=locked`);
 
-  const { count } = await supabase
+  const { data: existingItems, count } = await supabase
     .from("treatment_plan_items")
-    .select("id", { count: "exact", head: true })
-    .eq("treatment_plan_id", planId);
+    .select("currency", { count: "exact" })
+    .eq("treatment_plan_id", planId)
+    .limit(1);
+  if (existingItems?.[0]?.currency && existingItems[0].currency !== currency) {
+    redirect(`/clinic/plans/${planId}?error=currency`);
+  }
 
   const { error } = await supabase.from("treatment_plan_items").insert({
     treatment_plan_id: planId,
@@ -135,6 +191,22 @@ export async function addTreatmentPlanItem(formData: FormData) {
   revalidatePath(`/clinic/plans/${planId}`);
 }
 
+export async function removeTreatmentPlanItem(formData: FormData) {
+  const { supabase } = await requireClinicalPublisher();
+  const planId = text(formData, "plan_id");
+  const itemId = text(formData, "item_id");
+  const plan = planId ? await getEditablePlan(supabase, planId) : null;
+  if (!plan || !itemId) redirect(`/clinic/plans/${planId}?error=locked`);
+
+  const { error } = await supabase
+    .from("treatment_plan_items")
+    .delete()
+    .eq("id", itemId)
+    .eq("treatment_plan_id", planId);
+  if (error) redirect(`/clinic/plans/${planId}?error=item`);
+  revalidatePath(`/clinic/plans/${planId}`);
+}
+
 export async function sendTreatmentPlan(formData: FormData) {
   const { supabase } = await requireClinicalPublisher();
   const planId = text(formData, "plan_id");
@@ -142,10 +214,10 @@ export async function sendTreatmentPlan(formData: FormData) {
 
   const { data: plan } = await supabase
     .from("treatment_plans")
-    .select("id,case_id,version")
+    .select("id,case_id,version,status")
     .eq("id", planId)
     .maybeSingle();
-  if (!plan) redirect("/clinic/commercial?error=plan");
+  if (!plan || !["draft", "preliminary"].includes(plan.status)) redirect(`/clinic/plans/${planId}?error=locked`);
 
   const { count } = await supabase
     .from("treatment_plan_items")
@@ -163,7 +235,8 @@ export async function sendTreatmentPlan(formData: FormData) {
   const { error } = await supabase
     .from("treatment_plans")
     .update({ status: "sent", sent_at: new Date().toISOString() })
-    .eq("id", planId);
+    .eq("id", planId)
+    .in("status", ["draft", "preliminary"]);
   if (error) redirect(`/clinic/plans/${planId}?error=send`);
 
   await supabase.from("patient_cases").update({ status: "estimate_sent" }).eq("id", plan.case_id);
@@ -180,10 +253,10 @@ export async function createPlanRevision(formData: FormData) {
 
   const { data: source } = await supabase
     .from("treatment_plans")
-    .select("id,patient_id,case_id,version,title,summary,doctor_message,estimated_stay_days_min,estimated_stay_days_max,second_visit_required,valid_until")
+    .select("id,patient_id,case_id,version,status,title,summary,doctor_message,estimated_stay_days_min,estimated_stay_days_max,second_visit_required,valid_until")
     .eq("id", sourceId)
     .maybeSingle();
-  if (!source) redirect("/clinic/commercial?error=plan");
+  if (!source || source.status !== "requested_changes") redirect(`/clinic/plans/${sourceId}?error=revision`);
 
   const { data: latest } = await supabase
     .from("treatment_plans")
@@ -220,12 +293,11 @@ export async function createPlanRevision(formData: FormData) {
     .eq("treatment_plan_id", sourceId)
     .order("sort_order");
   if (items?.length) {
-    await supabase.from("treatment_plan_items").insert(
-      items.map((item) => ({ ...item, treatment_plan_id: revision.id })),
-    );
+    await supabase.from("treatment_plan_items").insert(items.map((item) => ({ ...item, treatment_plan_id: revision.id })));
   }
 
   await supabase.from("treatment_plans").update({ status: "superseded" }).eq("id", sourceId);
+  await supabase.from("patient_cases").update({ status: "preliminary_plan_ready" }).eq("id", source.case_id);
   redirect(`/clinic/plans/${revision.id}`);
 }
 
@@ -235,6 +307,9 @@ export async function confirmTravelPlan(formData: FormData) {
   const caseId = text(formData, "case_id");
   if (!travelId || !caseId) redirect("/clinic/travel?error=travel");
 
+  const { data: travel } = await supabase.from("travel_plans").select("id,case_id,status").eq("id", travelId).eq("case_id", caseId).maybeSingle();
+  if (!travel || !["planning", "details_submitted"].includes(travel.status)) redirect(`/clinic/travel/${travelId}?error=locked`);
+
   const { error } = await supabase
     .from("travel_plans")
     .update({
@@ -243,7 +318,8 @@ export async function confirmTravelPlan(formData: FormData) {
       confirmed_by: user.id,
       confirmed_at: new Date().toISOString(),
     })
-    .eq("id", travelId);
+    .eq("id", travelId)
+    .eq("case_id", caseId);
   if (error) redirect(`/clinic/travel/${travelId}?error=confirm`);
 
   await supabase.from("patient_cases").update({ status: "travel_confirmed" }).eq("id", caseId);
