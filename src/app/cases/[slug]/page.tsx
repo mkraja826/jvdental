@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
@@ -77,7 +78,19 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ slu
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 12, margin: "24px 0 0 114px" }}>
                       {stageMedia.map((asset) => {
                         const src = publicMediaUrl(supabaseUrl, asset.storage_path);
-                        return src && asset.media_type !== "video" ? <figure key={asset.id} style={{ margin: 0 }}><img src={src} alt={asset.alt_text ?? asset.caption ?? stage.title} style={{ width: "100%", display: "block" }} />{asset.caption ? <figcaption style={{ color: "#aeb3af", fontSize: ".75rem", marginTop: 8 }}>{asset.caption}</figcaption> : null}</figure> : null;
+                        return src && asset.media_type !== "video" ? (
+                          <figure key={asset.id} style={{ margin: 0 }}>
+                            <Image
+                              src={src}
+                              alt={asset.alt_text ?? asset.caption ?? stage.title}
+                              width={1200}
+                              height={900}
+                              sizes="(max-width: 720px) 100vw, 50vw"
+                              style={{ width: "100%", height: "auto", display: "block" }}
+                            />
+                            {asset.caption ? <figcaption style={{ color: "#aeb3af", fontSize: ".75rem", marginTop: 8 }}>{asset.caption}</figcaption> : null}
+                          </figure>
+                        ) : null;
                       })}
                     </div>
                   ) : null}
