@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
 function publicMediaUrl(supabaseUrl: string | undefined, path: string) {
@@ -12,13 +13,14 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ slu
   const supabase = await createClient();
   const { data: item } = await supabase
     .from("signature_cases")
-    .select("id,title,treatment_type,short_summary,diagnosis_summary,challenge_summary,treatment_plan_summary,final_outcome_summary,patient_age_band,patient_country,guided_implant,dionavi_used,full_arch,published_at")
+    .select("id,title,treatment_type,short_summary,diagnosis_summary,challenge_summary,treatment_plan_summary,final_outcome_summary,patient_age_band,patient_country,guided_implant,dionavi_used,full_arch,published_at,doctor_profiles(full_name,slug,professional_title)")
     .eq("slug", slug)
     .eq("publication_status", "published")
     .eq("consent_for_website", true)
     .maybeSingle();
 
   if (!item) notFound();
+  const doctor = Array.isArray(item.doctor_profiles) ? item.doctor_profiles[0] : item.doctor_profiles;
 
   const [{ data: stages }, { data: media }] = await Promise.all([
     supabase.from("signature_case_stages").select("id,stage_type,title,body,sort_order").eq("signature_case_id", item.id).order("sort_order", { ascending: true }),
@@ -29,18 +31,13 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ slu
 
   return (
     <main>
-      <header className="site-header">
-        <div className="site-header__inner">
-          <Link className="wordmark" href="/"><span>JV</span><span>Dental</span></Link>
-          <nav className="site-nav" aria-label="Primary navigation"><Link href="/guided-implants">Guided implants</Link><Link href="/cases">Cases</Link><Link href="/journal">Journal</Link></nav>
-          <div className="header-actions"><Link className="button" href="/patient/login">Request assessment</Link></div>
-        </div>
-      </header>
+      <SiteHeader />
 
       <section className="section">
         <p className="section-kicker">Signature case {item.dionavi_used ? "· DIOnavi" : ""}</p>
         <h1 className="section-title">{item.title}</h1>
         <p className="section-intro">{item.short_summary ?? item.treatment_type}</p>
+        {doctor?.slug ? <p style={{ marginTop: 22 }}><Link className="text-link" href={`/doctors/${doctor.slug}`}>Clinical portfolio: {doctor.full_name} · {doctor.professional_title ?? "JV Dental clinician"} →</Link></p> : null}
         <div className="data-strip" style={{ width: "100%", marginTop: 52, borderTop: "1px solid var(--line)" }}>
           <div className="data-strip__item"><span>Treatment</span><strong>{item.treatment_type}</strong></div>
           <div className="data-strip__item"><span>Workflow</span><strong>{item.dionavi_used ? "DIOnavi guided" : item.guided_implant ? "Guided" : "Case specific"}</strong></div>
@@ -92,9 +89,18 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ slu
         </div>
       </section>
 
+      {doctor?.slug ? (
+        <section className="section section--tight">
+          <p className="section-kicker">Treating clinician</p>
+          <h2 className="section-title">{doctor.full_name}</h2>
+          <p className="section-intro">{doctor.professional_title}</p>
+          <Link className="button button--ghost" href={`/doctors/${doctor.slug}`}>View doctor portfolio →</Link>
+        </section>
+      ) : null}
+
       <section className="section section--tight">
         <p style={{ maxWidth: 700, color: "var(--muted)", fontSize: ".82rem" }}>This case is shown with recorded publication consent and is presented for education. Treatment recommendations and outcomes vary according to anatomy, oral health, medical history and clinical findings.</p>
-        <Link className="button" href="/patient/login">Request your implant assessment</Link>
+        <Link className="button" href="/patient/login?next=/patient/intake">Request your implant assessment</Link>
       </section>
     </main>
   );
