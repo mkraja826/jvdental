@@ -9,6 +9,8 @@ export default async function PatientLoginPage({ searchParams }: LoginPageProps)
   const params = await searchParams;
   const sent = params.sent === "1";
   const hasError = typeof params.error === "string";
+  const requestedNext = typeof params.next === "string" ? params.next : "/patient";
+  const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/patient";
 
   return (
     <main className="login-shell">
@@ -19,9 +21,7 @@ export default async function PatientLoginPage({ searchParams }: LoginPageProps)
         </Link>
 
         <div>
-          <p className="eyebrow" style={{ color: "#b8cec5" }}>
-            Secure patient access
-          </p>
+          <p className="eyebrow" style={{ color: "#b8cec5" }}>Secure patient access</p>
           <h1>Your treatment journey, in one place.</h1>
           <p>
             Share records, complete your health information, follow your case review and
@@ -64,6 +64,7 @@ export default async function PatientLoginPage({ searchParams }: LoginPageProps)
           ) : null}
 
           <form action={requestMagicLink}>
+            <input type="hidden" name="next" value={next} />
             <div className="field">
               <label htmlFor="email">Email address</label>
               <input
@@ -87,11 +88,7 @@ export default async function PatientLoginPage({ searchParams }: LoginPageProps)
             consent steps. Clinical records are not requested on this public sign-in screen.
           </p>
 
-          <p className="form-note">
-            <Link className="text-link" href="/">
-              ← Return to JV Dental
-            </Link>
-          </p>
+          <p className="form-note"><Link className="text-link" href="/">← Return to JV Dental</Link></p>
         </div>
       </section>
     </main>
