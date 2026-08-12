@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { addCaseStage, setCasePublication } from "@/app/clinic/cases/actions";
+import CaseMediaUploader from "@/app/clinic/cases/[id]/CaseMediaUploader";
 import { requireClinicalPublisher } from "@/lib/content/permissions";
 
 const stages = [
@@ -29,11 +30,10 @@ export default async function SignatureCaseEditor({ params, searchParams }: { pa
     .maybeSingle();
   if (!item) notFound();
 
-  const { data: caseStages } = await supabase
-    .from("signature_case_stages")
-    .select("id,stage_type,title,body,sort_order")
-    .eq("signature_case_id", id)
-    .order("sort_order", { ascending: true });
+  const [{ data: caseStages }, { data: caseMedia }] = await Promise.all([
+    supabase.from("signature_case_stages").select("id,stage_type,title,body,sort_order").eq("signature_case_id", id).order("sort_order", { ascending: true }),
+    supabase.from("signature_case_media").select("id,stage_id,media_type,storage_path,alt_text,caption").eq("signature_case_id", id).order("created_at", { ascending: true }),
+  ]);
 
   return (
     <main className="portal-shell">
@@ -87,6 +87,30 @@ export default async function SignatureCaseEditor({ params, searchParams }: { pa
                   <label>Clinical explanation<textarea name="body" rows={6} placeholder="Explain what was assessed, planned or performed at this stage." /></label>
                   <button className="button" type="submit">Add stage</button>
                 </form>
+              </div>
+            </article>
+          </div>
+
+          <div className="portal-grid" style={{ marginTop: 24 }}>
+            <article className="portal-card">
+              <div className="portal-card__header"><h2>Upload public case media</h2><span className="status-pill">{caseMedia?.length ?? 0} files</span></div>
+              <div className="portal-card__body">
+                <CaseMediaUploader caseId={item.id} stages={(caseStages ?? []).map((stage) => ({ id: stage.id, title: stage.title, stage_type: stage.stage_type }))} />
+              </div>
+            </article>
+            <article className="portal-card">
+              <div className="portal-card__header"><h2>Media register</h2><span className="status-pill">De-identified</span></div>
+              <div className="portal-card__body">
+                <div className="status-list">
+                  {(caseMedia ?? []).map((asset) => (
+                    <div className="status-row" key={asset.id}>
+                      <strong>{asset.media_type.replaceAll("_", " ")}</strong>
+                      <span>{asset.caption ?? asset.alt_text ?? "No caption"}</span>
+                      <span className="status-pill">{asset.stage_id ? "Stage linked" : "General"}</span>
+                    </div>
+                  ))}
+                  {!caseMedia?.length ? <p>No public media uploaded yet.</p> : null}
+                </div>
               </div>
             </article>
           </div>
