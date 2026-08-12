@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 function fractionDigits(currency: string) {
-  return new Intl.NumberFormat("en", { style: "currency", currency }).resolvedOptions().maximumFractionDigits;
+  return new Intl.NumberFormat("en", { style: "currency", currency }).resolvedOptions().maximumFractionDigits ?? 2;
 }
 
 export default function StripeRefundForm({ paymentId, currency, refundableMinor }: { paymentId: string; currency: string; refundableMinor: number }) {
