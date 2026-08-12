@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { Upload } from "tus-js-client";
 import { createClient } from "@/lib/supabase/client";
 
+const MAX_PATIENT_DOCUMENT_BYTES = 50 * 1024 * 1024;
+const allowedExtensions = new Set(["jpg", "jpeg", "png", "webp", "pdf", "zip", "dcm"]);
+
 const categories = [
   ["opg", "OPG / panoramic X-ray"],
   ["cbct", "CBCT archive"],
@@ -20,6 +23,11 @@ function safeFileName(name: string) {
   return name.replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/-+/g, "-");
 }
 
+function fileExtension(name: string) {
+  const lastDot = name.lastIndexOf(".");
+  return lastDot > -1 ? name.slice(lastDot + 1).toLowerCase() : "";
+}
+
 export function DocumentUploader({ userId, caseId }: { userId: string; caseId: string }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,6 +40,17 @@ export function DocumentUploader({ userId, caseId }: { userId: string; caseId: s
     const file = fileInputRef.current?.files?.[0];
     if (!file) {
       setMessage("Choose a file first.");
+      return;
+    }
+
+    if (file.size > MAX_PATIENT_DOCUMENT_BYTES) {
+      setMessage("This file is larger than the current 50 MB secure-upload limit. Please contact JV Dental for a larger CBCT transfer.");
+      return;
+    }
+
+    const extension = fileExtension(file.name);
+    if (!allowedExtensions.has(extension)) {
+      setMessage("Use JPEG, PNG, WebP, PDF, ZIP or DICOM (.dcm) records only.");
       return;
     }
 
@@ -128,7 +147,7 @@ export function DocumentUploader({ userId, caseId }: { userId: string; caseId: s
         />
       </label>
       <p style={{ margin: 0, color: "var(--muted)", fontSize: ".86rem" }}>
-        OPGs, X-rays, PDFs, clinical photos and compressed CBCT/DICOM records are stored in your private case vault. Large uploads are resumable.
+        OPGs, X-rays, PDFs, clinical photos and compressed CBCT/DICOM records are stored in your private case vault. Large uploads are resumable. Current secure-upload limit: 50 MB per file.
       </p>
       {progress !== null ? (
         <div aria-label={`Upload progress ${progress}%`}>
