@@ -74,6 +74,7 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
             <Link href="/patient/documents">Documents</Link>
             <Link href="/patient/messages">Messages</Link>
             <Link href="/patient/plan">Treatment plan</Link>
+            <Link href="/patient/payments">Payments</Link>
             <Link href="/patient/travel">Travel</Link>
             <Link href="/patient/passport">Implant passport</Link>
           </nav>
