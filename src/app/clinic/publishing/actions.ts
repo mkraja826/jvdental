@@ -13,8 +13,25 @@ function slugify(value: string) {
     .slice(0, 90);
 }
 
+async function resolveDoctorAttribution(
+  supabase: Awaited<ReturnType<typeof requireClinicalPublisher>>["supabase"],
+  userId: string,
+  staffRole: string,
+  requestedId: string,
+) {
+  if (!requestedId) return null;
+  const { data: doctor } = await supabase
+    .from("doctor_profiles")
+    .select("id,staff_user_id,status")
+    .eq("id", requestedId)
+    .maybeSingle();
+  if (!doctor || doctor.status === "archived") return null;
+  if (["owner", "admin"].includes(staffRole)) return doctor.id;
+  return doctor.staff_user_id === userId ? doctor.id : null;
+}
+
 export async function saveBlogPost(formData: FormData) {
-  const { supabase, user } = await requireClinicalPublisher();
+  const { supabase, user, staff } = await requireClinicalPublisher();
   const title = String(formData.get("title") ?? "").trim();
   const requestedSlug = String(formData.get("slug") ?? "").trim();
   const status = String(formData.get("status") ?? "draft");
@@ -24,11 +41,16 @@ export async function saveBlogPost(formData: FormData) {
     redirect("/clinic/publishing?error=invalid");
   }
 
+  const requestedDoctor = String(formData.get("doctor_profile_id") ?? "");
+  const doctorProfileId = await resolveDoctorAttribution(supabase, user.id, staff.role, requestedDoctor);
+  if (requestedDoctor && !doctorProfileId) redirect("/clinic/publishing?error=doctor");
+
   const slug = slugify(requestedSlug || title);
   const publishedAt = status === "published" ? new Date().toISOString() : null;
 
   const { error } = await supabase.from("blog_posts").insert({
     author_user_id: user.id,
+    doctor_profile_id: doctorProfileId,
     title,
     slug,
     excerpt: String(formData.get("excerpt") ?? "").trim() || null,
@@ -45,6 +67,10 @@ export async function saveBlogPost(formData: FormData) {
 
   revalidatePath("/clinic/publishing");
   revalidatePath("/journal");
+  if (doctorProfileId) {
+    const { data: doctor } = await supabase.from("doctor_profiles").select("slug").eq("id", doctorProfileId).maybeSingle();
+    if (doctor?.slug) revalidatePath(`/doctors/${doctor.slug}`);
+  }
   redirect("/clinic/publishing?saved=1");
 }
 
@@ -64,4 +90,5 @@ export async function setBlogStatus(formData: FormData) {
 
   revalidatePath("/clinic/publishing");
   revalidatePath("/journal");
+  revalidatePath("/doctors");
 }
