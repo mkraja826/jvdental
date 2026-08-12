@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createTreatmentPlan } from "@/app/clinic/commercial/actions";
 import {
   cancelConsultation,
@@ -7,21 +7,26 @@ import {
   retryCalendarSync,
   scheduleVideoConsultation,
 } from "@/app/clinic/commercial/consultation-actions";
-import { requireClinicalPublisher } from "@/lib/content/permissions";
+import { requireStaff } from "@/lib/auth/guards";
+
+const COMMERCIAL_ROLES = new Set(["owner", "admin", "implantologist", "doctor", "coordinator"]);
+const CLINICAL_PLAN_ROLES = new Set(["owner", "admin", "implantologist", "doctor"]);
 
 export default async function CommercialCasePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { id } = await params;
   const query = await searchParams;
-  const { supabase } = await requireClinicalPublisher();
+  const { supabase, staff } = await requireStaff();
+  if (!COMMERCIAL_ROLES.has(staff.role)) redirect("/clinic");
+  const canAuthorPlan = CLINICAL_PLAN_ROLES.has(staff.role);
 
   const { data: caseRecord } = await supabase
     .from("patient_cases")
-    .select("id,case_number,status,treatment_interest,country_snapshot,patient_id,patient_profiles(full_name,country)")
+    .select("id,case_number,status,treatment_interest,country_snapshot,patient_id,assigned_clinician,patient_profiles(full_name,country)")
     .eq("id", id)
     .maybeSingle();
   if (!caseRecord) notFound();
 
-  const [{ data: appointments }, { data: plans }] = await Promise.all([
+  const [{ data: appointments }, { data: plans }, { data: assignedClinician }] = await Promise.all([
     supabase
       .from("appointments")
       .select("id,appointment_type,starts_at,ends_at,meeting_url,status,timezone,conference_provider,external_sync_status,external_sync_error,external_event_html_url,external_event_id")
@@ -33,6 +38,9 @@ export default async function CommercialCasePage({ params, searchParams }: { par
       .select("id,version,title,status,created_at,sent_at,accepted_at")
       .eq("case_id", id)
       .order("version", { ascending: false }),
+    caseRecord.assigned_clinician
+      ? supabase.from("staff_profiles").select("full_name,job_title").eq("user_id", caseRecord.assigned_clinician).maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   const patient = Array.isArray(caseRecord.patient_profiles) ? caseRecord.patient_profiles[0] : caseRecord.patient_profiles;
@@ -42,7 +50,7 @@ export default async function CommercialCasePage({ params, searchParams }: { par
       <header className="portal-header">
         <Link className="wordmark" href="/clinic"><span>JV</span><span>Clinic</span></Link>
         <div className="portal-header__right">
-          <Link className="text-link" href={`/clinic/reviews/${id}`}>Clinical review</Link>
+          {canAuthorPlan ? <Link className="text-link" href={`/clinic/reviews/${id}`}>Clinical review</Link> : null}
           <Link className="text-link" href="/clinic/commercial">Worklist</Link>
         </div>
       </header>
@@ -50,7 +58,7 @@ export default async function CommercialCasePage({ params, searchParams }: { par
         <aside className="portal-sidebar">
           <nav aria-label="Case commercial navigation">
             <Link href={`/clinic/commercial/${id}`}>Consultation & estimate</Link>
-            <Link href={`/clinic/reviews/${id}`}>Clinical review</Link>
+            {canAuthorPlan ? <Link href={`/clinic/reviews/${id}`}>Clinical review</Link> : null}
             <Link href="/clinic/inbox">Inbox</Link>
             <Link href="/clinic/travel">Travel</Link>
             <Link href="/clinic/notifications">Notifications</Link>
@@ -72,35 +80,46 @@ export default async function CommercialCasePage({ params, searchParams }: { par
             <article className="portal-card">
               <div className="portal-card__header"><h2>Schedule video consultation</h2><span className="status-pill">30 min</span></div>
               <div className="portal-card__body">
+                <p className="form-note">Treating clinician: {assignedClinician?.full_name ?? (caseRecord.assigned_clinician ? "Assigned clinician" : "Not assigned yet")}{assignedClinician?.job_title ? ` · ${assignedClinician.job_title}` : ""}</p>
                 <form action={scheduleVideoConsultation} style={{ display: "grid", gap: 16 }}>
                   <input type="hidden" name="case_id" value={caseRecord.id} />
                   <label>Clinic date & time (India)<input name="starts_at" type="datetime-local" required /></label>
                   <label>Manual meeting link · fallback only<input name="meeting_url" type="url" placeholder="https://meet.google.com/..." /></label>
                   <label>Internal appointment note<textarea name="notes" rows={3} placeholder="Records to review before consultation" /></label>
-                  <p className="form-note">If Google Calendar is connected, JV Dental requests a unique Google Meet automatically and sends Calendar attendee updates. The manual link is retained as a fallback when Google is not connected.</p>
+                  <p className="form-note">If Google Calendar is connected, JV Dental requests a unique Google Meet automatically and sends Calendar attendee updates. A coordinator scheduling the appointment does not become the treating clinician.</p>
                   <button className="button" type="submit">Schedule consultation</button>
                 </form>
               </div>
             </article>
 
-            <article className="portal-card">
-              <div className="portal-card__header"><h2>Create preliminary plan</h2><span className="status-pill">Versioned</span></div>
-              <div className="portal-card__body">
-                <form action={createTreatmentPlan} style={{ display: "grid", gap: 16 }}>
-                  <input type="hidden" name="case_id" value={caseRecord.id} />
-                  <label>Plan title<input name="title" defaultValue="Preliminary implant treatment plan" required /></label>
-                  <label>Clinical summary<textarea name="summary" rows={4} placeholder="Provisional plan based on records and consultation." /></label>
-                  <label>Message to patient<textarea name="doctor_message" rows={3} placeholder="Explain the proposed approach in patient-friendly language." /></label>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                    <label>Minimum stay (days)<input name="stay_min" type="number" min="0" /></label>
-                    <label>Maximum stay (days)<input name="stay_max" type="number" min="0" /></label>
-                  </div>
-                  <label>Estimate valid until<input name="valid_until" type="date" /></label>
-                  <label style={{ display: "flex", gap: 10, alignItems: "center" }}><input name="second_visit_required" type="checkbox" /> Second visit expected</label>
-                  <button className="button" type="submit">Create treatment plan</button>
-                </form>
-              </div>
-            </article>
+            {canAuthorPlan ? (
+              <article className="portal-card">
+                <div className="portal-card__header"><h2>Create preliminary plan</h2><span className="status-pill">Clinical · Versioned</span></div>
+                <div className="portal-card__body">
+                  <form action={createTreatmentPlan} style={{ display: "grid", gap: 16 }}>
+                    <input type="hidden" name="case_id" value={caseRecord.id} />
+                    <label>Plan title<input name="title" defaultValue="Preliminary implant treatment plan" required /></label>
+                    <label>Clinical summary<textarea name="summary" rows={4} placeholder="Provisional plan based on records and consultation." /></label>
+                    <label>Message to patient<textarea name="doctor_message" rows={3} placeholder="Explain the proposed approach in patient-friendly language." /></label>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                      <label>Minimum stay (days)<input name="stay_min" type="number" min="0" /></label>
+                      <label>Maximum stay (days)<input name="stay_max" type="number" min="0" /></label>
+                    </div>
+                    <label>Estimate valid until<input name="valid_until" type="date" /></label>
+                    <label style={{ display: "flex", gap: 10, alignItems: "center" }}><input name="second_visit_required" type="checkbox" /> Second visit expected</label>
+                    <button className="button" type="submit">Create treatment plan</button>
+                  </form>
+                </div>
+              </article>
+            ) : (
+              <article className="portal-card">
+                <div className="portal-card__header"><h2>Clinical plan</h2><span className="status-pill">Doctor controlled</span></div>
+                <div className="portal-card__body">
+                  <p>Coordinators can manage consultation timing and international logistics, but clinical findings, treatment recommendations and estimates remain under the clinical team.</p>
+                  <p className="form-note">Existing plan status can still be followed below for coordination purposes.</p>
+                </div>
+              </article>
+            )}
           </div>
 
           <div className="portal-grid" style={{ marginTop: 24 }}>
@@ -175,11 +194,19 @@ export default async function CommercialCasePage({ params, searchParams }: { par
                 {!plans?.length ? <p>No preliminary plan created yet.</p> : (
                   <div className="status-list">
                     {plans.map((plan) => (
-                      <Link className="status-row" href={`/clinic/plans/${plan.id}`} key={plan.id}>
-                        <strong>v{plan.version} · {plan.title || "Treatment plan"}</strong>
-                        <span>{new Date(plan.created_at).toLocaleDateString("en-IN")}</span>
-                        <span className="status-pill">{plan.status.replaceAll("_", " ")}</span>
-                      </Link>
+                      canAuthorPlan ? (
+                        <Link className="status-row" href={`/clinic/plans/${plan.id}`} key={plan.id}>
+                          <strong>v{plan.version} · {plan.title || "Treatment plan"}</strong>
+                          <span>{new Date(plan.created_at).toLocaleDateString("en-IN")}</span>
+                          <span className="status-pill">{plan.status.replaceAll("_", " ")}</span>
+                        </Link>
+                      ) : (
+                        <div className="status-row" key={plan.id}>
+                          <strong>v{plan.version} · {plan.title || "Treatment plan"}</strong>
+                          <span>{new Date(plan.created_at).toLocaleDateString("en-IN")}</span>
+                          <span className="status-pill">{plan.status.replaceAll("_", " ")}</span>
+                        </div>
+                      )
                     ))}
                   </div>
                 )}
