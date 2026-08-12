@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signOut } from "@/app/auth/actions";
+import AssistantConversionClaim from "@/components/assistant-conversion-claim";
 import { createClient } from "@/lib/supabase/server";
 
 type PatientDashboardProps = {
@@ -47,6 +48,7 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
 
   return (
     <main className="portal-shell">
+      <AssistantConversionClaim />
       <header className="portal-header">
         <Link className="wordmark" href="/"><span>JV</span><span>Dental</span></Link>
         <div className="portal-header__right">
