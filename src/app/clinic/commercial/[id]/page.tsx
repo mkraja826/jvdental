@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cancelConsultation, createTreatmentPlan, scheduleVideoConsultation } from "@/app/clinic/commercial/actions";
+import { createTreatmentPlan } from "@/app/clinic/commercial/actions";
+import {
+  cancelConsultation,
+  rescheduleConsultation,
+  retryCalendarSync,
+  scheduleVideoConsultation,
+} from "@/app/clinic/commercial/consultation-actions";
 import { requireClinicalPublisher } from "@/lib/content/permissions";
 
 export default async function CommercialCasePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -18,7 +24,7 @@ export default async function CommercialCasePage({ params, searchParams }: { par
   const [{ data: appointments }, { data: plans }] = await Promise.all([
     supabase
       .from("appointments")
-      .select("id,appointment_type,starts_at,ends_at,meeting_url,status,timezone")
+      .select("id,appointment_type,starts_at,ends_at,meeting_url,status,timezone,conference_provider,external_sync_status,external_sync_error,external_event_html_url,external_event_id")
       .eq("case_id", id)
       .order("starts_at", { ascending: false })
       .limit(10),
@@ -47,6 +53,7 @@ export default async function CommercialCasePage({ params, searchParams }: { par
             <Link href={`/clinic/reviews/${id}`}>Clinical review</Link>
             <Link href="/clinic/inbox">Inbox</Link>
             <Link href="/clinic/travel">Travel</Link>
+            <Link href="/clinic/notifications">Notifications</Link>
           </nav>
         </aside>
         <section className="portal-main">
@@ -56,6 +63,10 @@ export default async function CommercialCasePage({ params, searchParams }: { par
 
           {query.error === "consultation_time" ? <p style={{ color: "var(--danger)" }}>Choose a future consultation time.</p> : null}
           {query.error === "consultation" ? <p style={{ color: "var(--danger)" }}>The consultation could not be scheduled.</p> : null}
+          {query.scheduled ? <p className="form-note">Consultation scheduled. Google Calendar sync was attempted automatically.</p> : null}
+          {query.rescheduled ? <p className="form-note">Consultation rescheduled. The existing Calendar event was updated when available.</p> : null}
+          {query.cancelled ? <p className="form-note">Consultation cancelled.</p> : null}
+          {query.calendar_sync ? <p className="form-note">Calendar sync retried.</p> : null}
 
           <div className="portal-grid" style={{ marginTop: 28 }}>
             <article className="portal-card">
@@ -64,8 +75,9 @@ export default async function CommercialCasePage({ params, searchParams }: { par
                 <form action={scheduleVideoConsultation} style={{ display: "grid", gap: 16 }}>
                   <input type="hidden" name="case_id" value={caseRecord.id} />
                   <label>Clinic date & time (India)<input name="starts_at" type="datetime-local" required /></label>
-                  <label>Meeting link<input name="meeting_url" type="url" placeholder="https://meet.google.com/..." /></label>
+                  <label>Manual meeting link · fallback only<input name="meeting_url" type="url" placeholder="https://meet.google.com/..." /></label>
                   <label>Internal appointment note<textarea name="notes" rows={3} placeholder="Records to review before consultation" /></label>
+                  <p className="form-note">If Google Calendar is connected, JV Dental requests a unique Google Meet automatically and sends Calendar attendee updates. The manual link is retained as a fallback when Google is not connected.</p>
                   <button className="button" type="submit">Schedule consultation</button>
                 </form>
               </div>
@@ -96,23 +108,62 @@ export default async function CommercialCasePage({ params, searchParams }: { par
               <div className="portal-card__header"><h2>Consultations</h2><span className="status-pill">{appointments?.length ?? 0}</span></div>
               <div className="portal-card__body">
                 {!appointments?.length ? <p>No consultation scheduled yet.</p> : (
-                  <div className="status-list">
-                    {appointments.map((appointment) => (
-                      <div className="status-row" key={appointment.id}>
-                        <strong>{new Date(appointment.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })}</strong>
-                        <span>{appointment.appointment_type.replaceAll("_", " ")}</span>
-                        <span style={{ display: "flex", gap: 10, justifyContent: "flex-end", alignItems: "center" }}>
-                          <span className="status-pill">{appointment.status}</span>
-                          {appointment.status === "scheduled" ? (
-                            <form action={cancelConsultation}>
-                              <input type="hidden" name="appointment_id" value={appointment.id} />
-                              <input type="hidden" name="case_id" value={caseRecord.id} />
-                              <button className="text-link" type="submit" style={{ background: "none", border: 0, cursor: "pointer" }}>Cancel</button>
-                            </form>
-                          ) : null}
-                        </span>
-                      </div>
-                    ))}
+                  <div style={{ display: "grid", gap: 16 }}>
+                    {appointments.map((appointment) => {
+                      const syncLabel = appointment.external_sync_status === "synced"
+                        ? appointment.conference_provider === "google_meet" ? "Google Meet ready" : "Calendar synced"
+                        : appointment.external_sync_status === "failed" ? "Calendar sync failed"
+                        : appointment.external_sync_status === "cancelled" ? "Calendar cancelled"
+                        : appointment.conference_provider === "manual" ? "Manual link" : "Calendar not connected";
+                      return (
+                        <div className="portal-card" key={appointment.id} style={{ boxShadow: "none" }}>
+                          <div className="portal-card__body" style={{ display: "grid", gap: 14 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                              <div>
+                                <strong>{new Date(appointment.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })}</strong>
+                                <p className="form-note" style={{ margin: "6px 0 0" }}>{appointment.appointment_type.replaceAll("_", " ")} · {appointment.timezone}</p>
+                              </div>
+                              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                                <span className="status-pill">{appointment.status}</span>
+                                <span className="status-pill">{syncLabel}</span>
+                              </div>
+                            </div>
+
+                            {appointment.meeting_url ? (
+                              <div><a className="button button--ghost" href={appointment.meeting_url} target="_blank" rel="noreferrer">Open meeting →</a></div>
+                            ) : appointment.status === "scheduled" ? <p className="form-note">No meeting URL is available yet. Retry Calendar sync after Google Calendar is connected.</p> : null}
+
+                            {appointment.external_event_html_url ? (
+                              <a className="text-link" href={appointment.external_event_html_url} target="_blank" rel="noreferrer">Open Google Calendar event ↗</a>
+                            ) : null}
+                            {appointment.external_sync_error ? <p className="form-note">Sync detail: {appointment.external_sync_error}</p> : null}
+
+                            {appointment.status === "scheduled" ? (
+                              <div style={{ display: "grid", gap: 12 }}>
+                                <form action={rescheduleConsultation} style={{ display: "flex", gap: 10, alignItems: "end", flexWrap: "wrap" }}>
+                                  <input type="hidden" name="appointment_id" value={appointment.id} />
+                                  <input type="hidden" name="case_id" value={caseRecord.id} />
+                                  <label style={{ flex: "1 1 230px" }}>Reschedule<input name="starts_at" type="datetime-local" required /></label>
+                                  <button className="button button--ghost" type="submit">Update time</button>
+                                </form>
+                                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                                  <form action={retryCalendarSync}>
+                                    <input type="hidden" name="appointment_id" value={appointment.id} />
+                                    <input type="hidden" name="case_id" value={caseRecord.id} />
+                                    <button className="text-link" type="submit" style={{ background: "none", border: 0, cursor: "pointer" }}>Retry Calendar / Meet sync</button>
+                                  </form>
+                                  <form action={cancelConsultation}>
+                                    <input type="hidden" name="appointment_id" value={appointment.id} />
+                                    <input type="hidden" name="case_id" value={caseRecord.id} />
+                                    <button className="text-link" type="submit" style={{ background: "none", border: 0, cursor: "pointer" }}>Cancel consultation</button>
+                                  </form>
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
