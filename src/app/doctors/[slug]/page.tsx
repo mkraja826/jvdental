@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
@@ -22,8 +23,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { doctor } = await getDoctor(slug);
   if (!doctor) return { title: "Doctor | JV Dental" };
   return {
-    title: doctor.seo_title || `${doctor.full_name} | JV Dental`,
+    title: doctor.seo_title || doctor.full_name,
     description: doctor.seo_description || doctor.short_intro || `Professional profile for ${doctor.full_name} at JV Dental.`,
+    alternates: { canonical: `/doctors/${doctor.slug}` },
   };
 }
 
@@ -56,7 +58,17 @@ export default async function DoctorPortfolioPage({ params }: PageProps) {
 
       <section className="doctor-profile-hero">
         <div className="doctor-profile-hero__portrait">
-          {imageUrl ? <img src={imageUrl} alt={doctor.full_name} /> : <span>{doctor.full_name.split(/\s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J"}</span>}
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={doctor.full_name}
+              width={1000}
+              height={1250}
+              sizes="(max-width: 900px) 100vw, 42vw"
+              priority
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : <span>{doctor.full_name.split(/\s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J"}</span>}
         </div>
         <div className="doctor-profile-hero__copy">
           <p className="eyebrow">JV DENTAL · CLINICAL PORTFOLIO</p>
