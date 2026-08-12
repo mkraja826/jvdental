@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <html lang="en">
@@ -14,9 +16,9 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
             <button type="button" onClick={() => reset()} style={{ padding: "12px 18px", border: "1px solid #171918", background: "#171918", color: "#fff", cursor: "pointer" }}>
               Try again
             </button>
-            <a href="/" style={{ padding: "12px 18px", border: "1px solid #171918", color: "#171918", textDecoration: "none" }}>
+            <Link href="/" style={{ padding: "12px 18px", border: "1px solid #171918", color: "#171918", textDecoration: "none" }}>
               Return home
-            </a>
+            </Link>
           </div>
         </main>
       </body>
