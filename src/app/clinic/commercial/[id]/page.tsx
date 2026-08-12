@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createTreatmentPlan, scheduleVideoConsultation } from "@/app/clinic/commercial/actions";
+import { cancelConsultation, createTreatmentPlan, scheduleVideoConsultation } from "@/app/clinic/commercial/actions";
 import { requireClinicalPublisher } from "@/lib/content/permissions";
 
-export default async function CommercialCasePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function CommercialCasePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { id } = await params;
+  const query = await searchParams;
   const { supabase } = await requireClinicalPublisher();
 
   const { data: caseRecord } = await supabase
@@ -54,6 +55,9 @@ export default async function CommercialCasePage({ params }: { params: Promise<{
           <h1 className="portal-title">{patient?.full_name ?? "Patient"}</h1>
           <p className="portal-subtitle">{caseRecord.treatment_interest || "Implant assessment"} · {caseRecord.status.replaceAll("_", " ")}</p>
 
+          {query.error === "consultation_time" ? <p style={{ color: "var(--danger)" }}>Choose a future consultation time.</p> : null}
+          {query.error === "consultation" ? <p style={{ color: "var(--danger)" }}>The consultation could not be scheduled.</p> : null}
+
           <div className="portal-grid" style={{ marginTop: 28 }}>
             <article className="portal-card">
               <div className="portal-card__header"><h2>Schedule video consultation</h2><span className="status-pill">30 min</span></div>
@@ -98,7 +102,16 @@ export default async function CommercialCasePage({ params }: { params: Promise<{
                       <div className="status-row" key={appointment.id}>
                         <strong>{new Date(appointment.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })}</strong>
                         <span>{appointment.appointment_type.replaceAll("_", " ")}</span>
-                        <span className="status-pill">{appointment.status}</span>
+                        <span style={{ display: "flex", gap: 10, justifyContent: "flex-end", alignItems: "center" }}>
+                          <span className="status-pill">{appointment.status}</span>
+                          {appointment.status === "scheduled" ? (
+                            <form action={cancelConsultation}>
+                              <input type="hidden" name="appointment_id" value={appointment.id} />
+                              <input type="hidden" name="case_id" value={caseRecord.id} />
+                              <button className="text-link" type="submit" style={{ background: "none", border: 0, cursor: "pointer" }}>Cancel</button>
+                            </form>
+                          ) : null}
+                        </span>
                       </div>
                     ))}
                   </div>
