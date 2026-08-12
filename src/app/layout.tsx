@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PublicDentalAssistant from "@/components/public-dental-assistant";
 import "./globals.css";
+import "./assistant.css";
 
 export const metadata: Metadata = {
   title: {
