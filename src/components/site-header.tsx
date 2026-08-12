@@ -10,10 +10,10 @@ export function SiteHeader() {
         </Link>
 
         <nav className="site-nav" aria-label="Primary navigation">
-          <Link href="#implants">Implants</Link>
-          <Link href="#cases">Cases</Link>
-          <Link href="#international">International Patients</Link>
-          <Link href="#approach">Our Approach</Link>
+          <Link href="/guided-implants">Guided implants</Link>
+          <Link href="/cases">Cases</Link>
+          <Link href="/#international">International</Link>
+          <Link href="/journal">Journal</Link>
         </nav>
 
         <div className="header-actions">
