@@ -123,6 +123,8 @@ All acceptance tests must use test/sandbox identities until the final controlled
 - [x] Committed npm lockfile and reproducible `npm ci` validation.
 - [x] Production dependency audit at high severity in CI.
 - [x] Standalone TypeScript validation in CI.
+- [x] Warning-free ESLint validation.
+- [x] Production Next.js build.
 - [x] Production-server smoke tests for security headers, robots rules and private-cache/indexing behavior.
 - [x] Visible keyboard focus safeguards and reduced-motion support.
 - [ ] Automated accessibility audit plus manual keyboard/screen-reader pass on deployed pages.
