@@ -14,7 +14,7 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/patient/login");
 
-  const [profileResult, caseResult, documentResult, conversationResult, appointmentResult, planResult, travelResult] = await Promise.all([
+  const [profileResult, caseResult, documentResult, conversationResult, appointmentResult, planResult, travelResult, implantResult] = await Promise.all([
     supabase.from("patient_profiles").select("full_name,intake_completed_at").eq("user_id", user.id).maybeSingle(),
     supabase.from("patient_cases").select("id,status,case_number").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("patient_documents").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
@@ -22,12 +22,14 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
     supabase.from("appointments").select("id,appointment_type,starts_at,status,meeting_url").eq("patient_id", user.id).eq("status", "scheduled").order("starts_at", { ascending: true }).limit(1).maybeSingle(),
     supabase.from("treatment_plans").select("id,status,version").eq("patient_id", user.id).in("status", ["preliminary", "sent", "requested_changes", "accepted"]).order("version", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("travel_plans").select("id,status,arrival_date").eq("patient_id", user.id).order("updated_at", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("implant_records").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
   ]);
 
   const profile = profileResult.data;
   const caseRecord = caseResult.data;
   const documentCount = documentResult.count ?? 0;
   const conversationCount = conversationResult.count ?? 0;
+  const implantCount = implantResult.count ?? 0;
   const appointment = appointmentResult.data;
   const treatmentPlan = planResult.data;
   const travel = travelResult.data;
@@ -69,6 +71,7 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
             <Link href="/patient/messages">Messages</Link>
             <Link href="/patient/plan">Treatment plan</Link>
             <Link href="/patient/travel">Travel</Link>
+            <Link href="/patient/passport">Implant passport</Link>
           </nav>
         </aside>
 
@@ -141,6 +144,14 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
               <div className="portal-card__body">
                 <p>{travel?.arrival_date ? `Arrival currently listed for ${travel.arrival_date}.` : "Travel planning opens after you accept the preliminary treatment plan."}</p>
                 <Link className="button button--ghost" href="/patient/travel">Open travel planning →</Link>
+              </div>
+            </article>
+
+            <article className="portal-card">
+              <div className="portal-card__header"><h2>Implant passport</h2><span className="status-pill">{implantCount ? `${implantCount} recorded` : "Waiting"}</span></div>
+              <div className="portal-card__body">
+                <p>{implantCount ? "View the brand, system, dimensions, placement site and lot captured for implants placed at JV Dental." : "Your traceability passport appears automatically after an implant is recorded from clinic inventory."}</p>
+                <Link className="button button--ghost" href="/patient/passport">Open implant passport →</Link>
               </div>
             </article>
           </div>
