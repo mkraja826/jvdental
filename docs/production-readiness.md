@@ -10,23 +10,28 @@ This document is the launch gate for the JV Dental patient and clinic platform. 
 - Supabase performance advisor: no WARN-level findings after FK indexing, auth init-plan optimization and policy consolidation. INFO-level unused-index observations are intentionally retained until real workload data exists.
 - Private patient Storage: 50 MB per object with server-side MIME + extension restrictions.
 - Public case media Storage: 25 MB per object, JPEG/PNG/WebP/MP4 only.
-- Application dependency versions are pinned; a committed package lock is required before launch.
+- Application dependency versions are pinned with a committed npm lockfile.
+- CI uses `npm ci`, audits production dependencies at high severity, type-checks, lints, builds, and smoke-tests production security headers/routes.
+- Public assistant has both per-session rate limiting and an atomic salted-network-fingerprint limit. Raw client IP addresses are not stored by JV Dental for this limiter.
 
-## Blocker: backup and disaster recovery
+## Blocker: production Supabase plan, backup and disaster recovery
 
-Do not place production patient records in the current Free-plan project until an approved backup strategy is operational and a restore has been tested.
+Do not place real production patient records in the current Free-plan project until an approved availability/backup strategy is operational and a restore has been tested.
 
-Supabase-managed daily database backups are a paid-plan capability. Database backups also do not contain the underlying Storage objects, so a database backup alone is not sufficient for JV Dental because radiographs, CBCT archives and clinical media are stored in Supabase Storage.
+For a clinic production deployment, moving JV Dental to a paid Supabase plan with managed daily database backups is the preferred baseline. Free projects can be paused for low activity and do not provide the same managed-backup/availability posture expected for a patient-facing clinical system.
+
+Database backups do not contain the underlying Storage objects, so a database backup alone is not sufficient for JV Dental because radiographs, CBCT archives and clinical media are stored in Supabase Storage.
 
 ### Minimum launch requirement
 
-1. Move the production Supabase organization/project to a plan with managed daily database backups, **or** operate a separately secured, audited logical database backup process.
-2. Maintain an encrypted off-site copy of both Storage buckets independently of database backups.
-3. Keep backup credentials outside this public GitHub repository.
-4. Define retention and deletion periods with the clinic's privacy/legal policy before production use.
-5. Perform a restore drill to a non-production project using synthetic/test data.
-6. Record the restore date, operator, recovery point, recovery duration and any missing assets.
-7. Repeat restore drills after meaningful schema/storage changes and periodically during operations.
+1. Upgrade the production Supabase project to the clinic-approved production plan before real patient onboarding, or document an equivalent availability/backup architecture approved by the clinic.
+2. Confirm managed database backup settings or operate a separately secured, audited logical database backup process.
+3. Maintain an encrypted off-site copy of both Storage buckets independently of database backups.
+4. Keep backup credentials outside this public GitHub repository.
+5. Define retention and deletion periods with the clinic's privacy/legal policy before production use.
+6. Perform a restore drill to a non-production project using synthetic/test data.
+7. Record the restore date, operator, recovery point, recovery duration and any missing assets.
+8. Repeat restore drills after meaningful schema/storage changes and periodically during operations.
 
 ### Suggested operational targets for launch
 
@@ -36,6 +41,21 @@ Supabase-managed daily database backups are a paid-plan capability. Database bac
 - Never use production patient data for restore testing in developer environments.
 
 These are internal engineering targets, not legal/compliance guarantees.
+
+## Blocker: Supabase platform security settings
+
+Before production:
+
+- enable and verify database SSL enforcement
+- review database Network Restrictions and restrict direct database access to the operational paths that genuinely need it
+- enable MFA on administrative Supabase/GitHub accounts and organization-level enforcement where practical
+- review Supabase Auth rate limits for the expected clinic/public workload
+- enable CAPTCHA/Turnstile protection for public Auth entry points before a public launch
+- configure a JV Dental-controlled custom SMTP provider for Auth emails
+- use an OTP/magic-link expiry no longer than the clinic's approved security window; Supabase recommends one hour or less
+- disable email-provider click/link tracking for Auth links if the SMTP provider enables it by default
+
+The application already separates the flows correctly: patient magic links may create patient users; staff sign-in explicitly uses `shouldCreateUser: false` and therefore cannot provision arbitrary staff accounts.
 
 ## Blocker: real-user acceptance
 
@@ -84,7 +104,9 @@ All acceptance tests must use test/sandbox identities until the final controlled
 - Configure the approved model/provider only after model selection.
 - Verify prompt-injection resistance and clinic-knowledge boundaries.
 - Keep diagnosis, radiograph interpretation and prescribing blocked.
-- Add production-grade edge/CDN abuse controls before public launch.
+- [x] Server-side session rate limiting.
+- [x] Atomic salted-network-fingerprint rate limiting without retaining raw IP addresses.
+- Add CDN/WAF rules at the final public hosting layer as an additional perimeter control.
 
 ## Application boundary checklist
 
@@ -98,9 +120,13 @@ All acceptance tests must use test/sandbox identities until the final controlled
 - [x] Dynamic public sitemap.
 - [x] Privacy-safe health endpoint.
 - [x] Branded global error and 404 handling.
-- [ ] Committed npm lockfile and `npm ci` validation.
-- [ ] Automated accessibility checks and manual keyboard/screen-reader pass.
-- [ ] Cross-browser/mobile acceptance matrix.
+- [x] Committed npm lockfile and reproducible `npm ci` validation.
+- [x] Production dependency audit at high severity in CI.
+- [x] Standalone TypeScript validation in CI.
+- [x] Production-server smoke tests for security headers, robots rules and private-cache/indexing behavior.
+- [x] Visible keyboard focus safeguards and reduced-motion support.
+- [ ] Automated accessibility audit plus manual keyboard/screen-reader pass on deployed pages.
+- [ ] Cross-browser/mobile acceptance matrix on the deployed release candidate.
 - [ ] Production error-reporting provider / alert destination.
 - [ ] Uptime monitor pointed at `/api/health`.
 
@@ -121,8 +147,8 @@ Still required before launch:
 - determine whether real CBCT archives require more than the current 50 MB/object limit; raise the Supabase global + bucket limit deliberately if necessary
 - define per-patient/storage usage limits
 - orphan-upload cleanup procedure
-- malware/file-content scanning strategy for untrusted uploaded documents
-- production edge/CDN rate limiting for public AI and authentication abuse
+- malware/file-content scanning strategy for untrusted uploaded documents, especially PDF/ZIP content
+- final hosting-layer WAF/rate-limit rules for public assistant and authentication traffic
 
 ## SEO/content launch gate
 
@@ -147,7 +173,7 @@ Production launch is approved only when:
 
 1. security advisor is clean,
 2. CI is green on the exact release SHA,
-3. backup + Storage recovery is operational and restore-tested,
+3. production Supabase availability + backup + Storage recovery is operational and restore-tested,
 4. real role provisioning is verified,
 5. external integrations pass controlled acceptance tests,
 6. privacy/legal content is approved,
