@@ -44,3 +44,40 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+      - name: Production security smoke tests
+        run: |
+          npm run start > /tmp/jv-next.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          READY=0
+          for attempt in $(seq 1 20); do
+            if curl -fsS -o /dev/null http://127.0.0.1:3000/robots.txt; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/jv-next.log
+            exit 1
+          fi
+
+          PUBLIC_HEADERS=$(curl -fsSI http://127.0.0.1:3000/robots.txt)
+          echo "$PUBLIC_HEADERS" | grep -qi '^content-security-policy:'
+          echo "$PUBLIC_HEADERS" | grep -qi '^x-content-type-options: nosniff'
+          echo "$PUBLIC_HEADERS" | grep -qi '^x-frame-options: DENY'
+          echo "$PUBLIC_HEADERS" | grep -qi '^referrer-policy: strict-origin-when-cross-origin'
+          echo "$PUBLIC_HEADERS" | grep -qi '^strict-transport-security:'
+
+          ROBOTS=$(curl -fsS http://127.0.0.1:3000/robots.txt)
+          echo "$ROBOTS" | grep -q 'Disallow: /patient'
+          echo "$ROBOTS" | grep -q 'Disallow: /clinic'
+          echo "$ROBOTS" | grep -q 'Disallow: /staff'
+          echo "$ROBOTS" | grep -q 'Disallow: /auth'
+          echo "$ROBOTS" | grep -q 'Sitemap: http://localhost:3000/sitemap.xml'
+
+          PRIVATE_HEADERS=$(curl -fsSI http://127.0.0.1:3000/patient/login)
+          echo "$PRIVATE_HEADERS" | grep -qi '^cache-control: private, no-store, max-age=0'
+          echo "$PRIVATE_HEADERS" | grep -qi '^x-robots-tag: noindex, nofollow, noarchive, nosnippet'
