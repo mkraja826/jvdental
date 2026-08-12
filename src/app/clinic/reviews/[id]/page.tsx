@@ -71,6 +71,7 @@ export default async function DoctorCaseReview({ params, searchParams }: { param
       <header className="portal-header">
         <Link className="wordmark" href="/clinic"><span>JV</span><span>Clinic</span></Link>
         <div className="portal-header__right">
+          <Link className="text-link" href={`/clinic/commercial/${caseRecord.id}`}>Consultation & estimate</Link>
           {conversation ? <Link className="text-link" href={`/clinic/inbox/${conversation.id}`}>Open patient conversation</Link> : null}
           <Link className="text-link" href="/clinic/reviews">Back to queue</Link>
         </div>
@@ -79,6 +80,7 @@ export default async function DoctorCaseReview({ params, searchParams }: { param
         <aside className="portal-sidebar">
           <nav aria-label="Case review navigation">
             <Link href="/clinic/reviews">Review queue</Link>
+            <Link href={`/clinic/commercial/${caseRecord.id}`}>Consultation & estimate</Link>
             {conversation ? <Link href={`/clinic/inbox/${conversation.id}`}>Patient conversation</Link> : null}
             <Link href="/clinic/cases">Signature cases</Link>
             <Link href="/clinic">Overview</Link>
@@ -115,76 +117,80 @@ export default async function DoctorCaseReview({ params, searchParams }: { param
             </article>
 
             <article className="portal-card">
-              <div className="portal-card__header"><h2>Medical flags</h2><span className="status-pill">Clinical</span></div>
+              <div className="portal-card__header"><h2>Dental concern</h2></div>
               <div className="portal-card__body">
-                <p><strong>Diabetes:</strong> {yesNo(medical?.diabetes ?? null)}<br />
-                  <strong>Hypertension:</strong> {yesNo(medical?.hypertension ?? null)}<br />
-                  <strong>Heart condition:</strong> {yesNo(medical?.heart_condition ?? null)}<br />
-                  <strong>Blood thinners:</strong> {yesNo(medical?.blood_thinners ?? null)}<br />
-                  <strong>Smoking:</strong> {medical?.smoking_status ?? "—"}</p>
-                <p><strong>Allergies:</strong> {medical?.allergies ?? "—"}</p>
-                <p><strong>Current medications:</strong> {medical?.current_medications ?? "—"}</p>
-                <p><strong>Other conditions:</strong> {medical?.other_conditions ?? "—"}</p>
+                <p><strong>Primary concern:</strong> {dental?.primary_concern ?? "—"}<br />
+                  <strong>Missing teeth:</strong> {dental?.missing_teeth ?? "—"}<br />
+                  <strong>Loose teeth:</strong> {yesNo(dental?.loose_teeth ?? null)}<br />
+                  <strong>Existing dentures:</strong> {yesNo(dental?.existing_dentures ?? null)}<br />
+                  <strong>Previous implants:</strong> {dental?.previous_implants ?? "—"}<br />
+                  <strong>Pain / infection:</strong> {dental?.pain_or_infection ?? "—"}</p>
+                {dental?.treatment_interest?.length ? <p><strong>Treatment interests:</strong><br />{dental.treatment_interest.join(", ")}</p> : null}
+                {dental?.preferred_treatment_month ? <p><strong>Preferred treatment month:</strong> {dental.preferred_treatment_month}</p> : null}
+                {dental?.notes ? <p><strong>Patient notes:</strong><br />{dental.notes}</p> : null}
               </div>
             </article>
           </div>
 
           <article className="portal-card" style={{ marginTop: 24 }}>
-            <div className="portal-card__header"><h2>Dental presentation</h2><span className="status-pill">Structured intake</span></div>
+            <div className="portal-card__header"><h2>Medical considerations</h2><span className="status-pill">Clinical</span></div>
             <div className="portal-card__body">
-              <p><strong>Primary concern:</strong> {dental?.primary_concern ?? "—"}</p>
-              <p><strong>Missing teeth:</strong> {dental?.missing_teeth ?? "—"}</p>
-              <p><strong>Loose teeth:</strong> {yesNo(dental?.loose_teeth ?? null)} · <strong>Existing dentures:</strong> {yesNo(dental?.existing_dentures ?? null)}</p>
-              <p><strong>Previous implants:</strong> {dental?.previous_implants ?? "—"}</p>
-              <p><strong>Pain / infection:</strong> {dental?.pain_or_infection ?? "—"}</p>
-              <p><strong>Treatment interests:</strong> {dental?.treatment_interest?.join(", ") || "—"}</p>
-              <p><strong>Preferred treatment month:</strong> {dental?.preferred_treatment_month ?? "—"}</p>
-              <p><strong>Patient notes:</strong> {dental?.notes ?? "—"}</p>
+              <div className="status-list">
+                <div className="status-row"><strong>Diabetes</strong><span>{yesNo(medical?.diabetes ?? null)}</span><span /></div>
+                <div className="status-row"><strong>Hypertension</strong><span>{yesNo(medical?.hypertension ?? null)}</span><span /></div>
+                <div className="status-row"><strong>Heart condition</strong><span>{yesNo(medical?.heart_condition ?? null)}</span><span /></div>
+                <div className="status-row"><strong>Blood thinners</strong><span>{yesNo(medical?.blood_thinners ?? null)}</span><span /></div>
+                <div className="status-row"><strong>Smoking</strong><span>{medical?.smoking_status ?? "—"}</span><span /></div>
+              </div>
+              {medical?.allergies ? <p><strong>Allergies:</strong> {medical.allergies}</p> : null}
+              {medical?.current_medications ? <p><strong>Current medications:</strong> {medical.current_medications}</p> : null}
+              {medical?.previous_surgeries ? <p><strong>Previous surgeries:</strong> {medical.previous_surgeries}</p> : null}
+              {medical?.other_conditions ? <p><strong>Other conditions:</strong> {medical.other_conditions}</p> : null}
             </div>
           </article>
 
           <article className="portal-card" style={{ marginTop: 24 }}>
-            <div className="portal-card__header"><h2>Clinical records</h2><span className="status-pill">{documents.length}</span></div>
+            <div className="portal-card__header"><h2>Private records</h2><span className="status-pill">{documents.length}</span></div>
             <div className="portal-card__body">
-              {documents.length ? <div className="status-list">
-                {documents.map((document) => (
-                  <div className="status-row" key={document.id}>
-                    <strong>{document.file_name}</strong>
-                    <span>{document.category.replaceAll("_", " ")}</span>
-                    {document.signedUrl ? <a className="text-link" href={document.signedUrl} target="_blank" rel="noreferrer">Open securely →</a> : <span>Unavailable</span>}
-                  </div>
-                ))}
-              </div> : <p>No records attached to this case.</p>}
-              <p style={{ color: "var(--muted)", fontSize: ".82rem" }}>Signed file links expire after five minutes. CBCT/DICOM records remain in the private patient vault.</p>
+              {!documents.length ? <p>No records uploaded for this case.</p> : (
+                <div className="status-list">
+                  {documents.map((document) => (
+                    <div className="status-row" key={document.id}>
+                      <strong>{document.file_name}</strong>
+                      <span>{document.category.replaceAll("_", " ")}</span>
+                      {document.signedUrl ? <a className="text-link" href={document.signedUrl} target="_blank" rel="noreferrer">Open 5-min link</a> : <span>Unavailable</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </article>
 
           <div className="portal-grid" style={{ marginTop: 24 }}>
             <article className="portal-card">
-              <div className="portal-card__header"><h2>Internal clinical notes</h2><span className="status-pill">Staff only</span></div>
+              <div className="portal-card__header"><h2>Internal clinical notes</h2><span className="status-pill">Not patient-visible</span></div>
               <div className="portal-card__body">
-                <form action={addInternalClinicalNote} style={{ display: "grid", gap: 12, marginBottom: 22 }}>
+                <form action={addInternalClinicalNote} style={{ display: "grid", gap: 12 }}>
                   <input type="hidden" name="case_id" value={caseRecord.id} />
-                  <label>New note<textarea name="note" rows={5} maxLength={10000} required placeholder="Clinical reasoning, records required, planning observations or handover notes." /></label>
-                  <button className="button" type="submit">Add internal note</button>
+                  <label>New internal note<textarea name="note" rows={5} required placeholder="Clinical observations, records still required, planning considerations..." /></label>
+                  <button className="button button--ghost" type="submit">Add internal note</button>
                 </form>
-                <div className="status-list">
+                <div className="status-list" style={{ marginTop: 22 }}>
                   {notes.map((note) => {
                     const author = staffMap.get(note.author_user_id);
-                    return <div className="status-row" key={note.id}><strong>{author?.full_name ?? "Clinical staff"}</strong><span style={{ whiteSpace: "pre-wrap" }}>{note.note}</span><span>{new Date(note.created_at).toLocaleDateString()}</span></div>;
+                    return <div className="status-row" key={note.id}><strong>{author?.full_name ?? author?.role ?? "Staff"}</strong><span>{note.note}</span><span>{new Date(note.created_at).toLocaleDateString("en-IN")}</span></div>;
                   })}
-                  {!notes.length ? <p>No internal clinical notes yet.</p> : null}
                 </div>
               </div>
             </article>
 
             <article className="portal-card">
-              <div className="portal-card__header"><h2>Status history</h2><span className="status-pill">Audit</span></div>
+              <div className="portal-card__header"><h2>Case history</h2><span className="status-pill">Audit</span></div>
               <div className="portal-card__body">
                 <div className="status-list">
                   {history.map((entry) => {
                     const actor = entry.changed_by ? staffMap.get(entry.changed_by) : null;
-                    return <div className="status-row" key={entry.id}><strong>{entry.new_status.replaceAll("_", " ")}</strong><span>{entry.previous_status?.replaceAll("_", " ") ?? "Started"}</span><span>{actor?.full_name ?? (entry.changed_by === caseRecord.patient_id ? "Patient action" : "System")}</span></div>;
+                    return <div className="status-row" key={entry.id}><strong>{entry.new_status.replaceAll("_", " ")}</strong><span>{actor?.full_name ?? actor?.role ?? "System"}</span><span>{new Date(entry.created_at).toLocaleString("en-IN")}</span></div>;
                   })}
                   {!history.length ? <p>No status transitions recorded yet.</p> : null}
                 </div>
