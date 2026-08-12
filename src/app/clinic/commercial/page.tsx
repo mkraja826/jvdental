@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { requireClinicalPublisher } from "@/lib/content/permissions";
+import { redirect } from "next/navigation";
+import { requireStaff } from "@/lib/auth/guards";
+
+const COMMERCIAL_ROLES = new Set(["owner", "admin", "implantologist", "doctor", "coordinator"]);
+const CLINICAL_PLAN_ROLES = new Set(["owner", "admin", "implantologist", "doctor"]);
 
 const relevantStatuses = [
   "doctor_review",
@@ -12,7 +16,9 @@ const relevantStatuses = [
 ];
 
 export default async function CommercialWorklist() {
-  const { supabase } = await requireClinicalPublisher();
+  const { supabase, staff } = await requireStaff();
+  if (!COMMERCIAL_ROLES.has(staff.role)) redirect("/clinic");
+  const canAuthorPlan = CLINICAL_PLAN_ROLES.has(staff.role);
 
   const { data: cases } = await supabase
     .from("patient_cases")
@@ -31,16 +37,19 @@ export default async function CommercialWorklist() {
         <aside className="portal-sidebar">
           <nav aria-label="Consultation and estimates navigation">
             <Link href="/clinic/commercial">Consultations & estimates</Link>
-            <Link href="/clinic/reviews">Doctor reviews</Link>
+            {canAuthorPlan ? <Link href="/clinic/reviews">Doctor reviews</Link> : null}
             <Link href="/clinic/travel">International travel</Link>
             <Link href="/clinic/inbox">Inbox</Link>
+            <Link href="/clinic/notifications">Notifications</Link>
           </nav>
         </aside>
         <section className="portal-main">
           <p className="portal-overline">Clinical-commercial handoff</p>
           <h1 className="portal-title">Consultation to confirmed treatment.</h1>
           <p className="portal-subtitle">
-            Schedule the implant consultation, prepare a versioned preliminary plan and send an itemised estimate without losing earlier revisions.
+            {canAuthorPlan
+              ? "Schedule the implant consultation, prepare a versioned preliminary plan and send an itemised estimate without losing earlier revisions."
+              : "Coordinate video consultation timing and international-patient logistics while treatment planning remains controlled by the clinical team."}
           </p>
 
           <article className="portal-card" style={{ marginTop: 28 }}>
