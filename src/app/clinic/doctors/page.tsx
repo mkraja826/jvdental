@@ -26,6 +26,7 @@ export default async function DoctorProfilesPage({ searchParams }: { searchParam
           <nav aria-label="Doctor portfolio navigation">
             <Link href="/clinic">Overview</Link>
             <Link href="/clinic/doctors">Doctor portfolios</Link>
+            <Link href="/clinic/doctors/content">Content attribution</Link>
             <Link href="/doctors">Public doctors</Link>
             <Link href="/clinic/cases">Signature cases</Link>
             <Link href="/clinic/publishing">Publishing</Link>
