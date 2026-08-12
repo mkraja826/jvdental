@@ -34,7 +34,7 @@ export default function PublicDentalAssistant() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      body: "Good evening. I can help with JV Dental, dental implants, DIOnavi guided implant treatment, international-patient planning and general dental questions.",
+      body: "Hello. I can help with JV Dental, dental implants, DIOnavi guided implant treatment, international-patient planning and general dental questions.",
     },
   ]);
   const logRef = useRef<HTMLDivElement>(null);
