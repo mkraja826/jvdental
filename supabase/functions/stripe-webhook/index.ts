@@ -1,6 +1,30 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
+type StripeObject = {
+  id?: string;
+  metadata?: Record<string, string>;
+  payment_intent?: string | StripeObject;
+  customer_details?: { address?: { country?: string } };
+  latest_charge?: string | StripeObject;
+  payment_method_details?: { card?: { brand?: string; last4?: string } };
+  receipt_url?: string;
+  amount_received?: number;
+  amount?: number;
+  currency?: string;
+  created?: number;
+  last_payment_error?: { code?: string; message?: string };
+  status?: string;
+  reason?: string;
+  [key: string]: unknown;
+};
+
+type StripeEvent = {
+  id?: string;
+  type?: string;
+  data?: { object?: StripeObject };
+};
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8" } });
 }
@@ -56,9 +80,9 @@ Deno.serve(async (req: Request) => {
   const signature = req.headers.get("Stripe-Signature") ?? "";
   if (!(await verifyStripeSignature(raw, signature, webhookSecret))) return json({ error: "invalid_signature" }, 400);
 
-  let event: any;
-  try { event = JSON.parse(raw); } catch { return json({ error: "invalid_json" }, 400); }
-  if (!event?.id || !event?.type || !event?.data?.object) return json({ error: "invalid_event" }, 400);
+  let event: StripeEvent;
+  try { event = JSON.parse(raw) as StripeEvent; } catch { return json({ error: "invalid_json" }, 400); }
+  if (!event.id || !event.type || !event.data?.object) return json({ error: "invalid_event" }, 400);
 
   const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
   const { data: prior } = await admin.from("payment_provider_events").select("event_id").eq("provider", "stripe").eq("event_id", event.id).maybeSingle();
@@ -82,14 +106,14 @@ Deno.serve(async (req: Request) => {
   } else if (event.type === "payment_intent.succeeded") {
     const requestId = object.metadata?.payment_request_id;
     const attemptId = object.metadata?.payment_attempt_id;
-    if (requestId) {
+    if (requestId && object.id) {
       const { data: request } = await admin.from("payment_requests").select("id,patient_id,case_id,currency").eq("id", requestId).maybeSingle();
       if (!request) return json({ error: "unknown_payment_request" }, 400);
 
-      let detail: any = object;
+      let detail: StripeObject = object;
       try {
         const detailResponse = await fetch(`https://api.stripe.com/v1/payment_intents/${encodeURIComponent(object.id)}?expand[]=latest_charge`, { headers: { Authorization: `Bearer ${stripeKey}` } });
-        if (detailResponse.ok) detail = await detailResponse.json();
+        if (detailResponse.ok) detail = await detailResponse.json() as StripeObject;
       } catch { /* webhook can still reconcile from the event payload */ }
 
       const charge = typeof detail.latest_charge === "object" ? detail.latest_charge : null;
@@ -143,15 +167,17 @@ Deno.serve(async (req: Request) => {
     }
   } else if (["refund.created", "refund.updated", "refund.failed"].includes(event.type)) {
     const refund = object;
-    let paymentId = refund.metadata?.payment_id as string | undefined;
+    let paymentId = refund.metadata?.payment_id;
     if (!paymentId && refund.payment_intent) {
       const paymentIntentId = typeof refund.payment_intent === "string" ? refund.payment_intent : refund.payment_intent.id;
-      const { data: payment } = await admin.from("payments").select("id").eq("provider", "stripe").eq("provider_payment_id", paymentIntentId).maybeSingle();
-      paymentId = payment?.id;
+      if (paymentIntentId) {
+        const { data: payment } = await admin.from("payments").select("id").eq("provider", "stripe").eq("provider_payment_id", paymentIntentId).maybeSingle();
+        paymentId = payment?.id;
+      }
     }
-    if (paymentId) {
+    if (paymentId && refund.id) {
       const mapped = mapRefundStatus(String(refund.status ?? "pending"));
-      const { data: existingRefund } = await admin.from("payment_refunds").select("id,initiated_by,reason").eq("provider", "stripe").eq("provider_refund_id", refund.id).maybeSingle();
+      const { data: existingRefund } = await admin.from("payment_refunds").select("id").eq("provider", "stripe").eq("provider_refund_id", refund.id).maybeSingle();
       if (existingRefund) {
         await admin.from("payment_refunds").update({
           amount_minor: Number(refund.amount),
