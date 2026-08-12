@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
@@ -33,7 +34,16 @@ export default async function DoctorsPage() {
           return (
             <article className="doctor-card" key={doctor.id}>
               <Link className="doctor-card__portrait" href={`/doctors/${doctor.slug}`} aria-label={`View ${doctor.full_name} portfolio`}>
-                {imageUrl ? <img src={imageUrl} alt={doctor.full_name} /> : <span>{doctor.full_name.split(/\s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J"}</span>}
+                {imageUrl ? (
+                  <Image
+                    src={imageUrl}
+                    alt={doctor.full_name}
+                    width={900}
+                    height={1100}
+                    sizes="(max-width: 720px) 100vw, 420px"
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                ) : <span>{doctor.full_name.split(/\s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J"}</span>}
               </Link>
               <div className="doctor-card__body">
                 {doctor.featured ? <p className="eyebrow">Featured clinician</p> : <p className="eyebrow">Clinical team</p>}
