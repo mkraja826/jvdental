@@ -14,15 +14,16 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/patient/login");
 
-  const [profileResult, caseResult, documentResult, conversationResult, appointmentResult, planResult, travelResult, implantResult] = await Promise.all([
+  const [profileResult, caseResult, documentResult, conversationResult, appointmentResult, planResult, travelResult, implantResult, notificationResult] = await Promise.all([
     supabase.from("patient_profiles").select("full_name,intake_completed_at").eq("user_id", user.id).maybeSingle(),
     supabase.from("patient_cases").select("id,status,case_number").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("patient_documents").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
     supabase.from("conversations").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
-    supabase.from("appointments").select("id,appointment_type,starts_at,status,meeting_url").eq("patient_id", user.id).eq("status", "scheduled").order("starts_at", { ascending: true }).limit(1).maybeSingle(),
+    supabase.from("appointments").select("id,appointment_type,starts_at,status,meeting_url,conference_provider,external_sync_status").eq("patient_id", user.id).eq("status", "scheduled").order("starts_at", { ascending: true }).limit(1).maybeSingle(),
     supabase.from("treatment_plans").select("id,status,version").eq("patient_id", user.id).in("status", ["preliminary", "sent", "requested_changes", "accepted"]).order("version", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("travel_plans").select("id,status,arrival_date").eq("patient_id", user.id).order("updated_at", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("implant_records").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
+    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("recipient_type", "patient").is("read_at", null),
   ]);
 
   const profile = profileResult.data;
@@ -30,6 +31,7 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
   const documentCount = documentResult.count ?? 0;
   const conversationCount = conversationResult.count ?? 0;
   const implantCount = implantResult.count ?? 0;
+  const unreadNotifications = notificationResult.count ?? 0;
   const appointment = appointmentResult.data;
   const treatmentPlan = planResult.data;
   const travel = travelResult.data;
@@ -54,6 +56,7 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
       <header className="portal-header">
         <Link className="wordmark" href="/"><span>JV</span><span>Dental</span></Link>
         <div className="portal-header__right">
+          <Link className="text-link" href="/patient/notifications">Notifications{unreadNotifications ? ` · ${unreadNotifications}` : ""}</Link>
           <span>{profile?.full_name || user.email}</span>
           {caseRecord ? <span className="status-pill">JV-{caseRecord.case_number}</span> : null}
           <form action={signOut}>
@@ -66,6 +69,7 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
         <aside className="portal-sidebar">
           <nav aria-label="Patient portal navigation">
             <Link href="/patient">Overview</Link>
+            <Link href="/patient/notifications">Notifications{unreadNotifications ? ` (${unreadNotifications})` : ""}</Link>
             <Link href="/patient/intake">My details</Link>
             <Link href="/patient/documents">Documents</Link>
             <Link href="/patient/messages">Messages</Link>
@@ -85,6 +89,15 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
               <div className="portal-card__body">
                 <strong>Your health and dental details were saved.</strong>
                 <p style={{ marginBottom: 0, color: "var(--muted)" }}>The next stage is to add any OPG, CBCT, X-rays or clinical photographs that are available for your case.</p>
+              </div>
+            </article>
+          ) : null}
+
+          {unreadNotifications ? (
+            <article className="portal-card" style={{ marginTop: 20 }}>
+              <div className="portal-card__body" style={{ display: "flex", justifyContent: "space-between", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
+                <div><strong>{unreadNotifications} new {unreadNotifications === 1 ? "update" : "updates"}</strong><p style={{ margin: "6px 0 0", color: "var(--muted)" }}>Consultation, treatment-plan, message and travel updates appear in your secure notification inbox.</p></div>
+                <Link className="button button--ghost" href="/patient/notifications">Open notifications →</Link>
               </div>
             </article>
           ) : null}
@@ -133,9 +146,9 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
             </article>
 
             <article className="portal-card" id="appointments">
-              <div className="portal-card__header"><h2>Next consultation</h2></div>
+              <div className="portal-card__header"><h2>Next consultation</h2><span className="status-pill">{appointment?.conference_provider === "google_meet" ? "Google Meet" : appointment ? "Scheduled" : "Waiting"}</span></div>
               <div className="portal-card__body">
-                {appointment ? <><p><strong>{appointment.appointment_type.replaceAll("_", " ")}</strong><br />{new Date(appointment.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })} IST</p>{appointment.meeting_url ? <a className="button button--ghost" href={appointment.meeting_url} target="_blank" rel="noreferrer">Join consultation →</a> : null}</> : <p>No consultation has been scheduled yet.</p>}
+                {appointment ? <><p><strong>{appointment.appointment_type.replaceAll("_", " ")}</strong><br />{new Date(appointment.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })} IST</p>{appointment.meeting_url ? <a className="button button--ghost" href={appointment.meeting_url} target="_blank" rel="noreferrer">Join consultation →</a> : <p className="form-note">The clinic has scheduled the consultation. Joining information will appear here when the meeting link is ready.</p>}</> : <p>No consultation has been scheduled yet.</p>}
               </div>
             </article>
 
