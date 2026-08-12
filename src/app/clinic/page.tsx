@@ -4,6 +4,7 @@ import { requireStaff } from "@/lib/auth/guards";
 
 export default async function ClinicDashboard() {
   const { staff, supabase } = await requireStaff();
+  const canManageAssistant = staff.role === "owner" || staff.role === "admin";
 
   const [enquiriesResult, reviewResult, consultationResult, inventoryResult, changesResult, travelResult] = await Promise.all([
     supabase.from("patient_cases").select("id", { count: "exact", head: true }),
@@ -49,6 +50,7 @@ export default async function ClinicDashboard() {
             <Link href="/clinic/travel">International travel</Link>
             <Link href="/clinic/cases">Signature cases</Link>
             <Link href="/clinic/publishing">Publishing</Link>
+            {canManageAssistant ? <Link href="/clinic/assistant">Public AI assistant</Link> : null}
             <Link href="/clinic/inventory">Inventory</Link>
           </nav>
         </aside>
@@ -88,6 +90,16 @@ export default async function ClinicDashboard() {
                 </div>
               </div>
             </article>
+
+            {canManageAssistant ? (
+              <article className="portal-card">
+                <div className="portal-card__header"><h2>Public AI assistant</h2><span className="status-pill">Controlled</span></div>
+                <div className="portal-card__body">
+                  <p>Review approved clinic knowledge, implant-lead handoffs and chatbot safety signals without mixing public conversations with secure patient-doctor messages.</p>
+                  <Link className="button button--ghost" href="/clinic/assistant">Open assistant control room →</Link>
+                </div>
+              </article>
+            ) : null}
 
             <article className="portal-card">
               <div className="portal-card__header"><h2>Clinical publishing</h2><span className="status-pill">CMS</span></div>
