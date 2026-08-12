@@ -1,0 +1,9 @@
+<html>
+  <body style="font-family:Arial,sans-serif;color:#171918;line-height:1.6">
+    <h2>You’ve been invited to the JV Dental clinic portal</h2>
+    <p>Hello {{ .Data.full_name }},</p>
+    <p>The JV Dental clinic owner has provisioned a staff account for {{ .Email }}.</p>
+    <p><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/clinic">Accept staff invitation</a></p>
+    <p>If you were not expecting this invitation, do not use the link and contact the clinic owner.</p>
+  </body>
+</html>
