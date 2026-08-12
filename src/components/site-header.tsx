@@ -18,6 +18,9 @@ export function SiteHeader() {
         </nav>
 
         <div className="header-actions">
+          <Link className="text-link" href="/staff/login">
+            Clinic login
+          </Link>
           <Link className="text-link" href="/patient/login">
             Patient login
           </Link>
