@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function JournalArticlePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -7,42 +8,43 @@ export default async function JournalArticlePage({ params }: { params: Promise<{
   const supabase = await createClient();
   const { data: post } = await supabase
     .from("blog_posts")
-    .select("title,excerpt,content_markdown,published_at,seo_title,seo_description")
+    .select("title,excerpt,content_markdown,published_at,seo_title,seo_description,doctor_profiles(full_name,slug,professional_title)")
     .eq("slug", slug)
     .eq("status", "published")
     .maybeSingle();
 
   if (!post) notFound();
+  const doctor = Array.isArray(post.doctor_profiles) ? post.doctor_profiles[0] : post.doctor_profiles;
 
   return (
     <main>
-      <header className="site-header">
-        <div className="site-header__inner">
-          <Link className="wordmark" href="/"><span>JV</span><span>Dental</span></Link>
-          <nav className="site-nav" aria-label="Primary navigation">
-            <Link href="/guided-implants">Guided implants</Link>
-            <Link href="/cases">Cases</Link>
-            <Link href="/journal">Journal</Link>
-          </nav>
-          <div className="header-actions"><Link className="button" href="/patient/login">Patient login</Link></div>
-        </div>
-      </header>
+      <SiteHeader />
 
       <article className="section" style={{ maxWidth: 980 }}>
         <p className="section-kicker">JV Dental Journal</p>
         <h1 className="section-title">{post.title}</h1>
         {post.excerpt ? <p className="section-intro">{post.excerpt}</p> : null}
-        <p style={{ marginTop: 24, color: "var(--muted)", fontSize: ".78rem" }}>
-          {post.published_at ? new Date(post.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : ""}
-        </p>
+        <div style={{ marginTop: 24, display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap", color: "var(--muted)", fontSize: ".78rem" }}>
+          <span>{post.published_at ? new Date(post.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : ""}</span>
+          {doctor?.slug ? <Link className="text-link" href={`/doctors/${doctor.slug}`}>By {doctor.full_name} · {doctor.professional_title ?? "JV Dental clinician"} →</Link> : null}
+        </div>
 
         <div style={{ marginTop: 64, maxWidth: 760, whiteSpace: "pre-wrap", fontSize: "1.08rem", lineHeight: 1.8 }}>
           {post.content_markdown}
         </div>
 
+        {doctor?.slug ? (
+          <div style={{ marginTop: 56, padding: "26px 0", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
+            <p className="section-kicker">About the author</p>
+            <h2 style={{ margin: "8px 0 10px", fontFamily: "var(--serif)", fontWeight: 400 }}>{doctor.full_name}</h2>
+            <p style={{ color: "var(--muted)" }}>{doctor.professional_title}</p>
+            <Link className="text-link" href={`/doctors/${doctor.slug}`}>View doctor portfolio →</Link>
+          </div>
+        ) : null}
+
         <div style={{ marginTop: 72, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
           <p style={{ color: "var(--muted)", fontSize: ".82rem" }}>This article is for general dental education and does not replace an individual clinical and radiographic assessment.</p>
-          <Link className="button" href="/patient/login">Request an implant assessment</Link>
+          <Link className="button" href="/patient/login?next=/patient/intake">Request an implant assessment</Link>
         </div>
       </article>
     </main>
