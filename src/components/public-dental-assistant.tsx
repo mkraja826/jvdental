@@ -4,11 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
-type ChatMessage = {
-  role: "assistant" | "user";
-  body: string;
-};
-
+type ChatMessage = { role: "assistant" | "user"; body: string };
 type AssistantResponse = {
   visitorToken: string;
   answer: string;
@@ -17,12 +13,13 @@ type AssistantResponse = {
   error?: string;
 };
 
-const DEFAULT_REPLIES = [
-  "Dental implants",
-  "DIOnavi guided implants",
-  "International patients",
-  "Treatment costs",
-];
+const DEFAULT_REPLIES = ["Dental implants", "DIOnavi guided implants", "International patients", "Treatment costs"];
+
+function withAssistantToken(href: string, visitorToken: string) {
+  if (!href.startsWith("/patient/")) return href;
+  const separator = href.includes("?") ? "&" : "?";
+  return `${href}${separator}assistant=${encodeURIComponent(visitorToken)}`;
+}
 
 export default function PublicDentalAssistant() {
   const pathname = usePathname();
@@ -32,10 +29,7 @@ export default function PublicDentalAssistant() {
   const [action, setAction] = useState<{ label: string; href: string } | null>(null);
   const [quickReplies, setQuickReplies] = useState(DEFAULT_REPLIES);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "assistant",
-      body: "Hello. I can help with JV Dental, dental implants, DIOnavi guided implant treatment, international-patient planning and general dental questions.",
-    },
+    { role: "assistant", body: "Hello. I can help with JV Dental, dental implants, DIOnavi guided implant treatment, international-patient planning and general dental questions." },
   ]);
   const logRef = useRef<HTMLDivElement>(null);
 
@@ -64,28 +58,22 @@ export default function PublicDentalAssistant() {
       const response = await fetch(`${supabaseUrl}/functions/v1/public-dental-assistant`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          visitorToken,
-          message: trimmed,
-          locale: navigator.language || "en",
-        }),
+        body: JSON.stringify({ visitorToken, message: trimmed, locale: navigator.language || "en" }),
       });
       const payload = (await response.json()) as AssistantResponse;
       if (!response.ok || !payload.answer) throw new Error(payload.error ?? "assistant_error");
 
       window.localStorage.setItem("jv-assistant-visitor", payload.visitorToken);
       setMessages((current) => [...current, { role: "assistant", body: payload.answer }]);
-      setAction(payload.action ?? null);
+      setAction(payload.action ? { ...payload.action, href: withAssistantToken(payload.action.href, payload.visitorToken) } : null);
       if (payload.quickReplies?.length) setQuickReplies(payload.quickReplies.slice(0, 4));
     } catch {
-      setMessages((current) => [
-        ...current,
-        {
-          role: "assistant",
-          body: "The digital assistant is temporarily unavailable. You can still start an implant assessment or use the patient portal to contact the clinic team.",
-        },
-      ]);
-      setAction({ label: "Start implant assessment", href: "/patient/login?next=/patient/intake" });
+      const visitorToken = window.localStorage.getItem("jv-assistant-visitor");
+      setMessages((current) => [...current, { role: "assistant", body: "The digital assistant is temporarily unavailable. You can still start an implant assessment or use the patient portal to contact the clinic team." }]);
+      setAction({
+        label: "Start implant assessment",
+        href: visitorToken ? withAssistantToken("/patient/login?next=/patient/intake", visitorToken) : "/patient/login?next=/patient/intake",
+      });
     } finally {
       setBusy(false);
     }
@@ -101,10 +89,7 @@ export default function PublicDentalAssistant() {
       {open ? (
         <section className="public-assistant__panel" aria-label="JV Dental digital assistant">
           <header className="public-assistant__header">
-            <div>
-              <span className="public-assistant__eyebrow">JV Dental</span>
-              <strong>Digital patient assistant</strong>
-            </div>
+            <div><span className="public-assistant__eyebrow">JV Dental</span><strong>Digital patient assistant</strong></div>
             <button type="button" className="public-assistant__close" onClick={() => setOpen(false)} aria-label="Close assistant">×</button>
           </header>
 
@@ -120,22 +105,12 @@ export default function PublicDentalAssistant() {
           {action ? <Link className="public-assistant__action" href={action.href}>{action.label}<span aria-hidden="true">→</span></Link> : null}
 
           <div className="public-assistant__quick" aria-label="Suggested questions">
-            {quickReplies.map((reply) => (
-              <button type="button" key={reply} onClick={() => void ask(reply)} disabled={busy}>{reply}</button>
-            ))}
+            {quickReplies.map((reply) => <button type="button" key={reply} onClick={() => void ask(reply)} disabled={busy}>{reply}</button>)}
           </div>
 
           <form className="public-assistant__form" onSubmit={submit}>
             <label className="sr-only" htmlFor="jv-assistant-input">Ask JV Dental</label>
-            <textarea
-              id="jv-assistant-input"
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              placeholder="Ask about implants, guided surgery or planning treatment in Hyderabad…"
-              maxLength={2000}
-              rows={2}
-              disabled={busy}
-            />
+            <textarea id="jv-assistant-input" value={input} onChange={(event) => setInput(event.target.value)} placeholder="Ask about implants, guided surgery or planning treatment in Hyderabad…" maxLength={2000} rows={2} disabled={busy} />
             <button type="submit" disabled={busy || !input.trim()} aria-label="Send question">Send</button>
           </form>
 
@@ -144,8 +119,7 @@ export default function PublicDentalAssistant() {
       ) : null}
 
       <button className="public-assistant__launcher" type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
-        <span className="public-assistant__mark" aria-hidden="true">JV</span>
-        <span>Ask JV Dental</span>
+        <span className="public-assistant__mark" aria-hidden="true">JV</span><span>Ask JV Dental</span>
       </button>
     </div>
   );
