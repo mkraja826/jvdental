@@ -5,6 +5,7 @@ import { requireStaff } from "@/lib/auth/guards";
 export default async function ClinicDashboard() {
   const { staff, supabase } = await requireStaff();
   const canManageAssistant = staff.role === "owner" || staff.role === "admin";
+  const canManageDoctors = staff.role === "owner" || staff.role === "admin";
 
   const [enquiriesResult, reviewResult, consultationResult, inventoryResult, changesResult, travelResult] = await Promise.all([
     supabase.from("patient_cases").select("id", { count: "exact", head: true }),
@@ -48,6 +49,7 @@ export default async function ClinicDashboard() {
             <Link href="/clinic/commercial">Consultations & estimates</Link>
             <Link href="/clinic/inbox">Inbox</Link>
             <Link href="/clinic/travel">International travel</Link>
+            {canManageDoctors ? <Link href="/clinic/doctors">Doctor portfolios</Link> : null}
             <Link href="/clinic/cases">Signature cases</Link>
             <Link href="/clinic/publishing">Publishing</Link>
             {canManageAssistant ? <Link href="/clinic/assistant">Public AI assistant</Link> : null}
@@ -111,6 +113,19 @@ export default async function ClinicDashboard() {
                 </div>
               </div>
             </article>
+
+            {canManageDoctors ? (
+              <article className="portal-card">
+                <div className="portal-card__header"><h2>Doctor portfolios</h2><span className="status-pill">Reusable CMS</span></div>
+                <div className="portal-card__body">
+                  <p>Manage each clinician&apos;s public professional profile, verified experience, qualifications, technologies, authored articles and selected cases.</p>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                    <Link className="button button--ghost" href="/clinic/doctors">Manage doctors →</Link>
+                    <Link className="button button--ghost" href="/clinic/doctors/content">Content attribution →</Link>
+                  </div>
+                </div>
+              </article>
+            ) : null}
 
             <article className="portal-card">
               <div className="portal-card__header"><h2>Inventory attention</h2><span className="status-pill">{lowStock} low stock</span></div>
