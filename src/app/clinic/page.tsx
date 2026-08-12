@@ -5,11 +5,13 @@ import { requireStaff } from "@/lib/auth/guards";
 export default async function ClinicDashboard() {
   const { staff, supabase } = await requireStaff();
 
-  const [enquiriesResult, reviewResult, consultationResult, inventoryResult] = await Promise.all([
+  const [enquiriesResult, reviewResult, consultationResult, inventoryResult, changesResult, travelResult] = await Promise.all([
     supabase.from("patient_cases").select("id", { count: "exact", head: true }),
     supabase.from("patient_cases").select("id", { count: "exact", head: true }).in("status", ["records_received", "doctor_review", "more_information_required"]),
     supabase.from("appointments").select("id", { count: "exact", head: true }).eq("status", "scheduled"),
     supabase.from("inventory_items").select("id,min_stock,inventory_batches(quantity_on_hand)").eq("is_active", true),
+    supabase.from("treatment_plans").select("id", { count: "exact", head: true }).eq("status", "requested_changes"),
+    supabase.from("travel_plans").select("id", { count: "exact", head: true }).eq("status", "details_submitted"),
   ]);
 
   const lowStock = (inventoryResult.data ?? []).filter((item) => {
@@ -42,7 +44,9 @@ export default async function ClinicDashboard() {
           <nav aria-label="Clinic portal navigation">
             <Link href="/clinic">Overview</Link>
             <Link href="/clinic/reviews">Doctor review</Link>
+            <Link href="/clinic/commercial">Consultations & estimates</Link>
             <Link href="/clinic/inbox">Inbox</Link>
+            <Link href="/clinic/travel">International travel</Link>
             <Link href="/clinic/cases">Signature cases</Link>
             <Link href="/clinic/publishing">Publishing</Link>
             <Link href="/clinic/inventory">Inventory</Link>
@@ -62,10 +66,25 @@ export default async function ClinicDashboard() {
             <article className="portal-card">
               <div className="portal-card__header"><h2>International patient workflow</h2><span className="status-pill">Live</span></div>
               <div className="portal-card__body">
-                <p>Uploaded records now enter a protected clinical queue automatically, while patient-facing communication stays in the secure inbox.</p>
+                <p>Uploaded records enter the protected review queue, then move through consultation, preliminary plan, patient response and travel confirmation.</p>
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                   <Link className="button" href="/clinic/reviews">Doctor review →</Link>
+                  <Link className="button button--ghost" href="/clinic/commercial">Consultations & estimates →</Link>
                   <Link className="button button--ghost" href="/clinic/inbox">Patient inbox →</Link>
+                </div>
+              </div>
+            </article>
+
+            <article className="portal-card">
+              <div className="portal-card__header"><h2>Decisions needing attention</h2><span className="status-pill">Action</span></div>
+              <div className="portal-card__body">
+                <div className="status-list">
+                  <div className="status-row"><strong>Estimate changes requested</strong><span>{changesResult.count ?? 0}</span><span className="status-pill">Clinical</span></div>
+                  <div className="status-row"><strong>Travel details awaiting confirmation</strong><span>{travelResult.count ?? 0}</span><span className="status-pill">Coordinator</span></div>
+                </div>
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 18 }}>
+                  <Link className="button button--ghost" href="/clinic/commercial">Open estimates →</Link>
+                  <Link className="button button--ghost" href="/clinic/travel">Open travel →</Link>
                 </div>
               </div>
             </article>
