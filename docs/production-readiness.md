@@ -12,7 +12,6 @@ This document is the launch gate for the JV Dental patient and clinic platform. 
 - Public case media Storage: 25 MB per object, JPEG/PNG/WebP/MP4 only.
 - Application dependency versions are pinned with a committed npm lockfile.
 - CI uses `npm ci`, audits production dependencies at high severity, type-checks, lints, builds, and smoke-tests production security headers/routes.
-- The production-hardening release candidate has passed every permanent CI stage; the exact current release SHA must remain green before merge/release.
 - Public assistant has both per-session rate limiting and an atomic salted-network-fingerprint limit. Raw client IP addresses are not stored by JV Dental for this limiter.
 
 ## Blocker: production Supabase plan, backup and disaster recovery
