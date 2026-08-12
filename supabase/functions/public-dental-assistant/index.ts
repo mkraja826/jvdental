@@ -44,6 +44,27 @@ function normalize(input: string) {
   return input.toLowerCase().replace(/[^a-z0-9\s-]/g, " ").replace(/\s+/g, " ").trim();
 }
 
+async function sha256Hex(value: string) {
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)));
+  return Array.from(digest, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function forwardedClientIp(req: Request) {
+  const forwarded = req.headers.get("x-forwarded-for");
+  const firstForwarded = forwarded?.split(",")[0]?.trim();
+  if (firstForwarded) return firstForwarded;
+  return req.headers.get("cf-connecting-ip")?.trim() || req.headers.get("x-real-ip")?.trim() || null;
+}
+
+async function networkRateKey(req: Request, serviceRole: string) {
+  const clientIp = forwardedClientIp(req);
+  if (!clientIp) return null;
+
+  const configuredSalt = Deno.env.get("ASSISTANT_RATE_LIMIT_SALT")?.trim();
+  const salt = configuredSalt || await sha256Hex(`jv-assistant-rate-limit:${serviceRole}`);
+  return sha256Hex(`${salt}|${clientIp}`);
+}
+
 function classify(message: string) {
   const emergency = /(difficulty breathing|cannot breathe|can't breathe|difficulty swallowing|cannot swallow|uncontrolled bleeding|heavy bleeding|face swelling|facial swelling|severe swelling|trauma|accident|fever.*swelling|swelling.*fever)/i.test(message);
   if (emergency) return "emergency";
@@ -180,6 +201,17 @@ Deno.serve(async (req: Request) => {
   const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !serviceRole) return json(origin, { error: "assistant_unavailable" }, 503);
   const supabase = createClient(supabaseUrl, serviceRole, { auth: { persistSession: false } });
+
+  const networkKey = await networkRateKey(req, serviceRole);
+  if (networkKey) {
+    const { data: networkAllowed, error: networkRateError } = await supabase.rpc("take_assistant_rate_limit", {
+      p_rate_key: networkKey,
+      p_minute_limit: 12,
+      p_hour_limit: 120,
+    });
+    if (networkRateError) return json(origin, { error: "assistant_unavailable" }, 503);
+    if (networkAllowed !== true) return json(origin, { error: "rate_limited" }, 429);
+  }
 
   const now = new Date();
   const { data: session, error: sessionError } = await supabase
