@@ -8,7 +8,7 @@ export async function requireStaff() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/patient/login");
+    redirect("/staff/login");
   }
 
   const { data: staff, error } = await supabase
