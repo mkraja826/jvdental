@@ -16,11 +16,8 @@ export default async function PlaceImplantPage({ searchParams }: PageProps) {
       .order("updated_at", { ascending: false })
       .limit(100),
     supabase
-      .from("inventory_batches")
-      .select("id,scan_code,lot_number,expiry_date,quantity_on_hand,inventory_items!inner(name,brand,system,diameter_mm,length_mm,connection,gtin,category)")
-      .eq("inventory_items.category", "implant")
-      .gt("quantity_on_hand", 0)
-      .or(`expiry_date.is.null,expiry_date.gte.${new Date().toISOString().slice(0, 10)}`)
+      .from("available_implant_batches")
+      .select("id,scan_code,lot_number,expiry_date,quantity_on_hand,name,brand,system,diameter_mm,length_mm,connection,gtin,sku")
       .order("expiry_date", { ascending: true, nullsFirst: false })
       .order("received_at", { ascending: true })
       .limit(200),
@@ -35,13 +32,12 @@ export default async function PlaceImplantPage({ searchParams }: PageProps) {
   });
 
   const batches = (batchesResult.data ?? []).map((batch) => {
-    const item = Array.isArray(batch.inventory_items) ? batch.inventory_items[0] : batch.inventory_items;
-    const dimensions = [item?.diameter_mm, item?.length_mm].filter((value) => value != null).join(" × ");
+    const dimensions = [batch.diameter_mm, batch.length_mm].filter((value) => value != null).join(" × ");
     return {
       id: batch.id,
-      label: [item?.brand, item?.name, dimensions ? `${dimensions} mm` : null, item?.system, `Lot ${batch.lot_number}`, batch.expiry_date ? `Exp ${batch.expiry_date}` : "No expiry", `Qty ${batch.quantity_on_hand}`].filter(Boolean).join(" · "),
+      label: [batch.brand, batch.name, dimensions ? `${dimensions} mm` : null, batch.system, `Lot ${batch.lot_number}`, batch.expiry_date ? `Exp ${batch.expiry_date}` : "No expiry", `Qty ${batch.quantity_on_hand}`].filter(Boolean).join(" · "),
       scanCode: batch.scan_code ?? null,
-      gtin: item?.gtin ?? null,
+      gtin: batch.gtin ?? null,
       expiryDate: batch.expiry_date ?? null,
       quantity: batch.quantity_on_hand,
     };
