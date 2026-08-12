@@ -1,0 +1,158 @@
+.shell {
+  max-width: 980px;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 32px;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.form {
+  margin-top: 38px;
+  display: grid;
+  gap: 24px;
+}
+
+.section {
+  padding: clamp(24px, 4vw, 42px);
+  border: 1px solid #dfe2de;
+  background: var(--white);
+}
+
+.sectionHeader {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e6e8e5;
+}
+
+.sectionHeader span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mineral);
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+.sectionHeader p {
+  max-width: 700px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 22px;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.field label,
+.label {
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 13px;
+  border: 1px solid #d4d8d3;
+  border-radius: 0;
+  background: #fbfcfa;
+  color: var(--ink);
+}
+
+.field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.checkGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.check {
+  min-height: 48px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #dfe2de;
+  background: #fbfcfa;
+  font-size: 0.8rem;
+}
+
+.check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--mineral);
+}
+
+.notice {
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  border: 1px solid #d7c0bd;
+  background: #fff9f8;
+  color: #633b37;
+  font-size: 0.8rem;
+}
+
+.submitBar {
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border: 1px solid #dfe2de;
+  background: var(--white);
+}
+
+.submitBar p {
+  max-width: 580px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+@media (max-width: 680px) {
+  .grid,
+  .checkGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .full {
+    grid-column: auto;
+  }
+
+  .submitBar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
