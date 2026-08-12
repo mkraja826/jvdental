@@ -92,3 +92,17 @@ export async function setBlogStatus(formData: FormData) {
   revalidatePath("/journal");
   revalidatePath("/doctors");
 }
+
+export async function publishBlogToBlogger(formData: FormData) {
+  const { supabase } = await requireClinicalPublisher();
+  const blogPostId = String(formData.get("blog_post_id") ?? "").trim();
+  if (!blogPostId) redirect("/clinic/publishing?error=blogger_article");
+
+  const { data, error } = await supabase.functions.invoke("blogger-publish", {
+    body: { blogPostId },
+  });
+  const result = data as { ok?: boolean; action?: "published" | "updated" } | null;
+  revalidatePath("/clinic/publishing");
+  if (error || !result?.ok) redirect("/clinic/publishing?error=blogger_publish");
+  redirect(`/clinic/publishing?blogger=${result.action === "updated" ? "synced" : "published"}`);
+}
