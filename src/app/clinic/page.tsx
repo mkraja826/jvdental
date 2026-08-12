@@ -54,6 +54,7 @@ export default async function ClinicDashboard() {
             <Link href="/clinic/notifications">Notifications{unreadNotifications ? ` (${unreadNotifications})` : ""}</Link>
             <Link href="/clinic/reviews">Doctor review</Link>
             <Link href="/clinic/commercial">Consultations & estimates</Link>
+            <Link href="/clinic/finance">Payments & finance</Link>
             <Link href="/clinic/inbox">Inbox</Link>
             <Link href="/clinic/travel">International travel</Link>
             {canManageStaff ? <Link href="/clinic/staff">Staff access</Link> : null}
@@ -69,7 +70,7 @@ export default async function ClinicDashboard() {
         <section className="portal-main">
           <p className="portal-overline">Clinic operations</p>
           <h1 className="portal-title">A precise view of today.</h1>
-          <p className="portal-subtitle">Clinical, international-patient, publishing, calendar and inventory workflows meet here without exposing private patient data to the public website.</p>
+          <p className="portal-subtitle">Clinical, international-patient, publishing, calendar, finance and inventory workflows meet here without exposing private patient data to the public website.</p>
 
           <div className="metric-grid">
             {metrics.map((metric) => <article className="metric" key={metric.label}><span>{metric.label}</span><strong>{metric.value}</strong></article>)}
@@ -83,6 +84,7 @@ export default async function ClinicDashboard() {
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                   <Link className="button" href="/clinic/reviews">Doctor review →</Link>
                   <Link className="button button--ghost" href="/clinic/commercial">Consultations & estimates →</Link>
+                  <Link className="button button--ghost" href="/clinic/finance">Payments & finance →</Link>
                   <Link className="button button--ghost" href="/clinic/inbox">Patient inbox →</Link>
                 </div>
               </div>
