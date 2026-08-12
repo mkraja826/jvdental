@@ -14,9 +14,6 @@ export const metadata: Metadata = {
   },
   description:
     "Advanced implant dentistry and full-mouth rehabilitation in Hyderabad, India, for patients from India and around the world.",
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     siteName: "JV Dental & Implant Centre",
