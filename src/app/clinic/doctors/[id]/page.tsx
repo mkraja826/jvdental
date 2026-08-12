@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
@@ -114,7 +115,16 @@ export default async function DoctorProfileEditor({ params, searchParams }: Page
               <div className="portal-card__header"><h2>Portrait</h2><span className="status-pill">Public media</span></div>
               <div className="portal-card__body">
                 <div className="doctor-admin-portrait">
-                  {imageUrl ? <img src={imageUrl} alt={`${profile.full_name} profile`} /> : <span>{profile.full_name.split(/\s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J"}</span>}
+                  {imageUrl ? (
+                    <Image
+                      src={imageUrl}
+                      alt={`${profile.full_name} profile`}
+                      width={720}
+                      height={900}
+                      sizes="240px"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  ) : <span>{profile.full_name.split(/\s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J"}</span>}
                 </div>
                 <form action={uploadDoctorProfileImage} style={{ display: "grid", gap: 14, marginTop: 18 }}>
                   <input type="hidden" name="id" value={profile.id} />
