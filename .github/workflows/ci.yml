@@ -30,8 +30,21 @@ jobs:
           node-version: 22
           package-manager-cache: false
 
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
+      - name: Generate lockfile when missing
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
+      - name: Capture generated lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-lock
+          path: package-lock.json
+          retention-days: 1
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
 
       - name: Lint
         run: npm run lint
