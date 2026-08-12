@@ -44,7 +44,7 @@ export default async function DoctorsPage() {
                   {doctor.specialist_experience_years != null ? <span><strong>{doctor.specialist_experience_years}</strong> years specialist</span> : null}
                 </div>
                 {doctor.short_intro ? <p>{doctor.short_intro}</p> : null}
-                <div className="doctor-card__tags">{(doctor.specialties ?? []).slice(0, 4).map((item) => <span key={item}>{item}</span>)}</div>
+                <div className="doctor-card__tags">{(doctor.specialties ?? []).slice(0, 4).map((item: string) => <span key={item}>{item}</span>)}</div>
                 <Link className="text-link" href={`/doctors/${doctor.slug}`}>View doctor portfolio →</Link>
               </div>
             </article>
