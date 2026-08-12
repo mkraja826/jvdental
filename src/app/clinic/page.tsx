@@ -6,6 +6,7 @@ export default async function ClinicDashboard() {
   const { staff, supabase } = await requireStaff();
   const canManageAssistant = staff.role === "owner" || staff.role === "admin";
   const canManageDoctors = staff.role === "owner" || staff.role === "admin";
+  const canManageStaff = staff.role === "owner" || staff.role === "admin";
 
   const [enquiriesResult, reviewResult, consultationResult, inventoryResult, changesResult, travelResult] = await Promise.all([
     supabase.from("patient_cases").select("id", { count: "exact", head: true }),
@@ -49,6 +50,7 @@ export default async function ClinicDashboard() {
             <Link href="/clinic/commercial">Consultations & estimates</Link>
             <Link href="/clinic/inbox">Inbox</Link>
             <Link href="/clinic/travel">International travel</Link>
+            {canManageStaff ? <Link href="/clinic/staff">Staff access</Link> : null}
             {canManageDoctors ? <Link href="/clinic/doctors">Doctor portfolios</Link> : null}
             <Link href="/clinic/cases">Signature cases</Link>
             <Link href="/clinic/publishing">Publishing</Link>
@@ -92,6 +94,16 @@ export default async function ClinicDashboard() {
                 </div>
               </div>
             </article>
+
+            {canManageStaff ? (
+              <article className="portal-card">
+                <div className="portal-card__header"><h2>Staff access</h2><span className="status-pill">Governed</span></div>
+                <div className="portal-card__body">
+                  <p>Provision staff by email, assign the minimum required role, deactivate access without deleting clinical history, and keep every access change auditable.</p>
+                  <Link className="button button--ghost" href="/clinic/staff">Manage staff access →</Link>
+                </div>
+              </article>
+            ) : null}
 
             {canManageAssistant ? (
               <article className="portal-card">
