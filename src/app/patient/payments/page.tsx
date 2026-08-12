@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 
 function formatMinor(amountMinor: number | string | null | undefined, currency: string) {
   const formatter = new Intl.NumberFormat("en", { style: "currency", currency });
-  const digits = formatter.resolvedOptions().maximumFractionDigits;
+  const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
   return formatter.format(Number(amountMinor ?? 0) / 10 ** digits);
 }
 
