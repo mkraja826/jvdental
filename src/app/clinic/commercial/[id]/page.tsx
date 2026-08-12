@@ -30,7 +30,6 @@ export default async function CommercialCasePage({ params, searchParams }: { par
   ]);
 
   const patient = Array.isArray(caseRecord.patient_profiles) ? caseRecord.patient_profiles[0] : caseRecord.patient_profiles;
-  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
   return (
     <main className="portal-shell">
@@ -64,7 +63,7 @@ export default async function CommercialCasePage({ params, searchParams }: { par
               <div className="portal-card__body">
                 <form action={scheduleVideoConsultation} style={{ display: "grid", gap: 16 }}>
                   <input type="hidden" name="case_id" value={caseRecord.id} />
-                  <label>Clinic date & time (India)<input name="starts_at" type="datetime-local" min={`${tomorrow}T08:00`} required /></label>
+                  <label>Clinic date & time (India)<input name="starts_at" type="datetime-local" required /></label>
                   <label>Meeting link<input name="meeting_url" type="url" placeholder="https://meet.google.com/..." /></label>
                   <label>Internal appointment note<textarea name="notes" rows={3} placeholder="Records to review before consultation" /></label>
                   <button className="button" type="submit">Schedule consultation</button>
