@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import PublicDentalAssistant from "@/components/public-dental-assistant";
 import "./globals.css";
 import "./assistant.css";
+import "./accessibility.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com");
 
