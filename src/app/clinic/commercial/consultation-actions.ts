@@ -36,8 +36,7 @@ async function syncGoogleCalendar(
       body: { appointmentId, action },
     });
   } catch {
-    // The JV Dental appointment remains the source of truth. External sync is best-effort
-    // and its own Edge Function records failures when a Google connection exists.
+    // JV Dental remains the source of truth when the external calendar is unavailable.
   }
 }
 
@@ -52,7 +51,7 @@ function refreshCase(caseId: string) {
 }
 
 export async function scheduleVideoConsultation(formData: FormData) {
-  const { supabase, user } = await requireConsultationScheduler();
+  const { supabase, user, staff } = await requireConsultationScheduler();
   const caseId = text(formData, "case_id");
   const rawStart = text(formData, "starts_at");
   const meetingUrl = nullableText(formData, "meeting_url");
@@ -62,7 +61,7 @@ export async function scheduleVideoConsultation(formData: FormData) {
 
   const { data: caseRecord } = await supabase
     .from("patient_cases")
-    .select("id,patient_id")
+    .select("id,patient_id,assigned_clinician")
     .eq("id", caseId)
     .maybeSingle();
   if (!caseRecord) redirect("/clinic/commercial?error=case");
@@ -72,13 +71,14 @@ export async function scheduleVideoConsultation(formData: FormData) {
     redirect(`/clinic/commercial/${caseId}?error=consultation_time`);
   }
   const endsAt = new Date(startsAt.getTime() + 30 * 60 * 1000);
+  const clinicianUserId = staff.role === "coordinator" ? caseRecord.assigned_clinician : user.id;
 
   const { data: appointment, error } = await supabase
     .from("appointments")
     .insert({
       patient_id: caseRecord.patient_id,
       case_id: caseRecord.id,
-      clinician_user_id: user.id,
+      clinician_user_id: clinicianUserId,
       appointment_type: "video_consultation",
       starts_at: startsAt.toISOString(),
       ends_at: endsAt.toISOString(),
