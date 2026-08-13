@@ -1,10 +1,16 @@
 import Link from "next/link";
-import { requestStaffMagicLink } from "@/app/auth/actions";
+import { signInStaffWithPassword } from "@/app/auth/actions";
 
 export default async function StaffLoginPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
-  const sent = params.sent === "1";
-  const hasError = typeof params.error === "string";
+  const error = typeof params.error === "string" ? params.error : "";
+
+  const errorMessage =
+    error === "not-authorized"
+      ? "This account is not an active JV Dental staff account. Contact the clinic owner if you believe this is incorrect."
+      : error
+        ? "Staff sign-in failed. Check your email address and password and try again."
+        : "";
 
   return (
     <main className="login-shell">
@@ -12,8 +18,8 @@ export default async function StaffLoginPage({ searchParams }: { searchParams: P
         <Link className="wordmark" href="/" aria-label="JV Dental home"><span>JV</span><span>Dental</span></Link>
         <div>
           <p className="eyebrow" style={{ color: "#b8cec5" }}>Clinic team access</p>
-          <h1>One secure entrance to the clinic workspace.</h1>
-          <p>Staff access is provisioned by the clinic owner or administrator. Use the same email address assigned to your JV Dental staff account.</p>
+          <h1>Secure access to the JV Dental clinic workspace.</h1>
+          <p>Staff access is provisioned by the clinic owner or administrator. Sign in using the email address and password assigned to your JV Dental staff account.</p>
         </div>
         <p>Clinical and patient information is available only after your authenticated account is matched to an active JV Dental staff role.</p>
       </section>
@@ -21,36 +27,33 @@ export default async function StaffLoginPage({ searchParams }: { searchParams: P
       <section className="login-form-wrap">
         <div className="login-form">
           <p className="portal-overline">Staff portal</p>
-          <h2>Sign in securely</h2>
-          <p>No password is required. We&apos;ll send a one-time sign-in link to your approved staff email.</p>
+          <h2>Staff sign in</h2>
+          <p>Email and password are required to access the clinic portal.</p>
 
-          {sent ? (
-            <div className="portal-card" style={{ marginBottom: 26 }}>
-              <div className="portal-card__body">
-                <strong>Check your staff inbox.</strong>
-                <p style={{ marginBottom: 0, color: "var(--muted)" }}>Open the secure sign-in link on this device to enter the JV Dental clinic portal.</p>
-              </div>
-            </div>
-          ) : null}
-
-          {hasError ? (
+          {errorMessage ? (
             <div className="portal-card" style={{ marginBottom: 26, borderColor: "#cda8a4" }}>
               <div className="portal-card__body">
-                <strong>Staff sign-in could not be started.</strong>
-                <p style={{ marginBottom: 0, color: "var(--muted)" }}>Use the exact email provisioned by the clinic owner. If access was recently removed, contact the clinic owner.</p>
+                <strong>Unable to sign in.</strong>
+                <p style={{ marginBottom: 0, color: "var(--muted)" }}>{errorMessage}</p>
               </div>
             </div>
           ) : null}
 
-          <form action={requestStaffMagicLink}>
+          <form action={signInStaffWithPassword}>
             <div className="field">
               <label htmlFor="email">Staff email address</label>
-              <input id="email" name="email" type="email" inputMode="email" autoComplete="email" placeholder="doctor@clinic.com" required />
+              <input id="email" name="email" type="email" inputMode="email" autoComplete="username" placeholder="admin@jvdental.com" required />
             </div>
-            <button className="button" type="submit" style={{ width: "100%" }}>Email my secure staff link <span aria-hidden="true">→</span></button>
+
+            <div className="field">
+              <label htmlFor="password">Password</label>
+              <input id="password" name="password" type="password" autoComplete="current-password" placeholder="Enter your password" required minLength={8} />
+            </div>
+
+            <button className="button" type="submit" style={{ width: "100%" }}>Sign in to clinic portal <span aria-hidden="true">→</span></button>
           </form>
 
-          <p className="form-note">Unprovisioned email addresses are not allowed to create staff accounts from this screen.</p>
+          <p className="form-note">Only accounts provisioned by the JV Dental owner or administrator can access this portal.</p>
           <p className="form-note"><Link className="text-link" href="/">← Return to JV Dental</Link></p>
         </div>
       </section>
