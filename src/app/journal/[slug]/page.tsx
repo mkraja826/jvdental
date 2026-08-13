@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
@@ -45,6 +46,8 @@ export default async function JournalArticlePage({ params }: { params: Promise<{
           <Link className="button" href="/book">Book an implant assessment</Link>
         </div>
       </article>
+
+      <SiteFooter />
     </main>
   );
 }
