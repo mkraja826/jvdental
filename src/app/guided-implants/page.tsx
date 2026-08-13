@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
@@ -79,6 +80,8 @@ export default async function GuidedImplantsPage() {
         <p className="section-intro">International patients can create a secure account, complete their dental and medical intake, and provide available records for the clinic to review before an online consultation.</p>
         <div className="guided-international-cta__action"><Link className="button" href="/book">Start implant assessment</Link></div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
