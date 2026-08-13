@@ -9,20 +9,17 @@ export default async function ClinicDashboard() {
   const canManageStaff = staff.role === "owner" || staff.role === "admin";
   const canManageIntegrations = staff.role === "owner" || staff.role === "admin";
 
-  const [enquiriesResult, reviewResult, consultationResult, inventoryResult, changesResult, travelResult, notificationResult] = await Promise.all([
+  const [enquiriesResult, reviewResult, consultationResult, lowStockResult, changesResult, travelResult, notificationResult] = await Promise.all([
     supabase.from("patient_cases").select("id", { count: "exact", head: true }),
     supabase.from("patient_cases").select("id", { count: "exact", head: true }).in("status", ["records_received", "doctor_review", "more_information_required"]),
     supabase.from("appointments").select("id", { count: "exact", head: true }).eq("status", "scheduled"),
-    supabase.from("inventory_items").select("id,min_stock,inventory_batches(quantity_on_hand)").eq("is_active", true),
+    supabase.rpc("dashboard_low_stock_count"),
     supabase.from("treatment_plans").select("id", { count: "exact", head: true }).eq("status", "requested_changes"),
     supabase.from("travel_plans").select("id", { count: "exact", head: true }).eq("status", "details_submitted"),
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("recipient_type", "staff").is("read_at", null),
   ]);
 
-  const lowStock = (inventoryResult.data ?? []).filter((item) => {
-    const total = (item.inventory_batches ?? []).reduce((sum, batch) => sum + (batch.quantity_on_hand ?? 0), 0);
-    return total <= item.min_stock;
-  }).length;
+  const lowStock = Number(lowStockResult.data ?? 0);
   const unreadNotifications = notificationResult.count ?? 0;
 
   const metrics = [
