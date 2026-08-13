@@ -82,7 +82,7 @@ export default async function DoctorPortfolioPage({ params }: PageProps) {
           </div>
 
           <div className="hero__actions">
-            <Link className="button" href="/patient/login?next=/patient/intake">Request an implant assessment →</Link>
+            <Link className="button" href="/book">Book an implant assessment →</Link>
             {doctor.practo_url ? <a className="button button--ghost" href={doctor.practo_url} target="_blank" rel="noreferrer">View Practo profile</a> : null}
           </div>
         </div>
@@ -181,8 +181,8 @@ export default async function DoctorPortfolioPage({ params }: PageProps) {
       <section className="section final-cta">
         <p className="eyebrow">International implant assessment</p>
         <h2>Considering treatment with {doctor.full_name}?</h2>
-        <p>Share your dental history and available OPG or CBCT securely. The clinical team can review your records before a video consultation is arranged.</p>
-        <Link className="button" href="/patient/login?next=/patient/intake">Start your implant assessment →</Link>
+        <p>Book a clinic or video consultation first. When individual record review is needed, the secure patient portal can be used to share your dental history and available OPG or CBCT.</p>
+        <Link className="button" href="/book">Book your consultation →</Link>
       </section>
     </main>
   );
