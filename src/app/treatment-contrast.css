@@ -1,0 +1,25 @@
+/* Shared implant-treatment contrast guard. Loaded after existing brand/mobile layers. */
+.treatment-page .dark-band .section-title,
+.treatment-page .dark-band .treatment-row strong {
+  color: #ffffff !important;
+}
+
+.treatment-page .dark-band .section-intro {
+  color: #d4e0ef !important;
+}
+
+.treatment-page .dark-band .section-kicker,
+.treatment-page .dark-band .treatment-row b {
+  color: #bcd2eb !important;
+}
+
+@media (min-width: 821px) {
+  .treatment-page .dark-band .section {
+    padding-top: 96px;
+    padding-bottom: 96px;
+  }
+
+  .treatment-page .dark-band .treatments {
+    margin-top: 48px;
+  }
+}
