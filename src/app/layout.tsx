@@ -4,6 +4,7 @@ import "./globals.css";
 import "./assistant.css";
 import "./accessibility.css";
 import "./brand.css";
+import "./header-responsive.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com");
 
