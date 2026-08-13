@@ -1,0 +1,223 @@
+/*
+ * JV Dental mobile-first experience layer.
+ * Intentionally scoped below desktop width so the approved desktop design stays unchanged.
+ */
+
+@media (max-width: 1180px) {
+  html { scroll-padding-top: 126px; }
+  body { overflow-x: hidden; }
+
+  .site-header { backdrop-filter: blur(18px); }
+  .site-header__inner { max-width: none; }
+  .site-nav { -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+  .site-nav a { min-height: 42px; display: inline-flex; align-items: center; scroll-snap-align: start; }
+
+  .hero {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    border: 1px solid var(--line);
+  }
+  .hero__copy {
+    min-height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding: clamp(54px, 8vw, 84px) clamp(28px, 6vw, 60px) 38px;
+  }
+  .hero__description { max-width: 680px; }
+  .hero__note { margin-top: 44px; }
+  .hero__visual { min-height: clamp(380px, 58vw, 620px); }
+
+  .data-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .data-strip__item { min-height: 112px; }
+  .data-strip__item:nth-child(2) { border-right: 0; }
+  .data-strip__item:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+
+  .clinic-evidence { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .clinic-evidence__item { min-height: 330px; }
+
+  .editorial-split { grid-template-columns: 1fr; gap: 48px; }
+  .editorial-quote { position: static; max-width: 760px; }
+
+  .case-feature { grid-template-columns: 1fr; }
+  .case-feature__visual { min-height: 450px; }
+
+  .journey { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .journey-step { min-height: 128px; }
+
+  .assistant-band { grid-template-columns: 1fr; gap: 34px; }
+  .assistant-panel { max-width: 760px; }
+
+  .footer { grid-template-columns: 1fr; gap: 42px; }
+  .footer-links { justify-content: flex-start; }
+
+  .doctor-directory-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .treatment-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 720px) {
+  html { scroll-padding-top: 112px; }
+
+  .site-header__inner { width: 100%; padding: 10px 12px 8px; }
+  .clinic-wordmark { min-height: 42px; display: flex; justify-content: center; }
+  .header-assessment { min-width: 126px; min-height: 44px; border-radius: 7px; }
+  .site-nav { margin-inline: -12px; padding: 7px 12px 2px; gap: 22px; }
+  .site-nav a { min-height: 40px; font-size: .73rem; }
+
+  .hero,
+  .data-strip,
+  .clinic-evidence { width: 100%; border-left: 0; border-right: 0; }
+
+  .hero__copy {
+    padding: 46px 20px 30px;
+  }
+  .eyebrow { margin-bottom: 18px; font-size: .63rem; letter-spacing: .15em; }
+  .display-title {
+    font-size: clamp(2.55rem, 12.5vw, 3.75rem);
+    line-height: .98;
+    letter-spacing: -.045em;
+  }
+  .hero__description {
+    margin-top: 24px;
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+  .hero__actions { margin-top: 30px; gap: 10px; }
+  .hero__actions .button { min-height: 52px; width: 100%; padding-inline: 18px; font-size: .76rem; }
+  .hero__note { margin-top: 34px; padding-top: 14px; font-size: .74rem; line-height: 1.6; }
+
+  .hero__visual { min-height: 390px; }
+  .hero__visual-label { top: 18px; left: 18px; width: min(210px, calc(100% - 36px)); }
+  .hero__visual-copy {
+    left: 18px;
+    right: 18px;
+    bottom: 20px;
+    max-width: none;
+    padding: 18px;
+  }
+  .hero__visual-copy strong { font-size: clamp(1.9rem, 9vw, 3rem); }
+
+  .data-strip { grid-template-columns: 1fr 1fr; }
+  .data-strip__item { min-height: 104px; padding: 18px 16px; }
+  .data-strip__item span { font-size: .56rem; letter-spacing: .12em; }
+  .data-strip__item strong { margin-top: 16px; font-size: 1.03rem; line-height: 1.15; }
+
+  .clinic-evidence {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .clinic-evidence__item { min-height: 270px; border-left: 0; border-right: 0; }
+  .clinic-evidence__copy { padding: 18px 20px; }
+
+  .section {
+    width: 100%;
+    padding: 70px 20px;
+  }
+  .section--tight { padding-top: 54px; padding-bottom: 54px; }
+  .section-kicker { margin-bottom: 16px; font-size: .61rem; letter-spacing: .17em; }
+  .section-title {
+    font-size: clamp(2.15rem, 10.2vw, 3.35rem);
+    line-height: 1.01;
+    letter-spacing: -.04em;
+  }
+  .section-intro { margin-top: 22px; font-size: .96rem; line-height: 1.65; }
+
+  .editorial-split { margin-top: 44px; gap: 34px; }
+  .editorial-quote { font-size: clamp(1.65rem, 8vw, 2.35rem); }
+  .principle { grid-template-columns: 42px 1fr; gap: 12px; padding: 24px 0; }
+  .principle h3 { font-size: 1.55rem; }
+  .principle p { font-size: .94rem; }
+
+  .treatments { margin-top: 44px; }
+  .treatment-row {
+    grid-template-columns: 34px 1fr 24px;
+    min-height: 88px;
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .treatment-row:hover { padding-left: 0; }
+  .treatment-row strong { font-size: clamp(1.25rem, 6.4vw, 1.75rem); line-height: 1.08; }
+
+  .case-feature { margin-top: 42px; border-left: 0; border-right: 0; }
+  .case-feature__visual { min-height: 320px; }
+  .case-feature__content { padding: 30px 20px 34px; }
+  .case-feature__content h3 { font-size: clamp(2rem, 9.2vw, 3rem); }
+  .case-meta { margin-top: 24px; }
+  .case-meta div { padding: 16px 0; gap: 8px; }
+
+  .journey { grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 38px; }
+  .journey-step { min-height: 116px; padding: 16px; }
+  .journey-step strong { font-size: .93rem; line-height: 1.25; }
+
+  .assistant-band { padding: 56px 20px; }
+  .assistant-band h2 { font-size: clamp(2rem, 9vw, 3rem); }
+  .assistant-panel .button { width: 100%; min-height: 52px; }
+
+  .footer { padding: 48px 20px 72px; }
+  .footer-links { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+  .footer-links a { min-height: 40px; display: flex; align-items: center; }
+
+  .doctor-directory-hero { padding: 54px 20px 44px; }
+  .doctor-directory-hero h1 { font-size: clamp(2.4rem, 11vw, 3.6rem); line-height: 1; }
+  .doctor-directory-grid { grid-template-columns: 1fr; padding-top: 38px; }
+  .doctor-card { border-radius: 8px; }
+  .doctor-card__portrait { min-height: 420px; }
+  .doctor-card__body { padding: 26px 20px 28px; }
+
+  .treatment-page .hero { width: 100%; }
+  .treatment-page .hero__copy { min-height: auto !important; }
+  .treatment-page .hero__visual { min-height: 360px !important; }
+  .treatment-steps { grid-template-columns: 1fr; gap: 12px; }
+  .treatment-step { padding: 22px 18px; }
+  .treatment-step:hover { padding: 22px 18px; }
+  .treatment-considerations .treatment-row { grid-template-columns: 34px 1fr 30px; }
+
+  input,
+  textarea,
+  select,
+  button { font-size: 16px; }
+  .field input,
+  .field textarea,
+  .field select { min-height: 50px; }
+}
+
+@media (max-width: 420px) {
+  .site-header__inner { padding-inline: 10px; }
+  .header-assessment { min-width: 116px; max-width: 116px; font-size: .64rem; }
+  .site-nav { padding-inline: 10px; gap: 18px; }
+
+  .hero__copy { padding-inline: 18px; }
+  .display-title { font-size: clamp(2.35rem, 12.2vw, 3.15rem); }
+  .hero__visual { min-height: 350px; }
+  .hero__visual-copy { left: 14px; right: 14px; bottom: 14px; }
+
+  .data-strip { grid-template-columns: 1fr; }
+  .data-strip__item { min-height: 86px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .data-strip__item:last-child { border-bottom: 0; }
+  .data-strip__item strong { margin-top: 10px; }
+
+  .section { padding-inline: 18px; }
+  .journey { grid-template-columns: 1fr; }
+  .journey-step { min-height: 92px; }
+  .footer-links { grid-template-columns: 1fr; gap: 8px; }
+
+  .case-feature__content { padding-inline: 18px; }
+  .doctor-card__portrait { min-height: 360px; }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .button,
+  .text-link,
+  .site-nav a,
+  .treatment-row,
+  .journey-step,
+  .clinic-evidence__item,
+  .doctor-card a { -webkit-tap-highlight-color: rgba(64,114,175,.12); }
+
+  .button:active,
+  .treatment-row:active,
+  .clinic-evidence__item:active { transform: scale(.985); }
+
+  .treatment-row:hover,
+  .principle:hover,
+  .doctor-card:hover { transform: none; }
+}
