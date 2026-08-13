@@ -9,23 +9,20 @@ export default async function ClinicDashboard() {
   const canManageStaff = staff.role === "owner" || staff.role === "admin";
   const canManageIntegrations = staff.role === "owner" || staff.role === "admin";
 
-  const [enquiriesResult, reviewResult, consultationResult, lowStockResult, changesResult, travelResult, notificationResult] = await Promise.all([
-    supabase.from("patient_cases").select("id", { count: "exact", head: true }),
-    supabase.from("patient_cases").select("id", { count: "exact", head: true }).in("status", ["records_received", "doctor_review", "more_information_required"]),
-    supabase.from("appointments").select("id", { count: "exact", head: true }).eq("status", "scheduled"),
-    supabase.rpc("dashboard_low_stock_count"),
-    supabase.from("treatment_plans").select("id", { count: "exact", head: true }).eq("status", "requested_changes"),
-    supabase.from("travel_plans").select("id", { count: "exact", head: true }).eq("status", "details_submitted"),
-    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("recipient_type", "staff").is("read_at", null),
-  ]);
-
-  const lowStock = Number(lowStockResult.data ?? 0);
-  const unreadNotifications = notificationResult.count ?? 0;
+  const { data: summaryData } = await supabase.rpc("clinic_dashboard_summary");
+  const summary = (summaryData ?? {}) as Record<string, number | string | null>;
+  const enquiries = Number(summary.international_enquiries ?? 0);
+  const awaitingReview = Number(summary.awaiting_doctor_review ?? 0);
+  const scheduledConsultations = Number(summary.scheduled_consultations ?? 0);
+  const requestedChanges = Number(summary.requested_changes ?? 0);
+  const travelAwaitingConfirmation = Number(summary.travel_awaiting_confirmation ?? 0);
+  const unreadNotifications = Number(summary.unread_notifications ?? 0);
+  const lowStock = Number(summary.low_stock_items ?? 0);
 
   const metrics = [
-    { label: "International enquiries", value: String(enquiriesResult.count ?? 0) },
-    { label: "Awaiting doctor review", value: String(reviewResult.count ?? 0) },
-    { label: "Scheduled consultations", value: String(consultationResult.count ?? 0) },
+    { label: "International enquiries", value: String(enquiries) },
+    { label: "Awaiting doctor review", value: String(awaitingReview) },
+    { label: "Scheduled consultations", value: String(scheduledConsultations) },
     { label: "Unread notifications", value: String(unreadNotifications) },
     { label: "Low-stock items", value: String(lowStock) },
   ];
@@ -92,8 +89,8 @@ export default async function ClinicDashboard() {
               <div className="portal-card__body">
                 <div className="status-list">
                   <div className="status-row"><strong>Unread operational notifications</strong><span>{unreadNotifications}</span><span className="status-pill">Inbox</span></div>
-                  <div className="status-row"><strong>Estimate changes requested</strong><span>{changesResult.count ?? 0}</span><span className="status-pill">Clinical</span></div>
-                  <div className="status-row"><strong>Travel details awaiting confirmation</strong><span>{travelResult.count ?? 0}</span><span className="status-pill">Coordinator</span></div>
+                  <div className="status-row"><strong>Estimate changes requested</strong><span>{requestedChanges}</span><span className="status-pill">Clinical</span></div>
+                  <div className="status-row"><strong>Travel details awaiting confirmation</strong><span>{travelAwaitingConfirmation}</span><span className="status-pill">Coordinator</span></div>
                 </div>
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 18 }}>
                   <Link className="button button--ghost" href="/clinic/notifications">Open notifications →</Link>
