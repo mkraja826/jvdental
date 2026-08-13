@@ -4,10 +4,14 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="site-header__inner">
-        <Link className="wordmark clinic-wordmark" href="/" aria-label="JV Dental & Implant Centre home">
-          <span>JV</span>
-          <span>Dental</span>
-          <small>Implant Centre</small>
+        <Link className="clinic-wordmark" href="/" aria-label="JV Dental & Implant Centre home">
+          <img
+            className="clinic-wordmark__image"
+            src="/jv-dental-logo.svg"
+            alt="JV Dental Implant Centre"
+            width="480"
+            height="242"
+          />
         </Link>
 
         <nav className="site-nav" aria-label="Primary navigation">
@@ -26,7 +30,7 @@ export function SiteHeader() {
             <Link className="text-link clinic-login-link" href="/staff/login">Clinic login</Link>
           </div>
           <Link className="button header-assessment" href="/book">
-            Book appointment <span aria-hidden="true">→</span>
+            Request assessment <span aria-hidden="true">→</span>
           </Link>
         </div>
       </div>
