@@ -3,6 +3,7 @@ import { requireStaff } from "@/lib/auth/guards";
 import "../clinic-ux.css";
 import "../clinic-navigation.css";
 import "../clinic-shell.css";
+import "../clinic-form-polish.css";
 
 export default async function ClinicLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const { staff } = await requireStaff();
