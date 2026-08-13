@@ -1,7 +1,8 @@
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function requireStaff() {
+const getRequiredStaff = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -23,4 +24,8 @@ export async function requireStaff() {
   }
 
   return { supabase, user, staff };
+});
+
+export async function requireStaff() {
+  return getRequiredStaff();
 }
