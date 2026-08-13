@@ -39,7 +39,9 @@ export function SiteFooter() {
   return (
     <footer className="footer footer--contact">
       <div className="footer-brand">
-        <Image className="footer-logo" src="/jv-dental-logo.svg" alt="JV Dental Implant Centre" width={480} height={242} />
+        <Link href="/" aria-label="JV Dental home">
+          <Image className="footer-logo" src="/jv-dental-logo.svg" alt="JV Dental Implant Centre" width={480} height={242} unoptimized />
+        </Link>
         <p>JV Dental &amp; Implant Centre · Hyderabad, India. Implant dentistry, full-mouth rehabilitation, digital treatment planning and coordinated care.</p>
       </div>
 
