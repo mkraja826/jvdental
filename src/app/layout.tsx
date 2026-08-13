@@ -9,6 +9,7 @@ import "./clinic-visuals.css";
 import "./mobile-first.css";
 import "./booking.css";
 import "./mobile-v2.css";
+import "./mobile-polish.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com");
 
