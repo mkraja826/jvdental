@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 const principles = [
   {
@@ -195,12 +195,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="footer">
-        <div className="footer-brand"><Image className="footer-logo" src="/jv-dental-logo.svg" alt="JV Dental Implant Centre" width={480} height={242} /><p>JV Dental &amp; Implant Centre · Hyderabad, India. Dental implants, full-mouth rehabilitation, digital treatment planning and coordinated care for patients from India and abroad.</p></div>
-        <div className="footer-links">
-          <Link href="/dental-implants">Dental implants</Link><Link href="/guided-implants">Guided implants</Link><Link href="/international">International patients</Link><Link href="/cases">Dental cases</Link><Link href="/doctors">Dentists</Link><Link href="/journal">Dental journal</Link><Link href="/book">Book appointment</Link><Link href="/patient/login">Patient login</Link><Link href="/staff/login">Clinic login</Link>
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }
