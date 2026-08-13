@@ -33,6 +33,13 @@ const journey = [
   "Remote follow-up",
 ];
 
+const clinicVisuals = [
+  { key: "team", label: "Dental team", title: "Dentist-led implant care", href: "/doctors" },
+  { key: "clinic", label: "Clinical environment", title: "Modern dental treatment setting", href: "/doctors" },
+  { key: "planning", label: "Digital dentistry", title: "3D implant planning & guided workflows", href: "/guided-implants" },
+  { key: "cases", label: "Clinical evidence", title: "Documented implant cases", href: "/cases" },
+];
+
 export default function Home() {
   return (
     <main>
@@ -79,22 +86,23 @@ export default function Home() {
       </section>
 
       <section className="data-strip" aria-label="JV Dental focus areas">
-        <div className="data-strip__item">
-          <span>Dental care</span>
-          <strong>Implant dentistry</strong>
-        </div>
-        <div className="data-strip__item">
-          <span>Advanced treatment</span>
-          <strong>Full-mouth rehabilitation</strong>
-        </div>
-        <div className="data-strip__item">
-          <span>Digital dentistry</span>
-          <strong>Guided implant planning</strong>
-        </div>
-        <div className="data-strip__item">
-          <span>Clinic</span>
-          <strong>Hyderabad, India</strong>
-        </div>
+        <div className="data-strip__item"><span>Dental care</span><strong>Implant dentistry</strong></div>
+        <div className="data-strip__item"><span>Advanced treatment</span><strong>Full-mouth rehabilitation</strong></div>
+        <div className="data-strip__item"><span>Digital dentistry</span><strong>Guided implant planning</strong></div>
+        <div className="data-strip__item"><span>Clinic</span><strong>Hyderabad, India</strong></div>
+      </section>
+
+      <section className="clinic-evidence" aria-label="JV Dental clinical environment">
+        {clinicVisuals.map((item) => (
+          <Link className={`clinic-evidence__item clinic-evidence__item--${item.key}`} href={item.href} key={item.key}>
+            <span className="clinic-evidence__visual" aria-hidden="true"><i /><i /><i /></span>
+            <span className="clinic-evidence__copy">
+              <small>{item.label}</small>
+              <strong>{item.title}</strong>
+              <b aria-hidden="true">↗</b>
+            </span>
+          </Link>
+        ))}
       </section>
 
       <section className="section" id="approach">
@@ -110,15 +118,11 @@ export default function Home() {
             “Plan the restoration. Understand the anatomy. Then place the implant.”
             <small>Restoration-led implant planning</small>
           </div>
-
           <div className="principle-list">
             {principles.map((principle, index) => (
               <article className="principle" key={principle.title}>
                 <span className="principle__number">0{index + 1}</span>
-                <div>
-                  <h3>{principle.title}</h3>
-                  <p>{principle.body}</p>
-                </div>
+                <div><h3>{principle.title}</h3><p>{principle.body}</p></div>
               </article>
             ))}
           </div>
@@ -133,13 +137,10 @@ export default function Home() {
             Explore implant treatment pathways, digital guided workflows and approaches used for
             straightforward and complex dental implant cases.
           </p>
-
           <div className="treatments">
             {treatments.map((treatment, index) => (
               <Link className="treatment-row" href={treatment.href} key={treatment.title}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{treatment.title}</strong>
-                <b aria-hidden="true">↗</b>
+                <span>{String(index + 1).padStart(2, "0")}</span><strong>{treatment.title}</strong><b aria-hidden="true">↗</b>
               </Link>
             ))}
           </div>
@@ -150,14 +151,10 @@ export default function Home() {
         <p className="section-kicker">Dental implant cases</p>
         <h2 className="section-title">See how dental treatment is planned—not only how it finishes.</h2>
         <p className="section-intro">
-          Published cases are structured around diagnosis → planning → surgery → restoration →
-          outcome, with patient consent and appropriate anonymisation.
+          Published cases are structured around diagnosis → planning → surgery → restoration → outcome, with patient consent and appropriate anonymisation.
         </p>
-
         <article className="case-feature">
-          <div className="case-feature__visual">
-            <span>Clinical dental imagery is published only with appropriate consent</span>
-          </div>
+          <div className="case-feature__visual"><span>Clinical dental imagery is published only with appropriate consent</span></div>
           <div className="case-feature__content">
             <div>
               <p className="section-kicker">Inside an implant case</p>
@@ -178,19 +175,11 @@ export default function Home() {
         <p className="section-kicker">International dental patients</p>
         <h2 className="section-title">Plan dental implant treatment in Hyderabad before you travel.</h2>
         <p className="section-intro">
-          Start remotely, share available dental records and imaging, understand the proposed
-          pathway before travel, and keep consultations and follow-up connected.
+          Start remotely, share available dental records and imaging, understand the proposed pathway before travel, and keep consultations and follow-up connected.
         </p>
-
         <div className="journey">
-          {journey.map((step, index) => (
-            <div className="journey-step" key={step}>
-              <span>0{index + 1}</span>
-              <strong>{step}</strong>
-            </div>
-          ))}
+          {journey.map((step, index) => <div className="journey-step" key={step}><span>0{index + 1}</span><strong>{step}</strong></div>)}
         </div>
-
         <div className="hero__actions">
           <Link className="button button--ghost" href="/international">International patient journey</Link>
           <Link className="button" href="/patient/login">Upload dental records <span aria-hidden="true">→</span></Link>
@@ -198,36 +187,17 @@ export default function Home() {
       </section>
 
       <section className="assistant-band">
-        <div>
-          <p className="section-kicker">JV Dental digital assistant</p>
-          <h2>Ask about our dental clinic, implant treatments and planning care in Hyderabad.</h2>
-        </div>
+        <div><p className="section-kicker">JV Dental digital assistant</p><h2>Ask about our dental clinic, implant treatments and planning care in Hyderabad.</h2></div>
         <div className="assistant-panel">
-          <p>
-            The public assistant provides clinic information and general dental education.
-            Personal diagnosis, radiograph review and treatment decisions remain with the clinical team.
-          </p>
+          <p>The public assistant provides clinic information and general dental education. Personal diagnosis, radiograph review and treatment decisions remain with the clinical team.</p>
           <Link className="button button--light" href="/patient/login">Start with your dental case <span aria-hidden="true">→</span></Link>
         </div>
       </section>
 
       <footer className="footer">
-        <div>
-          <div className="wordmark" aria-label="JV Dental"><span>JV</span><span>Dental</span></div>
-          <p>
-            JV Dental &amp; Implant Centre · Hyderabad, India. Dental implants, full-mouth
-            rehabilitation, digital treatment planning and coordinated care for patients from India and abroad.
-          </p>
-        </div>
+        <div><div className="wordmark" aria-label="JV Dental"><span>JV</span><span>Dental</span></div><p>JV Dental &amp; Implant Centre · Hyderabad, India. Dental implants, full-mouth rehabilitation, digital treatment planning and coordinated care for patients from India and abroad.</p></div>
         <div className="footer-links">
-          <Link href="/dental-implants">Dental implants</Link>
-          <Link href="/guided-implants">Guided implants</Link>
-          <Link href="/international">International patients</Link>
-          <Link href="/cases">Dental cases</Link>
-          <Link href="/doctors">Dentists</Link>
-          <Link href="/journal">Dental journal</Link>
-          <Link href="/patient/login">Patient login</Link>
-          <Link href="/staff/login">Clinic login</Link>
+          <Link href="/dental-implants">Dental implants</Link><Link href="/guided-implants">Guided implants</Link><Link href="/international">International patients</Link><Link href="/cases">Dental cases</Link><Link href="/doctors">Dentists</Link><Link href="/journal">Dental journal</Link><Link href="/patient/login">Patient login</Link><Link href="/staff/login">Clinic login</Link>
         </div>
       </footer>
     </main>
