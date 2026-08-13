@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 
@@ -59,8 +60,8 @@ export default function Home() {
               confidence—from a single missing tooth to complex full-arch rehabilitation.
             </p>
             <div className="hero__actions">
-              <Link className="button" href="/patient/login">
-                Request an implant assessment <span aria-hidden="true">→</span>
+              <Link className="button" href="/book">
+                Book an implant assessment <span aria-hidden="true">→</span>
               </Link>
               <Link className="button button--ghost" href="/doctors">
                 Meet the dental team
@@ -182,7 +183,7 @@ export default function Home() {
         </div>
         <div className="hero__actions">
           <Link className="button button--ghost" href="/international">International patient journey</Link>
-          <Link className="button" href="/patient/login">Upload dental records <span aria-hidden="true">→</span></Link>
+          <Link className="button" href="/book">Book an online consultation <span aria-hidden="true">→</span></Link>
         </div>
       </section>
 
@@ -190,14 +191,14 @@ export default function Home() {
         <div><p className="section-kicker">JV Dental digital assistant</p><h2>Ask about our dental clinic, implant treatments and planning care in Hyderabad.</h2></div>
         <div className="assistant-panel">
           <p>The public assistant provides clinic information and general dental education. Personal diagnosis, radiograph review and treatment decisions remain with the clinical team.</p>
-          <Link className="button button--light" href="/patient/login">Start with your dental case <span aria-hidden="true">→</span></Link>
+          <Link className="button button--light" href="/book">Book a consultation <span aria-hidden="true">→</span></Link>
         </div>
       </section>
 
       <footer className="footer">
-        <div><div className="wordmark" aria-label="JV Dental"><span>JV</span><span>Dental</span></div><p>JV Dental &amp; Implant Centre · Hyderabad, India. Dental implants, full-mouth rehabilitation, digital treatment planning and coordinated care for patients from India and abroad.</p></div>
+        <div className="footer-brand"><Image className="footer-logo" src="/jv-dental-logo.svg" alt="JV Dental Implant Centre" width={480} height={242} /><p>JV Dental &amp; Implant Centre · Hyderabad, India. Dental implants, full-mouth rehabilitation, digital treatment planning and coordinated care for patients from India and abroad.</p></div>
         <div className="footer-links">
-          <Link href="/dental-implants">Dental implants</Link><Link href="/guided-implants">Guided implants</Link><Link href="/international">International patients</Link><Link href="/cases">Dental cases</Link><Link href="/doctors">Dentists</Link><Link href="/journal">Dental journal</Link><Link href="/patient/login">Patient login</Link><Link href="/staff/login">Clinic login</Link>
+          <Link href="/dental-implants">Dental implants</Link><Link href="/guided-implants">Guided implants</Link><Link href="/international">International patients</Link><Link href="/cases">Dental cases</Link><Link href="/doctors">Dentists</Link><Link href="/journal">Dental journal</Link><Link href="/book">Book appointment</Link><Link href="/patient/login">Patient login</Link><Link href="/staff/login">Clinic login</Link>
         </div>
       </footer>
     </main>
