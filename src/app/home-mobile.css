@@ -1,4 +1,31 @@
 /* Homepage-specific mobile conversion polish. Loaded after all global responsive layers. */
+
+/* Desktop + mobile contrast guard for the navy implant-treatment section. */
+.home-page .dark-band .section-title,
+.home-page .dark-band .treatment-row strong {
+  color: #ffffff !important;
+}
+
+.home-page .dark-band .section-intro {
+  color: #d4e0ef !important;
+}
+
+.home-page .dark-band .section-kicker,
+.home-page .dark-band .treatment-row b {
+  color: #bcd2eb !important;
+}
+
+@media (min-width: 821px) {
+  .home-page .dark-band .section {
+    padding-top: 96px;
+    padding-bottom: 96px;
+  }
+
+  .home-page .dark-band .treatments {
+    margin-top: 48px;
+  }
+}
+
 @media (max-width: 820px) {
   .home-page .hero__copy {
     padding-top: 30px;
