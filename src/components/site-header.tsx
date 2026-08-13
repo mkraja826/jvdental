@@ -10,6 +10,7 @@ export function SiteHeader() {
         </Link>
 
         <nav className="site-nav" aria-label="Primary navigation">
+          <Link href="/dental-implants">Dental implants</Link>
           <Link href="/guided-implants">Guided implants</Link>
           <Link href="/doctors">Doctors</Link>
           <Link href="/cases">Cases</Link>
