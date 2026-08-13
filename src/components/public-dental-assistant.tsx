@@ -42,10 +42,7 @@ export default function PublicDentalAssistant() {
 
   useEffect(() => {
     const footer = document.querySelector(".footer--contact");
-    if (!footer || typeof IntersectionObserver === "undefined") {
-      setFooterVisible(false);
-      return;
-    }
+    if (!footer || typeof IntersectionObserver === "undefined") return;
 
     const observer = new IntersectionObserver(
       ([entry]) => setFooterVisible(entry.isIntersecting),
