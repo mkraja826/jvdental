@@ -1,0 +1,107 @@
+.clinic-workspace-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 244px minmax(0, 1fr);
+  background: #f6f8f7;
+}
+
+.clinic-workspace-nav {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 18px 14px 24px;
+  border-right: 1px solid #dde5e1;
+  background: #f3f6f4;
+  z-index: 45;
+}
+
+.clinic-workspace-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  margin: 0 4px 20px;
+  padding: 0 8px 14px;
+  border-bottom: 1px solid #dde5e1;
+}
+
+.clinic-workspace-brand__mark {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #173f37;
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.clinic-workspace-brand div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.clinic-workspace-brand strong {
+  color: #14201d;
+  font-size: .8rem;
+}
+
+.clinic-workspace-brand div span {
+  color: #7a8882;
+  font-size: .62rem;
+  text-transform: capitalize;
+}
+
+.clinic-workspace-content {
+  min-width: 0;
+}
+
+/* Existing clinic pages keep their data/content, while their local sidebars are retired. */
+.clinic-workspace-content .portal-shell > .portal-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.clinic-workspace-content .portal-shell > .portal-layout > .portal-sidebar {
+  display: none;
+}
+
+.clinic-workspace-content .portal-header {
+  left: 244px;
+}
+
+.clinic-workspace-content .portal-main {
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .clinic-workspace-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .clinic-workspace-nav {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: auto;
+    padding: 8px 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: 0;
+    border-bottom: 1px solid #dde5e1;
+    background: rgba(243, 246, 244, .97);
+    backdrop-filter: blur(12px);
+  }
+
+  .clinic-workspace-brand {
+    display: none;
+  }
+
+  .clinic-workspace-content .portal-header {
+    position: static;
+  }
+}
