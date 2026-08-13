@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
@@ -40,6 +41,8 @@ export default async function CasesPage() {
           <Link className="button" href="/book">Book an implant assessment</Link>
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
