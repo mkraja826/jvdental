@@ -6,6 +6,7 @@ import "./accessibility.css";
 import "./brand.css";
 import "./header-responsive.css";
 import "./clinic-visuals.css";
+import "./mobile-first.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com");
 
