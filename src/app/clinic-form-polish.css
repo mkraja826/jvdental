@@ -1,0 +1,101 @@
+/* Professional form system for the secure clinic workspace. */
+.clinic-workspace-content form label {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  color: #34423d;
+  font-size: .76rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.clinic-workspace-content form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.clinic-workspace-content form select,
+.clinic-workspace-content form textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #cbd6d1;
+  border-radius: 9px;
+  background: #fff;
+  color: #14201d;
+  font: inherit;
+  font-size: .88rem;
+  line-height: 1.45;
+  outline: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+.clinic-workspace-content form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.clinic-workspace-content form select {
+  min-height: 44px;
+  padding: 0 12px;
+}
+
+.clinic-workspace-content form textarea {
+  min-height: 108px;
+  padding: 11px 12px;
+  resize: vertical;
+}
+
+.clinic-workspace-content form input::placeholder,
+.clinic-workspace-content form textarea::placeholder {
+  color: #8a9691;
+}
+
+.clinic-workspace-content form input:focus,
+.clinic-workspace-content form select:focus,
+.clinic-workspace-content form textarea:focus {
+  border-color: #417468;
+  box-shadow: 0 0 0 3px rgba(65, 116, 104, .12);
+}
+
+.clinic-workspace-content form input:disabled,
+.clinic-workspace-content form select:disabled,
+.clinic-workspace-content form textarea:disabled {
+  cursor: not-allowed;
+  background: #f1f4f2;
+  color: #7c8984;
+}
+
+.clinic-workspace-content form input[type="checkbox"],
+.clinic-workspace-content form input[type="radio"] {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: #173f37;
+}
+
+.clinic-workspace-content .portal-card__body > form {
+  width: 100%;
+}
+
+.clinic-workspace-content .form-note {
+  color: #68756f;
+  font-size: .75rem;
+  line-height: 1.55;
+}
+
+.clinic-workspace-content form .button {
+  min-height: 44px;
+  border-radius: 9px;
+}
+
+.clinic-workspace-content .portal-card__body {
+  min-width: 0;
+}
+
+.clinic-workspace-content .portal-card__body form > div {
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .clinic-workspace-content form [style*="grid-template-columns: 1fr 1fr"],
+  .clinic-workspace-content form [style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .clinic-workspace-content form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+  .clinic-workspace-content form select {
+    min-height: 46px;
+  }
+}
