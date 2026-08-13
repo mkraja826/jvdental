@@ -13,6 +13,7 @@ import "./mobile-polish.css";
 import "./public-content.css";
 import "./site-audit.css";
 import "./home-mobile.css";
+import "./footer-polish.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com");
 
