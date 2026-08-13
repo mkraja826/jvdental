@@ -18,20 +18,20 @@ export function ImplantServicePage({ eyebrow, title, accent, description, suitab
     <main className="treatment-page">
       <SiteHeader />
 
-      <section className="hero treatment-hero" style={{ minHeight: "auto" }}>
-        <div className="hero__copy treatment-hero__copy" style={{ minHeight: 620 }}>
+      <section className="hero treatment-hero">
+        <div className="hero__copy treatment-hero__copy">
           <div>
             <p className="eyebrow">{eyebrow}</p>
             <h1 className="display-title">{title}<br /><em>{accent}</em></h1>
             <p className="hero__description">{description}</p>
             <div className="hero__actions">
-              <Link className="button" href="/patient/login">Upload records for assessment <span aria-hidden="true">→</span></Link>
+              <Link className="button" href="/book">Book implant assessment <span aria-hidden="true">→</span></Link>
               <Link className="button button--ghost" href="/cases">Explore dental cases</Link>
             </div>
           </div>
           <p className="hero__note">Treatment suitability, implant number, surgical approach, restorative design and timing depend on clinical examination, medical history and appropriate imaging. Online information is educational and does not replace diagnosis.</p>
         </div>
-        <div className="hero__visual treatment-hero__visual" style={{ minHeight: 620 }}>
+        <div className="hero__visual treatment-hero__visual">
           <span className="hero__visual-label">Dental implant treatment · clinical assessment · restorative planning</span>
           <div className="treatment-visual__marker" aria-hidden="true"><span /><span /><span /></div>
           <div className="hero__visual-copy">
@@ -45,7 +45,7 @@ export function ImplantServicePage({ eyebrow, title, accent, description, suitab
         <p className="section-kicker">Your treatment pathway</p>
         <h2 className="section-title">From dental assessment to the final restoration.</h2>
         <p className="section-intro">Each stage connects diagnosis, implant planning, surgery, restorative dentistry and follow-up rather than treating implant placement as an isolated procedure.</p>
-        <div className="principle-list treatment-steps" style={{ marginTop: 64 }}>
+        <div className="principle-list treatment-steps">
           {steps.map((step, index) => (
             <article className="principle treatment-step" key={step.title}>
               <span className="principle__number">{String(index + 1).padStart(2, "0")}</span>
@@ -75,11 +75,11 @@ export function ImplantServicePage({ eyebrow, title, accent, description, suitab
       <section className="section section--tight treatment-next-step">
         <p className="section-kicker">Talk to the dental team</p>
         <h2 className="section-title">Understand your options before committing to implant treatment.</h2>
-        <p className="section-intro">Explore treatment information, documented cases and the dental team without creating an account. Use the secure patient portal only when you are ready to send records for individual review.</p>
+        <p className="section-intro">Explore treatment information, documented cases and the dental team without creating an account. Book an assessment when you are ready to discuss your case, and use the secure patient portal when you need to send clinical records.</p>
         <div className="hero__actions">
           <Link className="button button--ghost" href="/guided-implants">Guided implant dentistry</Link>
           <Link className="button button--ghost" href="/doctors">Meet the dentists</Link>
-          <Link className="button" href="/patient/login">Request assessment</Link>
+          <Link className="button" href="/book">Book assessment</Link>
         </div>
       </section>
     </main>
