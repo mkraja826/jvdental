@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { internationalCostCategories, internationalJourney, internationalLogistics } from "@/content/international-patient";
 
@@ -104,6 +105,8 @@ export default function InternationalPage() {
           <div className="hero__actions international-actions"><Link className="button button--light" href="/book">Book consultation</Link><Link className="button" href="/patient/login">Patient portal <span aria-hidden="true">→</span></Link></div>
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
