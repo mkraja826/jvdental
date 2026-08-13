@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
@@ -62,6 +63,8 @@ export default async function DoctorsPage() {
         })}
         {!doctors?.length ? <p>No public dentist profiles are available yet.</p> : null}
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
