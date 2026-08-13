@@ -45,6 +45,18 @@
 .mobile-menu-toggle,
 .mobile-menu-portals { display: none; }
 
+/* Reuse the approved clinic mark in the public footer without changing footer structure. */
+.footer > div:first-child::before {
+  content: "";
+  display: block;
+  width: 184px;
+  aspect-ratio: 480 / 242;
+  margin-bottom: 20px;
+  border-radius: 7px;
+  background: var(--brand-navy) url('/jv-dental-logo.svg') center / contain no-repeat;
+}
+.footer > div:first-child > .wordmark { display: none; }
+
 @media (max-width: 1180px) {
   .site-header__inner {
     width: min(100% - 30px, 1440px);
@@ -164,6 +176,8 @@
     background: rgba(218,226,239,.08);
   }
 
+  .footer > div:first-child::before { width: 152px; margin-bottom: 16px; }
+
   .hero,.data-strip { width: calc(100% - 24px); }
   .hero__copy { padding-left: 24px; padding-right: 24px; }
   .hero__actions { gap: 10px; }
@@ -185,4 +199,5 @@
     font-size: .6rem;
   }
   .mobile-menu-toggle { width: 38px; height: 38px; }
+  .footer > div:first-child::before { width: 138px; }
 }
