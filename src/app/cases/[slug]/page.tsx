@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
@@ -114,6 +115,8 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ slu
         <p>This case is shown with recorded publication consent and is presented for education. Treatment recommendations and outcomes vary according to anatomy, oral health, medical history and clinical findings.</p>
         <Link className="button" href="/book">Book your implant assessment</Link>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
