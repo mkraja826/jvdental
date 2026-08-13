@@ -1,0 +1,46 @@
+.clinic-nav {
+  display: grid;
+  gap: 20px;
+}
+
+.clinic-nav__group {
+  display: grid;
+  gap: 7px;
+}
+
+.clinic-nav__label {
+  margin: 0;
+  padding: 0 12px;
+  color: #85918c;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.clinic-nav__items {
+  display: grid;
+  gap: 3px;
+}
+
+@media (max-width: 900px) {
+  .clinic-nav {
+    display: flex;
+    min-width: max-content;
+    gap: 6px;
+  }
+
+  .clinic-nav__group {
+    display: flex;
+    gap: 4px;
+  }
+
+  .clinic-nav__label {
+    display: none;
+  }
+
+  .clinic-nav__items {
+    display: flex;
+    gap: 4px;
+  }
+}
