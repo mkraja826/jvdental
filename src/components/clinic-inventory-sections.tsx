@@ -16,7 +16,7 @@ export default async function ClinicInventorySections() {
       .from("stock_movements")
       .select("id,movement_type,quantity_delta,tooth_site,reason,inventory_items(name,brand),inventory_batches(lot_number),patient_cases(case_number)")
       .order("created_at", { ascending: false })
-      .limit(40),
+      .limit(20),
   ]);
 
   const rows = batchesResult.data ?? [];
@@ -56,7 +56,7 @@ export default async function ClinicInventorySections() {
       </article>
 
       <article className="portal-card" style={{ marginTop: 26 }}>
-        <div className="portal-card__header"><h2>Recent movement ledger</h2><span className="status-pill">Append-only</span></div>
+        <div className="portal-card__header"><h2>Recent movement ledger</h2><span className="status-pill">Latest 20</span></div>
         <div className="portal-card__body">
           {movements.length ? <div className="status-list">{movements.map((movement) => {
             const item = Array.isArray(movement.inventory_items) ? movement.inventory_items[0] : movement.inventory_items;
