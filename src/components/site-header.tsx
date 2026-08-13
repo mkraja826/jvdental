@@ -1,10 +1,24 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+
+const navItems = [
+  ["Dental implants", "/dental-implants"],
+  ["Guided implants", "/guided-implants"],
+  ["Dentists", "/doctors"],
+  ["Cases", "/cases"],
+  ["International", "/international"],
+  ["Journal", "/journal"],
+] as const;
 
 export function SiteHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <header className="site-header">
+    <header className={`site-header${menuOpen ? " site-header--menu-open" : ""}`}>
       <div className="site-header__inner">
-        <Link className="clinic-wordmark" href="/" aria-label="JV Dental & Implant Centre home">
+        <Link className="clinic-wordmark" href="/" aria-label="JV Dental & Implant Centre home" onClick={() => setMenuOpen(false)}>
           <img
             className="clinic-wordmark__image"
             src="/jv-dental-logo.svg"
@@ -15,12 +29,13 @@ export function SiteHeader() {
         </Link>
 
         <nav className="site-nav" aria-label="Primary navigation">
-          <Link href="/dental-implants">Dental implants</Link>
-          <Link href="/guided-implants">Guided implants</Link>
-          <Link href="/doctors">Dentists</Link>
-          <Link href="/cases">Cases</Link>
-          <Link href="/international">International</Link>
-          <Link href="/journal">Journal</Link>
+          {navItems.map(([label, href]) => (
+            <Link href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</Link>
+          ))}
+          <div className="mobile-menu-portals" aria-label="Portal access">
+            <Link href="/patient/login" onClick={() => setMenuOpen(false)}>Patient login</Link>
+            <Link href="/staff/login" onClick={() => setMenuOpen(false)}>Clinic login</Link>
+          </div>
         </nav>
 
         <div className="header-actions">
@@ -28,9 +43,21 @@ export function SiteHeader() {
             <Link className="text-link" href="/patient/login">Patient login</Link>
             <Link className="text-link clinic-login-link" href="/staff/login">Clinic login</Link>
           </div>
-          <Link className="button header-assessment" href="/book">
+          <Link className="button header-assessment" href="/book" onClick={() => setMenuOpen(false)}>
             Request assessment <span aria-hidden="true">→</span>
           </Link>
+          <button
+            className="mobile-menu-toggle"
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-primary-navigation"
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
         </div>
       </div>
     </header>
