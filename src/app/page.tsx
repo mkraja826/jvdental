@@ -41,69 +41,68 @@ export default function Home() {
       <section className="hero" aria-labelledby="hero-title">
         <div className="hero__copy">
           <div>
-            <p className="eyebrow">Advanced implant dentistry · Hyderabad, India</p>
+            <p className="eyebrow">Dental Implant Centre · Hyderabad, India</p>
             <h1 className="display-title" id="hero-title">
-              Implant dentistry,
+              Advanced dental implants
               <br />
-              considered down to the <em>millimetre.</em>
+              &amp; <em>full-mouth rehabilitation.</em>
             </h1>
             <p className="hero__description">
-              A precise, digitally planned approach to dental implants and full-mouth
-              rehabilitation for patients from India and around the world.
+              Digitally planned implant dentistry focused on restoring function, comfort and
+              confidence—from a single missing tooth to complex full-arch rehabilitation.
             </p>
             <div className="hero__actions">
               <Link className="button" href="/patient/login">
                 Request an implant assessment <span aria-hidden="true">→</span>
               </Link>
-              <Link className="button button--ghost" href="/cases">
-                Explore patient cases
+              <Link className="button button--ghost" href="/doctors">
+                Meet the dental team
               </Link>
             </div>
           </div>
 
           <p className="hero__note">
-            Online case review supports treatment planning before travel. Final diagnosis
-            and treatment recommendations depend on appropriate clinical and radiographic
-            assessment by the treating dentist.
+            Implant treatment begins with clinical and radiographic assessment. Online case
+            review can support planning before a clinic visit or international travel.
           </p>
         </div>
 
-        <div className="hero__visual" aria-label="JV Dental implant planning">
+        <div className="hero__visual" aria-label="Dental implant planning at JV Dental">
           <span className="hero__visual-label">
-            Digital planning · guided workflows · restorative focus
+            Implant dentistry · digital planning · guided workflows
           </span>
           <div className="hero__visual-copy">
-            <p>Precision-led implant care</p>
-            <strong>Clarity before treatment begins.</strong>
+            <p>JV Dental &amp; Implant Centre</p>
+            <strong>Modern dentistry. Carefully planned.</strong>
           </div>
         </div>
       </section>
 
       <section className="data-strip" aria-label="JV Dental focus areas">
         <div className="data-strip__item">
-          <span>Clinical focus</span>
-          <strong>Implant-led care</strong>
+          <span>Dental care</span>
+          <strong>Implant dentistry</strong>
         </div>
         <div className="data-strip__item">
-          <span>Location</span>
+          <span>Advanced treatment</span>
+          <strong>Full-mouth rehabilitation</strong>
+        </div>
+        <div className="data-strip__item">
+          <span>Digital dentistry</span>
+          <strong>Guided implant planning</strong>
+        </div>
+        <div className="data-strip__item">
+          <span>Clinic</span>
           <strong>Hyderabad, India</strong>
-        </div>
-        <div className="data-strip__item">
-          <span>International care</span>
-          <strong>Pre-travel planning</strong>
-        </div>
-        <div className="data-strip__item">
-          <span>Patient records</span>
-          <strong>Digital case journey</strong>
         </div>
       </section>
 
       <section className="section" id="approach">
-        <p className="section-kicker">The JV Dental approach</p>
-        <h2 className="section-title">A specialist experience should feel considered at every step.</h2>
+        <p className="section-kicker">Clinical approach</p>
+        <h2 className="section-title">Dental implant care planned around the final smile, bite and long-term function.</h2>
         <p className="section-intro">
-          Clinical thinking is made easier to understand through documented cases,
-          transparent planning and a patient journey designed around informed decisions.
+          Every implant case starts with diagnosis. Clinical examination, imaging and restorative
+          planning guide the treatment pathway before surgery is considered.
         </p>
 
         <div className="editorial-split">
@@ -128,11 +127,11 @@ export default function Home() {
 
       <section className="dark-band" id="implants">
         <div className="section">
-          <p className="section-kicker">Implant dentistry</p>
-          <h2 className="section-title">Treatment organised around the complexity of the case.</h2>
+          <p className="section-kicker">Dental implant treatments</p>
+          <h2 className="section-title">From one missing tooth to complete dental rehabilitation.</h2>
           <p className="section-intro">
-            Explore implant treatment pathways, digital guided workflows and the clinical
-            principles used to plan straightforward and complex rehabilitation.
+            Explore implant treatment pathways, digital guided workflows and approaches used for
+            straightforward and complex dental implant cases.
           </p>
 
           <div className="treatments">
@@ -148,53 +147,39 @@ export default function Home() {
       </section>
 
       <section className="section" id="cases">
-        <p className="section-kicker">Documented patient cases</p>
-        <h2 className="section-title">Not a gallery. A clinical case library.</h2>
+        <p className="section-kicker">Dental implant cases</p>
+        <h2 className="section-title">See how dental treatment is planned—not only how it finishes.</h2>
         <p className="section-intro">
-          Published JV Dental cases are structured around diagnosis → planning → surgery →
-          restoration → outcome, with patient consent and appropriate anonymisation.
+          Published cases are structured around diagnosis → planning → surgery → restoration →
+          outcome, with patient consent and appropriate anonymisation.
         </p>
 
         <article className="case-feature">
           <div className="case-feature__visual">
-            <span>Clinical imagery is published only with appropriate consent</span>
+            <span>Clinical dental imagery is published only with appropriate consent</span>
           </div>
           <div className="case-feature__content">
             <div>
-              <p className="section-kicker">Clinical case structure</p>
-              <h3>The result is only the final chapter.</h3>
+              <p className="section-kicker">Inside an implant case</p>
+              <h3>Diagnosis and planning come before the final result.</h3>
               <div className="case-meta">
-                <div>
-                  <span>01 · Diagnosis</span>
-                  <strong>Clinical findings and imaging</strong>
-                </div>
-                <div>
-                  <span>02 · Planning</span>
-                  <strong>Restorative and surgical strategy</strong>
-                </div>
-                <div>
-                  <span>03 · Treatment</span>
-                  <strong>Documented surgical and prosthetic stages</strong>
-                </div>
-                <div>
-                  <span>04 · Outcome</span>
-                  <strong>Final result and follow-up</strong>
-                </div>
+                <div><span>01 · Dental diagnosis</span><strong>Clinical findings and imaging</strong></div>
+                <div><span>02 · Implant planning</span><strong>Restorative and surgical strategy</strong></div>
+                <div><span>03 · Treatment</span><strong>Documented surgical and prosthetic stages</strong></div>
+                <div><span>04 · Restoration</span><strong>Final result and follow-up</strong></div>
               </div>
             </div>
-            <Link className="text-link" href="/cases">
-              Explore documented cases →
-            </Link>
+            <Link className="text-link" href="/cases">Explore documented dental cases →</Link>
           </div>
         </article>
       </section>
 
       <section className="section" id="international">
-        <p className="section-kicker">International patients</p>
-        <h2 className="section-title">Treatment in Hyderabad, with more clarity before you book a flight.</h2>
+        <p className="section-kicker">International dental patients</p>
+        <h2 className="section-title">Plan dental implant treatment in Hyderabad before you travel.</h2>
         <p className="section-intro">
-          Start remotely, understand the proposed pathway before travel, and keep your
-          records, consultations and follow-up connected through one patient journey.
+          Start remotely, share available dental records and imaging, understand the proposed
+          pathway before travel, and keep consultations and follow-up connected.
         </p>
 
         <div className="journey">
@@ -207,49 +192,40 @@ export default function Home() {
         </div>
 
         <div className="hero__actions">
-          <Link className="button button--ghost" href="/dental-implants">
-            Explore implant treatment
-          </Link>
-          <Link className="button" href="/patient/login">
-            Upload records for review <span aria-hidden="true">→</span>
-          </Link>
+          <Link className="button button--ghost" href="/international">International patient journey</Link>
+          <Link className="button" href="/patient/login">Upload dental records <span aria-hidden="true">→</span></Link>
         </div>
       </section>
 
       <section className="assistant-band">
         <div>
           <p className="section-kicker">JV Dental digital assistant</p>
-          <h2>Ask about the clinic, implants and planning treatment in India.</h2>
+          <h2>Ask about our dental clinic, implant treatments and planning care in Hyderabad.</h2>
         </div>
         <div className="assistant-panel">
           <p>
             The public assistant provides clinic information and general dental education.
             Personal diagnosis, radiograph review and treatment decisions remain with the clinical team.
           </p>
-          <Link className="button button--light" href="/patient/login">
-            Start with your case <span aria-hidden="true">→</span>
-          </Link>
+          <Link className="button button--light" href="/patient/login">Start with your dental case <span aria-hidden="true">→</span></Link>
         </div>
       </section>
 
       <footer className="footer">
         <div>
-          <div className="wordmark" aria-label="JV Dental">
-            <span>JV</span>
-            <span>Dental</span>
-          </div>
+          <div className="wordmark" aria-label="JV Dental"><span>JV</span><span>Dental</span></div>
           <p>
-            JV Dental & Implant Centre · Hyderabad, India. Implant dentistry, digital
-            treatment planning and coordinated care for patients from India and abroad.
+            JV Dental &amp; Implant Centre · Hyderabad, India. Dental implants, full-mouth
+            rehabilitation, digital treatment planning and coordinated care for patients from India and abroad.
           </p>
         </div>
         <div className="footer-links">
           <Link href="/dental-implants">Dental implants</Link>
           <Link href="/guided-implants">Guided implants</Link>
-          <Link href="#international">International</Link>
-          <Link href="/cases">Patient cases</Link>
-          <Link href="/doctors">Doctors</Link>
-          <Link href="/journal">Journal</Link>
+          <Link href="/international">International patients</Link>
+          <Link href="/cases">Dental cases</Link>
+          <Link href="/doctors">Dentists</Link>
+          <Link href="/journal">Dental journal</Link>
           <Link href="/patient/login">Patient login</Link>
           <Link href="/staff/login">Clinic login</Link>
         </div>
