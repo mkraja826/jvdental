@@ -1,32 +1,33 @@
 .clinic-wordmark {
-  position: relative;
-  min-width: 86px;
-  padding-left: 13px;
+  display: inline-flex;
+  align-items: center;
+  width: clamp(178px, 15vw, 218px);
+  min-width: 0;
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  line-height: 0;
 }
 
 .clinic-wordmark::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 2px;
-  bottom: 2px;
-  width: 3px;
-  border-radius: 999px;
-  background: var(--brand-blue);
+  display: none;
 }
 
-.clinic-wordmark small {
-  margin-top: 7px;
-  color: var(--muted);
-  font-size: 0.48rem;
-  line-height: 1;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  white-space: nowrap;
+.clinic-wordmark__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.site-header {
+  background: var(--brand-navy);
+  border-bottom: 1px solid rgba(218, 226, 239, 0.2);
+  box-shadow: 0 10px 34px rgba(16, 45, 77, 0.16);
 }
 
 .site-header__inner {
-  min-height: 86px;
+  min-height: 92px;
 }
 
 .site-nav {
@@ -37,6 +38,12 @@
 .site-nav a {
   position: relative;
   padding: 31px 0 28px;
+  color: rgba(249, 247, 248, 0.9);
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  color: #fff;
 }
 
 .site-nav a::after {
@@ -46,7 +53,7 @@
   right: 100%;
   bottom: 20px;
   height: 2px;
-  background: var(--brand-blue);
+  background: var(--brand-mist);
   transition: right 180ms ease;
 }
 
@@ -67,31 +74,48 @@
 
 .header-logins .text-link {
   font-size: 0.7rem;
-  color: rgba(16, 45, 77, 0.75);
+  color: rgba(249, 247, 248, 0.76);
+}
+
+.header-logins .text-link:hover,
+.header-logins .text-link:focus-visible {
+  color: #fff;
 }
 
 .clinic-login-link {
   padding-left: 12px;
-  border-left: 1px solid var(--line);
+  border-left: 1px solid rgba(218, 226, 239, 0.28);
 }
 
 .header-assessment {
   min-height: 44px;
   padding-inline: 18px;
   white-space: nowrap;
+  background: var(--brand-mist);
+  border-color: var(--brand-mist);
+  color: var(--brand-navy);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+}
+
+.header-assessment:hover,
+.header-assessment:focus-visible {
+  background: #edf2f8;
+  border-color: #edf2f8;
+  color: var(--brand-navy);
 }
 
 @media (max-width: 1180px) {
   .site-header__inner {
     width: min(100% - 30px, 1440px);
     grid-template-columns: auto 1fr;
-    gap: 18px 26px;
-    padding: 12px 0 10px;
+    gap: 14px 26px;
+    padding: 10px 0 8px;
   }
 
   .clinic-wordmark {
     grid-column: 1;
     grid-row: 1;
+    width: 190px;
   }
 
   .header-actions {
@@ -109,6 +133,7 @@
     scrollbar-width: none;
     gap: 24px;
     padding: 0 1px 2px;
+    border-top: 1px solid rgba(218, 226, 239, 0.14);
   }
 
   .site-nav::-webkit-scrollbar {
@@ -132,21 +157,17 @@
   }
 
   .site-header__inner {
-    width: calc(100% - 24px);
+    width: calc(100% - 20px);
     min-height: auto;
-    grid-template-columns: 1fr auto;
-    gap: 12px 14px;
-    padding: 10px 0 8px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px 12px;
+    padding: 8px 0 7px;
   }
 
   .clinic-wordmark {
-    min-width: 0;
-    padding-left: 10px;
-  }
-
-  .clinic-wordmark small {
-    font-size: 0.42rem;
-    letter-spacing: 0.12em;
+    width: 146px;
+    max-width: 42vw;
+    border-radius: 5px;
   }
 
   .header-logins {
@@ -154,9 +175,10 @@
   }
 
   .header-assessment {
-    min-height: 40px;
+    min-height: 42px;
     padding: 0 13px;
     font-size: 0.68rem;
+    background: var(--brand-mist);
   }
 
   .header-assessment span {
@@ -164,16 +186,18 @@
   }
 
   .site-nav {
-    margin-inline: -12px;
-    padding-inline: 12px;
+    margin-inline: -10px;
+    padding-inline: 10px;
     gap: 20px;
-    border-top: 1px solid rgba(16, 45, 77, 0.08);
-    padding-top: 7px;
+    border-top: 1px solid rgba(218, 226, 239, 0.16);
+    padding-top: 6px;
   }
 
   .site-nav a {
+    min-height: 38px;
     font-size: 0.72rem;
-    padding: 5px 0 8px;
+    padding: 4px 0 7px;
+    color: rgba(249, 247, 248, 0.88);
   }
 
   .hero,
@@ -208,13 +232,18 @@
 }
 
 @media (max-width: 420px) {
-  .header-assessment {
-    max-width: 128px;
-    line-height: 1.15;
-    text-align: center;
+  .clinic-wordmark {
+    width: 132px;
+    max-width: 41vw;
   }
 
-  .clinic-wordmark small {
-    display: none;
+  .header-assessment {
+    min-width: 124px;
+    max-width: 132px;
+    min-height: 40px;
+    line-height: 1.15;
+    text-align: center;
+    padding-inline: 10px;
+    font-size: 0.64rem;
   }
 }
