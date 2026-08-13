@@ -4,8 +4,8 @@ import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
-  title: "Clinical Team | JV Dental",
-  description: "Meet the clinicians behind JV Dental's implant and digital guided dentistry workflows in Hyderabad.",
+  title: "Dentists & Implant Team | JV Dental",
+  description: "Meet the dentists behind JV Dental's implant dentistry, full-mouth rehabilitation and digital guided treatment workflows in Hyderabad.",
 };
 
 export default async function DoctorsPage() {
@@ -21,23 +21,23 @@ export default async function DoctorsPage() {
     <main>
       <SiteHeader />
       <section className="doctor-directory-hero">
-        <p className="eyebrow">JV DENTAL · CLINICAL TEAM</p>
-        <h1>The clinicians behind the treatment plan.</h1>
-        <p>Professional profiles are maintained from verified clinic information, with each doctor&apos;s areas of focus, experience, selected cases and educational writing connected in one place.</p>
+        <p className="eyebrow">JV DENTAL · DENTISTS &amp; IMPLANT TEAM</p>
+        <h1>Meet the dentists behind your treatment plan.</h1>
+        <p>Explore each dentist&apos;s clinical focus, experience, implant technologies, selected dental cases and educational writing before you begin treatment.</p>
       </section>
 
-      <section className="section doctor-directory-grid" aria-label="JV Dental doctors">
+      <section className="section doctor-directory-grid" aria-label="JV Dental dentists">
         {(doctors ?? []).map((doctor) => {
           const imageUrl = doctor.profile_image_path
             ? supabase.storage.from("public-content").getPublicUrl(doctor.profile_image_path).data.publicUrl
             : null;
           return (
             <article className="doctor-card" key={doctor.id}>
-              <Link className="doctor-card__portrait" href={`/doctors/${doctor.slug}`} aria-label={`View ${doctor.full_name} portfolio`}>
+              <Link className="doctor-card__portrait" href={`/doctors/${doctor.slug}`} aria-label={`View ${doctor.full_name} dentist profile`}>
                 {imageUrl ? (
                   <Image
                     src={imageUrl}
-                    alt={doctor.full_name}
+                    alt={`${doctor.full_name}, dentist at JV Dental`}
                     width={900}
                     height={1100}
                     sizes="(max-width: 720px) 100vw, 420px"
@@ -46,21 +46,21 @@ export default async function DoctorsPage() {
                 ) : <span>{doctor.full_name.split(/\s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J"}</span>}
               </Link>
               <div className="doctor-card__body">
-                {doctor.featured ? <p className="eyebrow">Featured clinician</p> : <p className="eyebrow">Clinical team</p>}
+                {doctor.featured ? <p className="eyebrow">Featured dentist</p> : <p className="eyebrow">JV Dental team</p>}
                 <h2>{doctor.full_name}</h2>
-                <p className="doctor-card__title">{doctor.professional_title ?? "JV Dental clinician"}</p>
+                <p className="doctor-card__title">{doctor.professional_title ?? "JV Dental dentist"}</p>
                 <div className="doctor-card__experience">
-                  {doctor.overall_experience_years != null ? <span><strong>{doctor.overall_experience_years}</strong> years overall</span> : null}
-                  {doctor.specialist_experience_years != null ? <span><strong>{doctor.specialist_experience_years}</strong> years specialist</span> : null}
+                  {doctor.overall_experience_years != null ? <span><strong>{doctor.overall_experience_years}</strong> years overall experience</span> : null}
+                  {doctor.specialist_experience_years != null ? <span><strong>{doctor.specialist_experience_years}</strong> years specialist experience</span> : null}
                 </div>
                 {doctor.short_intro ? <p>{doctor.short_intro}</p> : null}
                 <div className="doctor-card__tags">{(doctor.specialties ?? []).slice(0, 4).map((item: string) => <span key={item}>{item}</span>)}</div>
-                <Link className="text-link" href={`/doctors/${doctor.slug}`}>View doctor portfolio →</Link>
+                <Link className="text-link" href={`/doctors/${doctor.slug}`}>View dentist profile &amp; cases →</Link>
               </div>
             </article>
           );
         })}
-        {!doctors?.length ? <p>No public doctor profiles are available yet.</p> : null}
+        {!doctors?.length ? <p>No public dentist profiles are available yet.</p> : null}
       </section>
     </main>
   );
