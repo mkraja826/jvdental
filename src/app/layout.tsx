@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import PublicDentalAssistant from "@/components/public-dental-assistant";
 import "./globals.css";
 import "./assistant.css";
@@ -11,6 +11,13 @@ import "./booking.css";
 import "./mobile-v2.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com");
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
