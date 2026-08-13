@@ -17,34 +17,32 @@ export default async function JournalArticlePage({ params }: { params: Promise<{
   const doctor = Array.isArray(post.doctor_profiles) ? post.doctor_profiles[0] : post.doctor_profiles;
 
   return (
-    <main>
+    <main className="journal-article-page">
       <SiteHeader />
 
-      <article className="section" style={{ maxWidth: 980 }}>
+      <article className="section journal-article">
         <p className="section-kicker">JV Dental Journal</p>
         <h1 className="section-title">{post.title}</h1>
         {post.excerpt ? <p className="section-intro">{post.excerpt}</p> : null}
-        <div style={{ marginTop: 24, display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap", color: "var(--muted)", fontSize: ".78rem" }}>
+        <div className="journal-article__meta">
           <span>{post.published_at ? new Date(post.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : ""}</span>
           {doctor?.slug ? <Link className="text-link" href={`/doctors/${doctor.slug}`}>By {doctor.full_name} · {doctor.professional_title ?? "JV Dental clinician"} →</Link> : null}
         </div>
 
-        <div style={{ marginTop: 64, maxWidth: 760, whiteSpace: "pre-wrap", fontSize: "1.08rem", lineHeight: 1.8 }}>
-          {post.content_markdown}
-        </div>
+        <div className="journal-article__body">{post.content_markdown}</div>
 
         {doctor?.slug ? (
-          <div style={{ marginTop: 56, padding: "26px 0", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
+          <div className="journal-author">
             <p className="section-kicker">About the author</p>
-            <h2 style={{ margin: "8px 0 10px", fontFamily: "var(--serif)", fontWeight: 400 }}>{doctor.full_name}</h2>
-            <p style={{ color: "var(--muted)" }}>{doctor.professional_title}</p>
+            <h2>{doctor.full_name}</h2>
+            <p>{doctor.professional_title}</p>
             <Link className="text-link" href={`/doctors/${doctor.slug}`}>View doctor portfolio →</Link>
           </div>
         ) : null}
 
-        <div style={{ marginTop: 72, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
-          <p style={{ color: "var(--muted)", fontSize: ".82rem" }}>This article is for general dental education and does not replace an individual clinical and radiographic assessment.</p>
-          <Link className="button" href="/patient/login?next=/patient/intake">Request an implant assessment</Link>
+        <div className="journal-article__cta">
+          <p>This article is for general dental education and does not replace an individual clinical and radiographic assessment.</p>
+          <Link className="button" href="/book">Book an implant assessment</Link>
         </div>
       </article>
     </main>
