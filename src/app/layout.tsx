@@ -16,6 +16,7 @@ import "./home-mobile.css";
 import "./footer-polish.css";
 import "./mobile-stabilization.css";
 import "./route-mobile-qa.css";
+import "./detail-mobile-qa.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com");
 
