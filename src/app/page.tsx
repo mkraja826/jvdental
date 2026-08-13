@@ -17,10 +17,11 @@ const principles = [
 ];
 
 const treatments = [
-  "Single & multiple implants",
-  "Full-arch implant rehabilitation",
-  "All-on-4 / All-on-6 planning",
-  "Bone grafting & complex implant cases",
+  { title: "Single & multiple implants", href: "/dental-implants" },
+  { title: "Full-arch implant rehabilitation", href: "/full-arch-implants" },
+  { title: "All-on-4 / All-on-6 planning", href: "/all-on-4-all-on-6" },
+  { title: "Bone grafting & complex implant cases", href: "/bone-grafting-dental-implants" },
+  { title: "Digitally guided implant surgery", href: "/guided-implants" },
 ];
 
 const journey = [
@@ -136,9 +137,9 @@ export default function Home() {
 
           <div className="treatments">
             {treatments.map((treatment, index) => (
-              <Link className="treatment-row" href="/guided-implants" key={treatment}>
-                <span>0{index + 1}</span>
-                <strong>{treatment}</strong>
+              <Link className="treatment-row" href={treatment.href} key={treatment.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{treatment.title}</strong>
                 <b aria-hidden="true">↗</b>
               </Link>
             ))}
@@ -206,8 +207,8 @@ export default function Home() {
         </div>
 
         <div className="hero__actions">
-          <Link className="button button--ghost" href="/guided-implants">
-            Understand implant planning
+          <Link className="button button--ghost" href="/dental-implants">
+            Explore implant treatment
           </Link>
           <Link className="button" href="/patient/login">
             Upload records for review <span aria-hidden="true">→</span>
@@ -243,7 +244,8 @@ export default function Home() {
           </p>
         </div>
         <div className="footer-links">
-          <Link href="#implants">Implants</Link>
+          <Link href="/dental-implants">Dental implants</Link>
+          <Link href="/guided-implants">Guided implants</Link>
           <Link href="#international">International</Link>
           <Link href="/cases">Patient cases</Link>
           <Link href="/doctors">Doctors</Link>
