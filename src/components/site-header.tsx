@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -19,12 +20,14 @@ export function SiteHeader() {
     <header className={`site-header${menuOpen ? " site-header--menu-open" : ""}`}>
       <div className="site-header__inner">
         <Link className="clinic-wordmark" href="/" aria-label="JV Dental & Implant Centre home" onClick={() => setMenuOpen(false)}>
-          <img
+          <Image
             className="clinic-wordmark__image"
             src="/jv-dental-logo.svg"
             alt="JV Dental Implant Centre"
-            width="480"
-            height="242"
+            width={480}
+            height={242}
+            priority
+            sizes="(max-width: 420px) 96px, (max-width: 820px) 104px, (max-width: 1180px) 174px, 198px"
           />
         </Link>
 
