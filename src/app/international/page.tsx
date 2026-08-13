@@ -100,14 +100,14 @@ export default function InternationalPage() {
           <article className="principle"><span className="principle__number">01</span><div><h3>Accreditations</h3><p>[TO BE CONFIRMED BY CLINIC]. No ISO, NABH or other accreditation will be claimed until documentary verification is complete.</p></div></article>
           <article className="principle"><span className="principle__number">02</span><div><h3>Sterilisation & clinical safety</h3><p>Clinic-approved sterilisation, infection-control and surgical-safety wording: [TO BE CONFIRMED BY CLINIC].</p></div></article>
           <article className="principle"><span className="principle__number">03</span><div><h3>International / NRI patient reviews</h3><p>Only consented, verifiable international or NRI patient reviews will be surfaced here. [TO BE CONFIRMED BY CLINIC]</p></div></article>
-          <article className="principle"><span className="principle__number">04</span><div><h3>Medical-record privacy</h3><p>Uploaded records are handled through the secure patient workflow. Public wording for encryption, authorised viewers, retention and deletion policy must be confirmed against the clinic's final privacy policy before this page is indexed.</p></div></article>
+          <article className="principle"><span className="principle__number">04</span><div><h3>Medical-record privacy</h3><p>Uploaded records are handled through the secure patient workflow. Public wording for encryption, authorised viewers, retention and deletion policy must be confirmed against the clinic’s final privacy policy before this page is indexed.</p></div></article>
         </div>
       </section>
 
       <section className="assistant-band" id="coordinator">
         <div><p className="section-kicker">Choose how far you want to go</p><h2>Research first. Talk when ready. Upload records only when you want clinical review.</h2></div>
         <div className="assistant-panel">
-          <p><strong>Just researching:</strong> this page and the public implant pages stay open without login.<br /><br /><strong>Ready to talk:</strong> the clinic's preferred WhatsApp/live-chat coordinator channel is [TO BE CONFIRMED BY CLINIC].<br /><br /><strong>Ready to start:</strong> create a secure account and upload your records for review.</p>
+          <p><strong>Just researching:</strong> this page and the public implant pages stay open without login.<br /><br /><strong>Ready to talk:</strong> the clinic’s preferred WhatsApp/live-chat coordinator channel is [TO BE CONFIRMED BY CLINIC].<br /><br /><strong>Ready to start:</strong> create a secure account and upload your records for review.</p>
           <div className="hero__actions" style={{ marginTop: 20 }}><Link className="button button--light" href="/dental-implants">Explore implant options</Link><Link className="button" href="/patient/login">Upload records <span aria-hidden="true">→</span></Link></div>
         </div>
       </section>
