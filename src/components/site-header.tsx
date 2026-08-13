@@ -28,7 +28,7 @@ export function SiteHeader() {
           />
         </Link>
 
-        <nav className="site-nav" aria-label="Primary navigation">
+        <nav className="site-nav" id="mobile-primary-navigation" aria-label="Primary navigation">
           {navItems.map(([label, href]) => (
             <Link href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</Link>
           ))}
