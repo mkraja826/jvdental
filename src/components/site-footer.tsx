@@ -41,6 +41,22 @@ export function SiteFooter() {
       <div className="footer-brand">
         <Image className="footer-logo" src="/jv-dental-logo.svg" alt="JV Dental Implant Centre" width={480} height={242} />
         <p>JV Dental &amp; Implant Centre · Hyderabad, India. Implant dentistry, full-mouth rehabilitation, digital treatment planning and coordinated care.</p>
+      </div>
+
+      <nav className="footer-links" aria-label="Footer navigation">
+        {navigation.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}
+      </nav>
+
+      <div className="footer-bottom">
+        <div className="footer-social" aria-label="JV Dental profiles">
+          <span className="footer-social__label">Connect</span>
+          <a href="https://in.linkedin.com/in/jaya-prakash-chinta-9849a51b8" target="_blank" rel="noreferrer" aria-label="JV Dental on LinkedIn">
+            <span className="footer-social__icon"><Icon name="linkedin" /></span><span>LinkedIn</span>
+          </a>
+          <a href="https://www.practo.com/hyderabad/clinic/jv-dental-care-sr-nagar-1" target="_blank" rel="noreferrer" aria-label="JV Dental on Practo">
+            <span className="footer-social__icon"><Icon name="practo" /></span><span>Practo</span>
+          </a>
+        </div>
 
         <div className="footer-contact" aria-label="JV Dental contact information">
           <a className="footer-contact__item footer-contact__item--address" href={mapsUrl} target="_blank" rel="noreferrer">
@@ -56,21 +72,7 @@ export function SiteFooter() {
             <span><small>WhatsApp</small><strong>{whatsappNumber}</strong></span>
           </a>
         </div>
-
-        <div className="footer-social" aria-label="JV Dental profiles">
-          <span className="footer-social__label">Connect</span>
-          <a href="https://in.linkedin.com/in/jaya-prakash-chinta-9849a51b8" target="_blank" rel="noreferrer" aria-label="JV Dental on LinkedIn">
-            <span className="footer-social__icon"><Icon name="linkedin" /></span><span>LinkedIn</span>
-          </a>
-          <a href="https://www.practo.com/hyderabad/clinic/jv-dental-care-sr-nagar-1" target="_blank" rel="noreferrer" aria-label="JV Dental on Practo">
-            <span className="footer-social__icon"><Icon name="practo" /></span><span>Practo</span>
-          </a>
-        </div>
       </div>
-
-      <nav className="footer-links" aria-label="Footer navigation">
-        {navigation.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}
-      </nav>
     </footer>
   );
 }
