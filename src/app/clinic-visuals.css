@@ -30,6 +30,8 @@
   min-height: 220px;
   overflow: hidden;
   background: linear-gradient(145deg, #f7fafd, #dae2ef);
+  background-size: cover;
+  background-position: center;
 }
 
 .clinic-evidence__visual::before,
@@ -63,117 +65,34 @@
   font-family: var(--serif);
   color: var(--brand-navy);
   font-size: 1.13rem;
-  font-weight: 400;
-  line-height: 1.1;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -.02em;
 }
 
 .clinic-evidence__copy b { color: var(--brand-blue); font-weight: 400; }
 
-/* Dentist / team portrait zone */
-.clinic-evidence__item--team .clinic-evidence__visual::before {
-  width: 76px;
-  height: 76px;
-  left: 50%;
-  top: 42px;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: rgba(255,255,255,.95);
-  border: 2px solid rgba(64,114,175,.25);
-}
-.clinic-evidence__item--team .clinic-evidence__visual::after {
-  width: 150px;
-  height: 112px;
-  left: 50%;
-  bottom: -15px;
-  transform: translateX(-50%);
-  border-radius: 76px 76px 18px 18px;
-  background: rgba(64,114,175,.18);
-  border: 2px solid rgba(16,45,77,.14);
+/* Temporary stock photography placeholders. Replace with real JV Dental photography before launch. */
+.clinic-evidence__item--team .clinic-evidence__visual {
+  background-image: linear-gradient(180deg, rgba(16,45,77,.04), rgba(16,45,77,.24)), url("https://images.pexels.com/photos/5355903/pexels-photo-5355903.jpeg?auto=compress&dpr=1&w=1000");
 }
 
-/* Dental operatory / treatment room zone */
 .clinic-evidence__item--clinic .clinic-evidence__visual {
-  background: linear-gradient(180deg,#f8fbfe 0 64%,#dfe7f1 64% 100%);
+  background-image: linear-gradient(180deg, rgba(16,45,77,.02), rgba(16,45,77,.16)), url("https://images.pexels.com/photos/3845723/pexels-photo-3845723.jpeg?auto=compress&dpr=1&w=1000");
 }
-.clinic-evidence__item--clinic .clinic-evidence__visual::before {
-  width: 58%;
-  height: 30px;
-  left: 21%;
-  bottom: 55px;
-  border-radius: 18px 18px 7px 7px;
-  background: #fff;
-  border: 2px solid rgba(16,45,77,.16);
-  transform: rotate(-5deg);
-}
-.clinic-evidence__item--clinic .clinic-evidence__visual::after {
-  width: 70px;
-  height: 70px;
-  right: 24px;
-  top: 34px;
-  border-radius: 50%;
-  border: 5px solid rgba(64,114,175,.22);
-  box-shadow: inset 0 0 0 10px rgba(255,255,255,.8);
-}
-.clinic-evidence__item--clinic .clinic-evidence__visual i:nth-child(1) { width: 2px; height: 90px; left: 42%; bottom: 0; background: rgba(16,45,77,.18); }
-.clinic-evidence__item--clinic .clinic-evidence__visual i:nth-child(2) { width: 80px; height: 2px; left: 30%; bottom: 14px; background: rgba(16,45,77,.18); }
 
-/* CBCT / planning zone */
 .clinic-evidence__item--planning .clinic-evidence__visual {
-  background: linear-gradient(135deg,#102d4d,#244d78);
+  background-image: linear-gradient(180deg, rgba(16,45,77,.02), rgba(16,45,77,.18)), url("https://images.unsplash.com/photo-1777445826358-f95518f49b44?auto=format&fit=crop&q=80&w=1200");
 }
-.clinic-evidence__item--planning .clinic-evidence__visual::before {
-  inset: 24px;
-  border: 1px solid rgba(218,226,239,.32);
-  background:
-    linear-gradient(90deg, transparent 49.5%, rgba(218,226,239,.2) 50%, transparent 50.5%),
-    linear-gradient(0deg, transparent 49.5%, rgba(218,226,239,.2) 50%, transparent 50.5%);
-}
-.clinic-evidence__item--planning .clinic-evidence__visual::after {
-  width: 44%;
-  height: 54%;
-  left: 28%;
-  top: 23%;
-  border-radius: 48% 48% 42% 42%;
-  border: 2px solid rgba(218,226,239,.65);
-  box-shadow: 0 0 0 10px rgba(64,114,175,.13);
-}
-.clinic-evidence__item--planning .clinic-evidence__visual i { width: 10px; height: 10px; border-radius: 50%; background: #bcd2eb; box-shadow: 0 0 0 6px rgba(188,210,235,.12); }
-.clinic-evidence__item--planning .clinic-evidence__visual i:nth-child(1) { left: 33%; top: 48%; }
-.clinic-evidence__item--planning .clinic-evidence__visual i:nth-child(2) { left: 50%; top: 38%; }
-.clinic-evidence__item--planning .clinic-evidence__visual i:nth-child(3) { right: 31%; top: 54%; }
 
-/* Before / after case zone */
 .clinic-evidence__item--cases .clinic-evidence__visual {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  background: #edf3f9;
+  background-image: linear-gradient(180deg, rgba(16,45,77,.03), rgba(16,45,77,.2)), url("https://images.pexels.com/photos/6812556/pexels-photo-6812556.jpeg?auto=compress&dpr=1&w=1000");
 }
-.clinic-evidence__item--cases .clinic-evidence__visual::before {
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: rgba(16,45,77,.18);
-}
-.clinic-evidence__item--cases .clinic-evidence__visual::after {
-  width: 68%;
-  height: 38%;
-  left: 16%;
-  top: 31%;
-  border-radius: 50%;
-  border-top: 8px solid rgba(64,114,175,.28);
-  border-bottom: 8px solid rgba(16,45,77,.22);
-}
-.clinic-evidence__item--cases .clinic-evidence__visual i:nth-child(1),
-.clinic-evidence__item--cases .clinic-evidence__visual i:nth-child(2) {
-  top: 16px;
-  padding: 3px 6px;
-  width: auto;
-  height: auto;
-  color: rgba(16,45,77,.6);
-  font-style: normal;
-  font-size: .52rem;
-  letter-spacing: .12em;
+
+.clinic-evidence__item .clinic-evidence__visual::before,
+.clinic-evidence__item .clinic-evidence__visual::after,
+.clinic-evidence__item .clinic-evidence__visual i {
+  display: none;
 }
 
 @media (max-width: 980px) {
@@ -187,5 +106,5 @@
     gap: 12px;
   }
   .clinic-evidence__item { min-height: 280px; }
-  .clinic-evidence__visual { min-height: 190px; }
+  .clinic-evidence__visual { min-height: 200px; }
 }
