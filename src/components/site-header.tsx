@@ -14,7 +14,7 @@ export function SiteHeader() {
           <Link href="/guided-implants">Guided implants</Link>
           <Link href="/doctors">Doctors</Link>
           <Link href="/cases">Cases</Link>
-          <Link href="/#international">International</Link>
+          <Link href="/international">International</Link>
           <Link href="/journal">Journal</Link>
         </nav>
 
