@@ -1,5 +1,6 @@
-import { SiteHeader } from "@/components/site-header";
 import AppointmentBookingForm from "@/components/appointment-booking-form";
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
 
 export const metadata = {
   title: "Book a Dental Appointment | JV Dental",
@@ -37,6 +38,8 @@ export default function BookAppointmentPage() {
         </div>
         <AppointmentBookingForm />
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
