@@ -11,6 +11,7 @@ export function SiteHeader() {
         </Link>
 
         <nav className="site-nav" aria-label="Primary navigation">
+          <Link href="/book">Book appointment</Link>
           <Link href="/dental-implants">Dental implants</Link>
           <Link href="/guided-implants">Guided implants</Link>
           <Link href="/doctors">Dentists</Link>
@@ -24,8 +25,8 @@ export function SiteHeader() {
             <Link className="text-link" href="/patient/login">Patient login</Link>
             <Link className="text-link clinic-login-link" href="/staff/login">Clinic login</Link>
           </div>
-          <Link className="button header-assessment" href="/patient/login">
-            Implant assessment <span aria-hidden="true">→</span>
+          <Link className="button header-assessment" href="/book">
+            Book appointment <span aria-hidden="true">→</span>
           </Link>
         </div>
       </div>
