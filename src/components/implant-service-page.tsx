@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
 type ServiceStep = { title: string; body: string };
@@ -82,6 +83,8 @@ export function ImplantServicePage({ eyebrow, title, accent, description, suitab
           <Link className="button" href="/book">Book assessment</Link>
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
