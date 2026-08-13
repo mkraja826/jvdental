@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
@@ -33,6 +34,8 @@ export default async function JournalPage() {
           {!posts?.length ? <p className="public-listing-empty">The doctor’s journal is being prepared.</p> : null}
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
