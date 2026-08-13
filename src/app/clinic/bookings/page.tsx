@@ -53,7 +53,8 @@ export default async function ClinicBookingsPage() {
       .order("created_at", { ascending: false }),
   ]);
 
-  const paymentByRequest = new Map<string, (typeof payments extends Array<infer T> ? T : never)>();
+  type BookingPayment = NonNullable<typeof payments>[number];
+  const paymentByRequest = new Map<string, BookingPayment>();
   for (const payment of payments ?? []) {
     if (!paymentByRequest.has(payment.appointment_request_id)) paymentByRequest.set(payment.appointment_request_id, payment);
   }
