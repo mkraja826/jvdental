@@ -1,0 +1,30 @@
+.clinic-workspace-shell button:disabled,
+.clinic-workspace-shell input:disabled,
+.clinic-workspace-shell select:disabled,
+.clinic-workspace-shell textarea:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.clinic-workspace-shell button:disabled {
+  pointer-events: none;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.clinic-workspace-shell form[aria-busy="true"] {
+  position: relative;
+}
+
+.clinic-workspace-shell form[aria-busy="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.28);
+  pointer-events: none;
+}
+
+.clinic-workspace-shell a,
+.clinic-workspace-shell button {
+  touch-action: manipulation;
+}
