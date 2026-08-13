@@ -54,26 +54,26 @@ export default function Home() {
               <Link className="button" href="/patient/login">
                 Request an implant assessment <span aria-hidden="true">→</span>
               </Link>
-              <Link className="button button--ghost" href="#cases">
+              <Link className="button button--ghost" href="/cases">
                 Explore patient cases
               </Link>
             </div>
           </div>
 
           <p className="hero__note">
-            Online case review is intended to support treatment planning. Final diagnosis
+            Online case review supports treatment planning before travel. Final diagnosis
             and treatment recommendations depend on appropriate clinical and radiographic
             assessment by the treating dentist.
           </p>
         </div>
 
-        <div className="hero__visual" aria-label="Reserved for original JV Dental clinical photography">
+        <div className="hero__visual" aria-label="JV Dental implant planning">
           <span className="hero__visual-label">
-            Original JV Dental clinical photography will replace this art-directed placeholder.
+            Digital planning · guided workflows · restorative focus
           </span>
           <div className="hero__visual-copy">
-            <p>Designed around the clinician, not stock imagery</p>
-            <strong>Precision you can see before you travel.</strong>
+            <p>Precision-led implant care</p>
+            <strong>Clarity before treatment begins.</strong>
           </div>
         </div>
       </section>
@@ -101,14 +101,14 @@ export default function Home() {
         <p className="section-kicker">The JV Dental approach</p>
         <h2 className="section-title">A specialist experience should feel considered at every step.</h2>
         <p className="section-intro">
-          The new platform is being designed to make clinical thinking visible—through
-          documented cases, transparent planning and a quieter patient experience.
+          Clinical thinking is made easier to understand through documented cases,
+          transparent planning and a patient journey designed around informed decisions.
         </p>
 
         <div className="editorial-split">
           <div className="editorial-quote">
             “Plan the restoration. Understand the anatomy. Then place the implant.”
-            <small>Working positioning statement · final doctor-approved wording pending</small>
+            <small>Restoration-led implant planning</small>
           </div>
 
           <div className="principle-list">
@@ -130,13 +130,13 @@ export default function Home() {
           <p className="section-kicker">Implant dentistry</p>
           <h2 className="section-title">Treatment organised around the complexity of the case.</h2>
           <p className="section-intro">
-            Each treatment page will eventually be supported by the doctor&apos;s own cases,
-            protocols, technologies and verified treatment information.
+            Explore implant treatment pathways, digital guided workflows and the clinical
+            principles used to plan straightforward and complex rehabilitation.
           </p>
 
           <div className="treatments">
             {treatments.map((treatment, index) => (
-              <Link className="treatment-row" href="/patient/login" key={treatment}>
+              <Link className="treatment-row" href="/guided-implants" key={treatment}>
                 <span>0{index + 1}</span>
                 <strong>{treatment}</strong>
                 <b aria-hidden="true">↗</b>
@@ -150,17 +150,17 @@ export default function Home() {
         <p className="section-kicker">Documented patient cases</p>
         <h2 className="section-title">Not a gallery. A clinical case library.</h2>
         <p className="section-intro">
-          Real JV Dental cases will be presented as diagnosis → planning → surgery →
+          Published JV Dental cases are structured around diagnosis → planning → surgery →
           restoration → outcome, with patient consent and appropriate anonymisation.
         </p>
 
         <article className="case-feature">
           <div className="case-feature__visual">
-            <span>Reserved for consented clinical case imagery</span>
+            <span>Clinical imagery is published only with appropriate consent</span>
           </div>
           <div className="case-feature__content">
             <div>
-              <p className="section-kicker">Case format · Full-arch rehabilitation</p>
+              <p className="section-kicker">Clinical case structure</p>
               <h3>The result is only the final chapter.</h3>
               <div className="case-meta">
                 <div>
@@ -181,8 +181,8 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <Link className="text-link" href="/patient/login">
-              Send your records for review →
+            <Link className="text-link" href="/cases">
+              Explore documented cases →
             </Link>
           </div>
         </article>
@@ -192,9 +192,8 @@ export default function Home() {
         <p className="section-kicker">International patients</p>
         <h2 className="section-title">Treatment in Hyderabad, with more clarity before you book a flight.</h2>
         <p className="section-intro">
-          The international patient flow is designed to answer the practical questions that
-          matter before travel: records, review, consultation, treatment stages, expected
-          stay and follow-up.
+          Start remotely, understand the proposed pathway before travel, and keep your
+          records, consultations and follow-up connected through one patient journey.
         </p>
 
         <div className="journey">
@@ -205,6 +204,15 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        <div className="hero__actions">
+          <Link className="button button--ghost" href="/guided-implants">
+            Understand implant planning
+          </Link>
+          <Link className="button" href="/patient/login">
+            Upload records for review <span aria-hidden="true">→</span>
+          </Link>
+        </div>
       </section>
 
       <section className="assistant-band">
@@ -214,9 +222,8 @@ export default function Home() {
         </div>
         <div className="assistant-panel">
           <p>
-            The public AI assistant will answer from doctor-approved clinic knowledge and
-            general dental education, then hand personal diagnosis, radiograph review and
-            treatment decisions to the clinical team.
+            The public assistant provides clinic information and general dental education.
+            Personal diagnosis, radiograph review and treatment decisions remain with the clinical team.
           </p>
           <Link className="button button--light" href="/patient/login">
             Start with your case <span aria-hidden="true">→</span>
@@ -231,17 +238,18 @@ export default function Home() {
             <span>Dental</span>
           </div>
           <p>
-            JV Dental & Implant Centre · Hyderabad, India. Final doctor profile, contact,
-            accreditation, treatment claims and clinical content will be published only after verification.
+            JV Dental & Implant Centre · Hyderabad, India. Implant dentistry, digital
+            treatment planning and coordinated care for patients from India and abroad.
           </p>
         </div>
         <div className="footer-links">
           <Link href="#implants">Implants</Link>
           <Link href="#international">International</Link>
-          <Link href="#cases">Patient cases</Link>
+          <Link href="/cases">Patient cases</Link>
+          <Link href="/doctors">Doctors</Link>
+          <Link href="/journal">Journal</Link>
           <Link href="/patient/login">Patient login</Link>
-          <Link href="/clinic">Clinic portal</Link>
-          <Link href="#approach">Our approach</Link>
+          <Link href="/staff/login">Clinic login</Link>
         </div>
       </footer>
     </main>
