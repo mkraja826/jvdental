@@ -9,193 +9,77 @@
   --white: #ffffff;
   --danger: #8e342f;
   --shadow: 0 24px 60px rgba(16, 45, 77, 0.1);
-
   --brand-off-white: #f9f7f8;
   --brand-mist: #dae2ef;
   --brand-blue: #4072af;
   --brand-navy: #102d4d;
 }
 
-body {
-  background: var(--brand-off-white);
-  color: var(--brand-navy);
-}
+body { background: var(--brand-off-white); color: var(--brand-navy); }
+.site-header { border-bottom-color: rgba(16,45,77,.12); background: rgba(249,247,248,.96); box-shadow: 0 8px 30px rgba(16,45,77,.035); }
+.site-nav a { color: rgba(16,45,77,.82); }
+.site-nav a:hover,.text-link:hover,.eyebrow,.section-kicker,.display-title em { color: var(--brand-blue); }
+.wordmark span:first-child { color: var(--brand-blue); font-size: 1.02rem; }
+.wordmark span:last-child { color: var(--brand-navy); }
+.button { border-color: var(--brand-navy); background: var(--brand-navy); color: var(--white); border-radius: 6px; box-shadow: 0 8px 20px rgba(16,45,77,.10); }
+.button:hover { border-color: var(--brand-blue); background: var(--brand-blue); }
+.button--ghost { background: transparent; color: var(--brand-navy); border-color: #b9c7da; box-shadow: none; }
+.button--ghost:hover { background: var(--brand-mist); border-color: var(--brand-blue); color: var(--brand-navy); }
+.button--light { background: var(--brand-off-white); border-color: var(--brand-off-white); color: var(--brand-navy); }
+.button--light:hover { background: var(--brand-mist); border-color: var(--brand-mist); }
 
-.site-header {
-  border-bottom-color: rgba(16, 45, 77, 0.12);
-  background: rgba(249, 247, 248, 0.94);
-}
-
-.site-nav a {
-  color: rgba(16, 45, 77, 0.82);
-}
-
-.site-nav a:hover,
-.text-link:hover,
-.eyebrow,
-.section-kicker,
-.display-title em {
-  color: var(--brand-blue);
-}
-
-.button {
-  border-color: var(--brand-navy);
-  background: var(--brand-navy);
-  color: var(--white);
-}
-
-.button:hover {
-  border-color: var(--brand-blue);
-  background: var(--brand-blue);
-}
-
-.button--ghost {
-  background: transparent;
-  color: var(--brand-navy);
-  border-color: #b9c7da;
-}
-
-.button--ghost:hover {
-  background: var(--brand-mist);
-  border-color: var(--brand-blue);
-  color: var(--brand-navy);
-}
-
-.button--light {
-  background: var(--brand-off-white);
-  border-color: var(--brand-off-white);
-  color: var(--brand-navy);
-}
-
-.button--light:hover {
-  background: var(--brand-mist);
-  border-color: var(--brand-mist);
-}
-
+/* Dental-clinic visual language: retain structure, make surfaces clinical and treatment-led. */
+.hero { background: #fff; }
+.hero__copy { background: linear-gradient(180deg,#fff 0%,#f9fbfd 100%); }
 .hero__visual {
   background:
-    linear-gradient(145deg, rgba(64, 114, 175, 0.22), transparent 55%),
-    linear-gradient(45deg, #f9f7f8, #dae2ef);
+    radial-gradient(circle at 68% 32%, rgba(255,255,255,.92) 0 8%, transparent 8.4%),
+    radial-gradient(ellipse at 64% 45%, transparent 0 19%, rgba(64,114,175,.20) 19.4% 20.2%, transparent 20.6%),
+    radial-gradient(ellipse at 64% 45%, transparent 0 29%, rgba(16,45,77,.10) 29.4% 30%, transparent 30.4%),
+    linear-gradient(145deg, rgba(64,114,175,.22), transparent 55%),
+    linear-gradient(45deg,#f9f7f8,#dae2ef);
 }
+.hero__visual::before { width: 44%; top: 19%; right: 10%; border: 2px solid rgba(64,114,175,.30); box-shadow: 0 0 0 18px rgba(255,255,255,.24); }
+.hero__visual::after { width: 24%; bottom: 10%; left: 12%; border: 1px solid rgba(16,45,77,.20); }
+.hero__visual-label { color: rgba(16,45,77,.72); padding: 9px 12px; background: rgba(255,255,255,.72); border-left: 3px solid var(--brand-blue); }
+.hero__visual-copy { padding: 22px 24px; background: rgba(255,255,255,.82); backdrop-filter: blur(10px); border-left: 4px solid var(--brand-blue); box-shadow: 0 18px 45px rgba(16,45,77,.09); }
+.hero__visual-copy strong { color: var(--brand-navy); }
 
-.hero__visual::before,
-.hero__visual::after {
-  border-color: rgba(16, 45, 77, 0.18);
-}
+.data-strip { background: rgba(218,226,239,.34); }
+.data-strip__item { background: rgba(255,255,255,.42); }
+.data-strip__item strong { color: var(--brand-navy); }
+.section-title { color: var(--brand-navy); }
+.principle { transition: background 180ms ease, padding 180ms ease; }
+.principle:hover { background: rgba(218,226,239,.24); padding-left: 14px; padding-right: 14px; }
+.principle__number { color: var(--brand-blue); font-weight: 700; }
 
-.hero__visual-label {
-  color: rgba(16, 45, 77, 0.7);
-}
+.dark-band,.assistant-band,.footer,.login-story { background: var(--brand-navy); color: var(--white); }
+.dark-band .section-kicker,.assistant-band .section-kicker,.login-story .eyebrow { color: #bcd2eb !important; }
+.dark-band .section-intro,.assistant-band p,.login-story p { color: #d4e0ef; }
+.treatments,.treatment-row { border-color: rgba(218,226,239,.26); }
+.treatment-row span { color: #b7c9df; }
+.treatment-row:hover { background: rgba(64,114,175,.15); }
+.treatment-row b { color: #bcd2eb; }
 
-.data-strip {
-  background: rgba(218, 226, 239, 0.34);
-}
-
-.dark-band,
-.assistant-band,
-.footer,
-.login-story {
-  background: var(--brand-navy);
-  color: var(--white);
-}
-
-.dark-band .section-kicker,
-.assistant-band .section-kicker,
-.login-story .eyebrow {
-  color: #bcd2eb !important;
-}
-
-.dark-band .section-intro,
-.assistant-band p,
-.login-story p {
-  color: #d4e0ef;
-}
-
-.treatments,
-.treatment-row {
-  border-color: rgba(218, 226, 239, 0.26);
-}
-
-.treatment-row span {
-  color: #b7c9df;
-}
-
-.treatment-row:hover {
-  background: rgba(64, 114, 175, 0.12);
-}
-
+.case-feature { background: #fff; box-shadow: 0 22px 55px rgba(16,45,77,.07); }
 .case-feature__visual {
   background:
-    linear-gradient(135deg, rgba(64, 114, 175, 0.24), transparent),
-    var(--brand-mist);
+    linear-gradient(90deg,transparent 49.7%,rgba(16,45,77,.10) 50%,transparent 50.3%),
+    linear-gradient(0deg,transparent 49.7%,rgba(16,45,77,.08) 50%,transparent 50.3%),
+    radial-gradient(circle at center, rgba(255,255,255,.78) 0 18%, transparent 18.5%),
+    linear-gradient(135deg,rgba(64,114,175,.24),transparent),var(--brand-mist);
 }
+.case-feature__visual::before { border-color: rgba(16,45,77,.22); border-radius: 48% 48% 42% 42%; }
+.case-feature__visual span { color: rgba(16,45,77,.68); background: rgba(255,255,255,.74); padding: 7px 10px; }
 
-.case-feature__visual::before {
-  border-color: rgba(16, 45, 77, 0.22);
-}
-
-.case-feature__visual span {
-  color: rgba(16, 45, 77, 0.68);
-}
-
-.journey-step,
-.portal-card,
-.metric,
-.doctor-card,
-.login-form,
-.field input,
-.field textarea,
-.field select {
-  border-color: var(--line);
-}
-
-.journey-step:hover,
-.portal-card:hover,
-.doctor-card:hover {
-  border-color: rgba(64, 114, 175, 0.52);
-}
-
-.status-pill {
-  border-color: rgba(64, 114, 175, 0.28);
-  background: rgba(218, 226, 239, 0.58);
-  color: var(--brand-navy);
-}
-
-.portal-header,
-.portal-sidebar {
-  background: var(--brand-navy);
-  color: var(--white);
-}
-
-.portal-header .text-link,
-.portal-sidebar a {
-  color: #e3ecf7;
-}
-
-.portal-sidebar a:hover,
-.portal-sidebar a:focus-visible,
-.portal-header .text-link:hover {
-  color: var(--white);
-  background: rgba(64, 114, 175, 0.22);
-}
-
-.portal-main,
-.login-form-wrap {
-  background: var(--brand-off-white);
-}
-
-.metric,
-.portal-card,
-.doctor-card,
-.login-form {
-  background: #ffffff;
-}
-
-:focus-visible {
-  outline-color: var(--brand-blue);
-}
-
-::selection {
-  background: var(--brand-blue);
-  color: var(--white);
-}
+.journey-step,.portal-card,.metric,.doctor-card,.login-form,.field input,.field textarea,.field select { border-color: var(--line); }
+.journey-step { background: #fff; border-top: 3px solid var(--brand-blue); }
+.journey-step:hover,.portal-card:hover,.doctor-card:hover { border-color: rgba(64,114,175,.52); }
+.status-pill { border-color: rgba(64,114,175,.28); background: rgba(218,226,239,.58); color: var(--brand-navy); }
+.portal-header,.portal-sidebar { background: var(--brand-navy); color: var(--white); }
+.portal-header .text-link,.portal-sidebar a { color: #e3ecf7; }
+.portal-sidebar a:hover,.portal-sidebar a:focus-visible,.portal-header .text-link:hover { color: var(--white); background: rgba(64,114,175,.22); }
+.portal-main,.login-form-wrap { background: var(--brand-off-white); }
+.metric,.portal-card,.doctor-card,.login-form { background: #fff; }
+:focus-visible { outline-color: var(--brand-blue); }
+::selection { background: var(--brand-blue); color: var(--white); }
