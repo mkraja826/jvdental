@@ -24,6 +24,7 @@ function withAssistantToken(href: string, visitorToken: string) {
 export default function PublicDentalAssistant() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [footerVisible, setFooterVisible] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [action, setAction] = useState<{ label: string; href: string } | null>(null);
@@ -38,6 +39,21 @@ export default function PublicDentalAssistant() {
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, busy]);
+
+  useEffect(() => {
+    const footer = document.querySelector(".footer--contact");
+    if (!footer || typeof IntersectionObserver === "undefined") {
+      setFooterVisible(false);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setFooterVisible(entry.isIntersecting),
+      { rootMargin: "0px 0px 72px 0px", threshold: 0 },
+    );
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, [pathname]);
 
   if (hidden) return null;
 
@@ -85,7 +101,7 @@ export default function PublicDentalAssistant() {
   }
 
   return (
-    <div className={`public-assistant${open ? " public-assistant--open" : ""}`}>
+    <div className={`public-assistant${open ? " public-assistant--open" : ""}${footerVisible ? " public-assistant--near-footer" : ""}`}>
       {open ? (
         <section className="public-assistant__panel" aria-label="JV Dental digital assistant">
           <header className="public-assistant__header">
@@ -118,8 +134,8 @@ export default function PublicDentalAssistant() {
         </section>
       ) : null}
 
-      <button className="public-assistant__launcher" type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
-        <span className="public-assistant__mark" aria-hidden="true">JV</span><span>Ask JV Dental</span>
+      <button className="public-assistant__launcher" type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-label={open ? "Close JV Dental assistant" : "Open JV Dental assistant"}>
+        <span className="public-assistant__mark" aria-hidden="true">JV</span><span className="public-assistant__label">Ask JV Dental</span>
       </button>
     </div>
   );
