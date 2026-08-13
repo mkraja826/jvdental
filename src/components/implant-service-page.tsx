@@ -59,7 +59,12 @@ export function ImplantServicePage({ eyebrow, title, accent, description, suitab
       <section className="dark-band treatment-considerations">
         <div className="section">
           <p className="section-kicker">Before treatment is recommended</p>
-          <h2 className="section-title">What your implant dentist evaluates.</h2>
+          <h2
+            className="section-title"
+            style={{ color: "#ffffff", display: "block", visibility: "visible", opacity: 1 }}
+          >
+            What your implant dentist evaluates.
+          </h2>
           <p className="section-intro">The right treatment pathway depends on your teeth, gums, bone, bite, medical history and restorative goals—not on a treatment label alone.</p>
           <div className="treatments">
             {considerations.map((item, index) => (
