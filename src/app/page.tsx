@@ -43,7 +43,7 @@ const clinicVisuals = [
 
 export default function Home() {
   return (
-    <main>
+    <main className="home-page">
       <SiteHeader />
 
       <section className="hero" aria-labelledby="hero-title">
