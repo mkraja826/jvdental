@@ -1,0 +1,201 @@
+:root {
+  --bone: #dae2ef;
+  --paper: #f9f7f8;
+  --ink: #102d4d;
+  --muted: #52677f;
+  --line: #c7d2e2;
+  --mineral: #4072af;
+  --mineral-soft: #dae2ef;
+  --white: #ffffff;
+  --danger: #8e342f;
+  --shadow: 0 24px 60px rgba(16, 45, 77, 0.1);
+
+  --brand-off-white: #f9f7f8;
+  --brand-mist: #dae2ef;
+  --brand-blue: #4072af;
+  --brand-navy: #102d4d;
+}
+
+body {
+  background: var(--brand-off-white);
+  color: var(--brand-navy);
+}
+
+.site-header {
+  border-bottom-color: rgba(16, 45, 77, 0.12);
+  background: rgba(249, 247, 248, 0.94);
+}
+
+.site-nav a {
+  color: rgba(16, 45, 77, 0.82);
+}
+
+.site-nav a:hover,
+.text-link:hover,
+.eyebrow,
+.section-kicker,
+.display-title em {
+  color: var(--brand-blue);
+}
+
+.button {
+  border-color: var(--brand-navy);
+  background: var(--brand-navy);
+  color: var(--white);
+}
+
+.button:hover {
+  border-color: var(--brand-blue);
+  background: var(--brand-blue);
+}
+
+.button--ghost {
+  background: transparent;
+  color: var(--brand-navy);
+  border-color: #b9c7da;
+}
+
+.button--ghost:hover {
+  background: var(--brand-mist);
+  border-color: var(--brand-blue);
+  color: var(--brand-navy);
+}
+
+.button--light {
+  background: var(--brand-off-white);
+  border-color: var(--brand-off-white);
+  color: var(--brand-navy);
+}
+
+.button--light:hover {
+  background: var(--brand-mist);
+  border-color: var(--brand-mist);
+}
+
+.hero__visual {
+  background:
+    linear-gradient(145deg, rgba(64, 114, 175, 0.22), transparent 55%),
+    linear-gradient(45deg, #f9f7f8, #dae2ef);
+}
+
+.hero__visual::before,
+.hero__visual::after {
+  border-color: rgba(16, 45, 77, 0.18);
+}
+
+.hero__visual-label {
+  color: rgba(16, 45, 77, 0.7);
+}
+
+.data-strip {
+  background: rgba(218, 226, 239, 0.34);
+}
+
+.dark-band,
+.assistant-band,
+.footer,
+.login-story {
+  background: var(--brand-navy);
+  color: var(--white);
+}
+
+.dark-band .section-kicker,
+.assistant-band .section-kicker,
+.login-story .eyebrow {
+  color: #bcd2eb !important;
+}
+
+.dark-band .section-intro,
+.assistant-band p,
+.login-story p {
+  color: #d4e0ef;
+}
+
+.treatments,
+.treatment-row {
+  border-color: rgba(218, 226, 239, 0.26);
+}
+
+.treatment-row span {
+  color: #b7c9df;
+}
+
+.treatment-row:hover {
+  background: rgba(64, 114, 175, 0.12);
+}
+
+.case-feature__visual {
+  background:
+    linear-gradient(135deg, rgba(64, 114, 175, 0.24), transparent),
+    var(--brand-mist);
+}
+
+.case-feature__visual::before {
+  border-color: rgba(16, 45, 77, 0.22);
+}
+
+.case-feature__visual span {
+  color: rgba(16, 45, 77, 0.68);
+}
+
+.journey-step,
+.portal-card,
+.metric,
+.doctor-card,
+.login-form,
+.field input,
+.field textarea,
+.field select {
+  border-color: var(--line);
+}
+
+.journey-step:hover,
+.portal-card:hover,
+.doctor-card:hover {
+  border-color: rgba(64, 114, 175, 0.52);
+}
+
+.status-pill {
+  border-color: rgba(64, 114, 175, 0.28);
+  background: rgba(218, 226, 239, 0.58);
+  color: var(--brand-navy);
+}
+
+.portal-header,
+.portal-sidebar {
+  background: var(--brand-navy);
+  color: var(--white);
+}
+
+.portal-header .text-link,
+.portal-sidebar a {
+  color: #e3ecf7;
+}
+
+.portal-sidebar a:hover,
+.portal-sidebar a:focus-visible,
+.portal-header .text-link:hover {
+  color: var(--white);
+  background: rgba(64, 114, 175, 0.22);
+}
+
+.portal-main,
+.login-form-wrap {
+  background: var(--brand-off-white);
+}
+
+.metric,
+.portal-card,
+.doctor-card,
+.login-form {
+  background: #ffffff;
+}
+
+:focus-visible {
+  outline-color: var(--brand-blue);
+}
+
+::selection {
+  background: var(--brand-blue);
+  color: var(--white);
+}
