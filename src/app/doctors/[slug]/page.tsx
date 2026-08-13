@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
@@ -184,6 +185,8 @@ export default async function DoctorPortfolioPage({ params }: PageProps) {
         <p>Book a clinic or video consultation first. When individual record review is needed, the secure patient portal can be used to share your dental history and available OPG or CBCT.</p>
         <Link className="button" href="/book">Book your consultation →</Link>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
