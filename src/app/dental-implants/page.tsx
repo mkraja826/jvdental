@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { ImplantServicePage } from "@/components/implant-service-page";
 
 export const metadata: Metadata = {
-  title: "Dental Implants in Hyderabad",
-  description: "Learn how JV Dental plans single and multiple dental implants in Hyderabad using diagnosis-led, restoration-focused implant dentistry.",
+  title: "Dental Implants in Hyderabad | Near Ameerpet",
+  description: "Dental implant treatment at JV Dental near Ameerpet and S R Nagar, Hyderabad. Learn about diagnosis-led planning for single and multiple missing teeth.",
+  alternates: { canonical: "/dental-implants" },
 };
 
 export default function DentalImplantsPage() {
