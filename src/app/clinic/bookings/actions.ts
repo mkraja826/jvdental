@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireStaff } from "@/lib/auth/guards";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 function text(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -23,6 +24,13 @@ export async function confirmBookingRequest(formData: FormData) {
   }
   const endsAt = new Date(startsAt.getTime() + 30 * 60 * 1000);
 
+  const { data: booking, error: bookingReadError } = await supabase
+    .from("appointment_requests")
+    .select("id,booking_kind,patient_id,converted_appointment_id")
+    .eq("id", requestId)
+    .maybeSingle();
+  if (bookingReadError || !booking) redirect("/clinic/bookings?error=missing");
+
   const { error } = await supabase
     .from("appointment_requests")
     .update({
@@ -38,6 +46,56 @@ export async function confirmBookingRequest(formData: FormData) {
     .in("status", ["requested", "payment_pending", "paid", "confirmed"]);
 
   if (error) redirect("/clinic/bookings?error=confirm");
+
+  if (booking.patient_id) {
+    const admin = createAdminClient();
+    const { data: caseRecord } = await admin
+      .from("patient_cases")
+      .select("id")
+      .eq("patient_id", booking.patient_id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const appointment = {
+      patient_id: booking.patient_id,
+      case_id: caseRecord?.id ?? null,
+      clinician_user_id: clinicianId,
+      appointment_type: booking.booking_kind,
+      starts_at: startsAt.toISOString(),
+      ends_at: endsAt.toISOString(),
+      status: "scheduled",
+      timezone: "Asia/Kolkata",
+      notes,
+    };
+
+    if (booking.converted_appointment_id) {
+      const { error: appointmentError } = await admin
+        .from("appointments")
+        .update(appointment)
+        .eq("id", booking.converted_appointment_id)
+        .eq("patient_id", booking.patient_id);
+      if (appointmentError) redirect("/clinic/bookings?error=convert");
+    } else {
+      const { data: createdAppointment, error: appointmentError } = await admin
+        .from("appointments")
+        .insert(appointment)
+        .select("id")
+        .single();
+      if (appointmentError || !createdAppointment) redirect("/clinic/bookings?error=convert");
+
+      const { error: linkError } = await admin
+        .from("appointment_requests")
+        .update({ converted_appointment_id: createdAppointment.id })
+        .eq("id", requestId)
+        .is("converted_appointment_id", null);
+      if (linkError) redirect("/clinic/bookings?error=convert");
+    }
+
+    revalidatePath("/patient");
+    revalidatePath("/patient/plan");
+  }
+
   revalidatePath("/clinic/bookings");
   revalidatePath("/clinic");
 }
