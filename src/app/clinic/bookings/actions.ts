@@ -10,6 +10,13 @@ function text(formData: FormData, key: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function revalidateBookingViews() {
+  revalidatePath("/clinic/bookings");
+  revalidatePath("/clinic");
+  revalidatePath("/patient");
+  revalidatePath("/patient/plan");
+}
+
 export async function confirmBookingRequest(formData: FormData) {
   const { supabase, user } = await requireStaff();
   const requestId = text(formData, "request_id");
@@ -91,13 +98,9 @@ export async function confirmBookingRequest(formData: FormData) {
         .is("converted_appointment_id", null);
       if (linkError) redirect("/clinic/bookings?error=convert");
     }
-
-    revalidatePath("/patient");
-    revalidatePath("/patient/plan");
   }
 
-  revalidatePath("/clinic/bookings");
-  revalidatePath("/clinic");
+  revalidateBookingViews();
 }
 
 export async function updateBookingRequest(formData: FormData) {
@@ -108,49 +111,113 @@ export async function updateBookingRequest(formData: FormData) {
   const notes = text(formData, "staff_notes") || null;
   if (!requestId) redirect("/clinic/bookings?error=missing");
 
+  const { data: booking } = await supabase
+    .from("appointment_requests")
+    .select("converted_appointment_id,patient_id")
+    .eq("id", requestId)
+    .maybeSingle();
+
   const update: Record<string, string | null> = {
     assigned_clinician: clinicianId,
     staff_notes: notes,
     managed_by: user.id,
   };
+  let startsAt: Date | null = null;
+  let endsAt: Date | null = null;
   if (rawStart) {
-    const startsAt = new Date(`${rawStart}:00+05:30`);
+    startsAt = new Date(`${rawStart}:00+05:30`);
     if (Number.isNaN(startsAt.getTime()) || startsAt.getTime() <= Date.now()) {
       redirect("/clinic/bookings?error=time");
     }
+    endsAt = new Date(startsAt.getTime() + 30 * 60 * 1000);
     update.confirmed_starts_at = startsAt.toISOString();
-    update.confirmed_ends_at = new Date(startsAt.getTime() + 30 * 60 * 1000).toISOString();
+    update.confirmed_ends_at = endsAt.toISOString();
   }
 
   const { error } = await supabase.from("appointment_requests").update(update).eq("id", requestId);
   if (error) redirect("/clinic/bookings?error=update");
-  revalidatePath("/clinic/bookings");
+
+  if (booking?.converted_appointment_id && booking.patient_id) {
+    const appointmentUpdate: Record<string, string | null> = {
+      clinician_user_id: clinicianId,
+      notes,
+    };
+    if (startsAt && endsAt) {
+      appointmentUpdate.starts_at = startsAt.toISOString();
+      appointmentUpdate.ends_at = endsAt.toISOString();
+    }
+    const admin = createAdminClient();
+    const { error: appointmentError } = await admin
+      .from("appointments")
+      .update(appointmentUpdate)
+      .eq("id", booking.converted_appointment_id)
+      .eq("patient_id", booking.patient_id);
+    if (appointmentError) redirect("/clinic/bookings?error=convert");
+  }
+
+  revalidateBookingViews();
 }
 
 export async function cancelBookingRequest(formData: FormData) {
   const { supabase, user } = await requireStaff();
   const requestId = text(formData, "request_id");
   if (!requestId) redirect("/clinic/bookings?error=missing");
+
+  const { data: booking } = await supabase
+    .from("appointment_requests")
+    .select("converted_appointment_id,patient_id")
+    .eq("id", requestId)
+    .maybeSingle();
+
   const { error } = await supabase
     .from("appointment_requests")
     .update({ status: "cancelled", managed_by: user.id })
     .eq("id", requestId)
     .neq("status", "completed");
   if (error) redirect("/clinic/bookings?error=cancel");
-  revalidatePath("/clinic/bookings");
-  revalidatePath("/clinic");
+
+  if (booking?.converted_appointment_id && booking.patient_id) {
+    const admin = createAdminClient();
+    const { error: appointmentError } = await admin
+      .from("appointments")
+      .update({ status: "cancelled" })
+      .eq("id", booking.converted_appointment_id)
+      .eq("patient_id", booking.patient_id)
+      .neq("status", "completed");
+    if (appointmentError) redirect("/clinic/bookings?error=convert");
+  }
+
+  revalidateBookingViews();
 }
 
 export async function completeBookingRequest(formData: FormData) {
   const { supabase, user } = await requireStaff();
   const requestId = text(formData, "request_id");
   if (!requestId) redirect("/clinic/bookings?error=missing");
+
+  const { data: booking } = await supabase
+    .from("appointment_requests")
+    .select("converted_appointment_id,patient_id")
+    .eq("id", requestId)
+    .maybeSingle();
+
   const { error } = await supabase
     .from("appointment_requests")
     .update({ status: "completed", managed_by: user.id })
     .eq("id", requestId)
     .eq("status", "confirmed");
   if (error) redirect("/clinic/bookings?error=complete");
-  revalidatePath("/clinic/bookings");
-  revalidatePath("/clinic");
+
+  if (booking?.converted_appointment_id && booking.patient_id) {
+    const admin = createAdminClient();
+    const { error: appointmentError } = await admin
+      .from("appointments")
+      .update({ status: "completed" })
+      .eq("id", booking.converted_appointment_id)
+      .eq("patient_id", booking.patient_id)
+      .eq("status", "scheduled");
+    if (appointmentError) redirect("/clinic/bookings?error=convert");
+  }
+
+  revalidateBookingViews();
 }
