@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import PatientNavigation from "@/components/patient-navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DocumentUploader } from "./document-uploader";
 
@@ -40,12 +41,7 @@ export default async function PatientDocumentsPage() {
       </header>
       <div className="portal-layout">
         <aside className="portal-sidebar">
-          <nav aria-label="Patient portal navigation">
-            <Link href="/patient">Overview</Link>
-            <Link href="/patient/intake">My details</Link>
-            <Link href="/patient/documents">Documents</Link>
-            <Link href="/patient/messages">Messages</Link>
-          </nav>
+          <PatientNavigation />
         </aside>
         <section className="portal-main">
           <p className="portal-overline">Private clinical vault · Case JV-{caseRecord.case_number}</p>
