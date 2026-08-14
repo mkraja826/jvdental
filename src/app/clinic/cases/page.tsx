@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PendingSubmit from "@/components/pending-submit";
 import { createSignatureCase } from "@/app/clinic/cases/actions";
 import { requireClinicalPublisher } from "@/lib/content/permissions";
 
@@ -61,7 +62,7 @@ export default async function SignatureCasesPage({ searchParams }: { searchParam
                     </select>
                   </label>
                   <p style={{ color: "var(--muted)", fontSize: ".8rem" }}>Cases are anonymised by default. A case requested as published will remain in review if website consent has not been recorded.</p>
-                  <button className="button" type="submit">Create case</button>
+                  <PendingSubmit label="Create case" pendingLabel="Creating case…" />
                 </form>
               </div>
             </article>
@@ -71,7 +72,7 @@ export default async function SignatureCasesPage({ searchParams }: { searchParam
               <div className="portal-card__body">
                 <div className="status-list">
                   {(cases ?? []).map((item) => (
-                    <Link className="status-row" href={`/clinic/cases/${item.id}`} key={item.id}>
+                    <Link className="status-row" href={`/clinic/cases/${item.id}`} key={item.id} prefetch>
                       <div><strong>{item.title}</strong><br /><small>{item.treatment_type}</small></div>
                       <span>{item.dionavi_used ? "DIOnavi" : item.guided_implant ? "Guided" : "Conventional"}</span>
                       <span className="status-pill">{item.consent_for_website ? item.publication_status : "Consent pending"}</span>
