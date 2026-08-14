@@ -23,15 +23,18 @@ function formatMinor(amountMinor: number | string | null | undefined, currency: 
 
 export default async function PatientPaymentsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const query = await searchParams;
+  const showOlder = query.history === "older";
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/patient/login?next=/patient/payments");
 
-  const [{ data: requests }, { data: payments }] = await Promise.all([
-    supabase.from("payment_requests").select("id,request_number,title,description,request_type,amount_minor,currency,status,due_at,expires_at,created_at,provider_preference").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(30),
-    supabase.from("payments").select("id,payment_request_id,provider,amount_minor,currency,status,payment_method_summary,paid_at,receipt_url,created_at").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(30),
+  const [{ data: requests, count: requestCount }, { data: payments, count: paymentCount }] = await Promise.all([
+    supabase.from("payment_requests").select("id,request_number,title,description,request_type,amount_minor,currency,status,due_at,expires_at,created_at,provider_preference", { count: "exact" }).eq("patient_id", user.id).order("created_at", { ascending: false }).limit(showOlder ? 100 : 30),
+    supabase.from("payments").select("id,payment_request_id,provider,amount_minor,currency,status,payment_method_summary,paid_at,receipt_url,created_at", { count: "exact" }).eq("patient_id", user.id).order("created_at", { ascending: false }).limit(showOlder ? 100 : 30),
   ]);
 
+  const totalRequests = requestCount ?? requests?.length ?? 0;
+  const totalPayments = paymentCount ?? payments?.length ?? 0;
   const requestIds = (requests ?? []).map((request) => request.id);
   const paymentIds = (payments ?? []).map((payment) => payment.id);
 
@@ -76,7 +79,7 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
           {query.payment === "cancelled" ? <article className="portal-card" style={{ marginTop: 24 }}><div className="portal-card__body"><strong>Checkout closed.</strong><p className="form-note">No payment is recorded just because the checkout page was opened.</p></div></article> : null}
 
           <article className="portal-card" style={{ marginTop: 28 }}>
-            <div className="portal-card__header"><h2>Payment requests</h2><span className="status-pill">{requests?.length ?? 0}</span></div>
+            <div className="portal-card__header"><h2>Payment requests</h2><span className="status-pill">{totalRequests ? `${requests?.length ?? 0} of ${totalRequests}` : "0"}</span></div>
             <div className="portal-card__body">
               {!requests?.length ? <p>No payment request has been sent yet.</p> : (
                 <div style={{ display: "grid", gap: 18 }}>
@@ -106,12 +109,12 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
                   })}
                 </div>
               )}
-              {(requests?.length ?? 0) === 30 ? <p className="form-note">Showing your 30 most recent payment requests.</p> : null}
+              {totalRequests > (requests?.length ?? 0) ? <p className="form-note">Showing the {requests?.length ?? 0} most recent requests. <Link className="text-link" href="/patient/payments?history=older">Show older finance history →</Link></p> : null}
             </div>
           </article>
 
           <article className="portal-card" style={{ marginTop: 24 }}>
-            <div className="portal-card__header"><h2>Payment history</h2><span className="status-pill">{payments?.length ?? 0}</span></div>
+            <div className="portal-card__header"><h2>Payment history</h2><span className="status-pill">{totalPayments ? `${payments?.length ?? 0} of ${totalPayments}` : "0"}</span></div>
             <div className="portal-card__body">
               {!payments?.length ? <p>No confirmed payments yet.</p> : (
                 <div style={{ display: "grid", gap: 14 }}>
@@ -129,7 +132,7 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
                   })}
                 </div>
               )}
-              {(payments?.length ?? 0) === 30 ? <p className="form-note">Showing your 30 most recent payments.</p> : null}
+              {totalPayments > (payments?.length ?? 0) ? <p className="form-note">Showing the {payments?.length ?? 0} most recent payments. <Link className="text-link" href="/patient/payments?history=older">Show older finance history →</Link></p> : showOlder && (totalRequests > 30 || totalPayments > 30) ? <p className="form-note"><Link className="text-link" href="/patient/payments">Show recent finance only</Link></p> : null}
             </div>
           </article>
         </section>
