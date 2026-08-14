@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { trackProductEvent } from "@/lib/product-analytics";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -57,6 +58,13 @@ export async function POST(request: Request) {
       .single();
 
     if (error) throw error;
+
+    await trackProductEvent({
+      eventName: "booking_requested",
+      surface: patientId ? "patient" : "public",
+      actorType: patientId ? "patient" : "anonymous",
+      actorUserId: patientId,
+    });
 
     return NextResponse.json({ requestId: data.id, status: data.status });
   } catch (error) {
