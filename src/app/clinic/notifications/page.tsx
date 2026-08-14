@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PendingSubmit from "@/components/pending-submit";
 import { markAllNotificationsRead, markNotificationRead } from "@/app/notifications/actions";
 import { requireStaff } from "@/lib/auth/guards";
 
@@ -20,7 +21,7 @@ export default async function ClinicNotificationsPage() {
     .eq("recipient_user_id", user.id)
     .eq("recipient_type", "staff")
     .order("created_at", { ascending: false })
-    .limit(150);
+    .limit(75);
 
   const unread = (notifications ?? []).filter((item) => !item.read_at).length;
 
@@ -53,7 +54,7 @@ export default async function ClinicNotificationsPage() {
 
           {unread ? (
             <form action={markAllNotificationsRead} style={{ margin: "24px 0" }}>
-              <button className="button button--ghost" type="submit">Mark all as read</button>
+              <PendingSubmit label="Mark all as read" pendingLabel="Marking…" className="button button--ghost" />
             </form>
           ) : null}
 
@@ -70,11 +71,11 @@ export default async function ClinicNotificationsPage() {
                   </div>
                   <p style={{ margin: 0, color: "var(--muted)" }}>{item.body}</p>
                   <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                    <Link className="text-link" href={destination(item.event_type, item.case_id)}>Open workflow →</Link>
+                    <Link className="text-link" href={destination(item.event_type, item.case_id)} prefetch>Open workflow →</Link>
                     {!item.read_at ? (
                       <form action={markNotificationRead}>
                         <input type="hidden" name="notification_id" value={item.id} />
-                        <button className="text-link" type="submit" style={{ background: "none", border: 0, cursor: "pointer" }}>Mark read</button>
+                        <PendingSubmit label="Mark read" pendingLabel="Marking…" className="text-link" />
                       </form>
                     ) : null}
                   </div>
