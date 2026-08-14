@@ -89,12 +89,12 @@
     width: 100%;
     height: auto;
     padding: 8px 10px;
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow: visible;
     border-right: 0;
     border-bottom: 1px solid #dde5e1;
     background: rgba(243, 246, 244, .97);
     backdrop-filter: blur(12px);
+    z-index: 60;
   }
 
   .clinic-workspace-brand {
@@ -103,5 +103,6 @@
 
   .clinic-workspace-content .portal-header {
     position: static;
+    left: auto;
   }
 }
