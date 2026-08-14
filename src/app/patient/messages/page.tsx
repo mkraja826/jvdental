@@ -7,6 +7,7 @@ import { sendPatientMessage } from "./actions";
 
 export default async function PatientMessagesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const query = await searchParams;
+  const showOlder = query.history === "older";
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/patient/login");
@@ -19,17 +20,18 @@ export default async function PatientMessagesPage({ searchParams }: { searchPara
     .limit(1)
     .maybeSingle();
 
-  const { data: recentMessages } = conversation
+  const { data: recentMessages, count: messageCount } = conversation
     ? await supabase
         .from("messages")
-        .select("id,sender_user_id,body,created_at")
+        .select("id,sender_user_id,body,created_at", { count: "exact" })
         .eq("conversation_id", conversation.id)
         .eq("is_internal", false)
         .order("created_at", { ascending: false })
-        .limit(100)
-    : { data: [] };
+        .limit(showOlder ? 300 : 100)
+    : { data: [], count: 0 };
 
   const messages = [...(recentMessages ?? [])].reverse();
+  const totalMessages = messageCount ?? messages.length;
   const staffIds = [...new Set(messages.map((message) => message.sender_user_id).filter((id) => id !== user.id))];
   const { data: staffRows } = staffIds.length
     ? await supabase.from("staff_profiles").select("user_id,full_name,role").in("user_id", staffIds)
@@ -58,7 +60,7 @@ export default async function PatientMessagesPage({ searchParams }: { searchPara
           <article className="portal-card" style={{ marginTop: 28 }}>
             <div className="portal-card__header">
               <h2>{conversation?.subject ?? "Implant assessment"}</h2>
-              <span className="status-pill">Private</span>
+              <span className="status-pill">{totalMessages ? `${messages.length} of ${totalMessages}` : "Private"}</span>
             </div>
             <div className="portal-card__body">
               <div style={{ display: "grid", gap: 14, marginBottom: 24 }}>
@@ -77,7 +79,14 @@ export default async function PatientMessagesPage({ searchParams }: { searchPara
                   <p>No messages yet. Send a question to start the secure case conversation.</p>
                 )}
               </div>
-              {messages.length === 100 ? <p className="form-note">Showing the 100 most recent messages in this conversation.</p> : null}
+
+              {totalMessages > messages.length ? (
+                <p className="form-note">
+                  Showing the {messages.length} most recent messages. <Link className="text-link" href="/patient/messages?history=older">Show older history →</Link>
+                </p>
+              ) : showOlder && totalMessages > 100 ? (
+                <p className="form-note"><Link className="text-link" href="/patient/messages">Show recent messages only</Link></p>
+              ) : null}
 
               <form action={sendPatientMessage} style={{ display: "grid", gap: 12 }}>
                 <label>
