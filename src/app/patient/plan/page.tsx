@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { respondToTreatmentPlan } from "@/app/patient/plan/actions";
+import PatientNavigation from "@/components/patient-navigation";
 import { createClient } from "@/lib/supabase/server";
 
 function money(value: number, currency: string) {
@@ -53,13 +54,7 @@ export default async function PatientPlanPage({ searchParams }: { searchParams: 
       </header>
       <div className="portal-layout">
         <aside className="portal-sidebar">
-          <nav aria-label="Patient plan navigation">
-            <Link href="/patient">Overview</Link>
-            <Link href="/patient/records">My records</Link>
-            <Link href="/patient/messages">Messages</Link>
-            <Link href="/patient/plan">Treatment plan</Link>
-            <Link href="/patient/travel">Travel</Link>
-          </nav>
+          <PatientNavigation />
         </aside>
         <section className="portal-main">
           <p className="portal-overline">Preliminary treatment planning</p>
