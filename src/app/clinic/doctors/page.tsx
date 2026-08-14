@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import PendingSubmit from "@/components/pending-submit";
 import { createDoctorProfile } from "@/app/clinic/doctors/actions";
 import { requireStaff } from "@/lib/auth/guards";
 
@@ -52,7 +53,7 @@ export default async function DoctorProfilesPage({ searchParams }: { searchParam
                     <label>Overall experience<input name="overall_experience_years" type="number" min="0" placeholder="25" /></label>
                     <label>Specialist experience<input name="specialist_experience_years" type="number" min="0" placeholder="22" /></label>
                   </div>
-                  <button className="button" type="submit">Create doctor portfolio →</button>
+                  <PendingSubmit label="Create doctor portfolio →" pendingLabel="Creating portfolio…" />
                 </form>
               </div>
             </article>
@@ -62,7 +63,7 @@ export default async function DoctorProfilesPage({ searchParams }: { searchParam
               <div className="portal-card__body">
                 <div className="status-list">
                   {(doctors ?? []).map((doctor) => (
-                    <Link className="status-row" href={`/clinic/doctors/${doctor.id}`} key={doctor.id}>
+                    <Link className="status-row" href={`/clinic/doctors/${doctor.id}`} key={doctor.id} prefetch>
                       <div>
                         <strong>{doctor.full_name}</strong>
                         <br />
