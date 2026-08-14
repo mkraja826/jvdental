@@ -22,5 +22,10 @@ export default function DentalImplantsPage() {
       { title: "Healing & restoration", body: "Healing, temporary restoration where appropriate, and the final prosthetic stage are planned according to the individual case." },
     ]}
     considerations={["Bone and soft-tissue condition", "Position of nearby teeth and anatomy", "Bite and restorative space", "Medical and periodontal factors", "Long-term hygiene and maintenance"]}
+    faqs={[
+      ["Can a dental implant replace one missing tooth?", "A dental implant may support replacement of one missing tooth when the site, bone, gums, bite and overall dental condition are clinically suitable. The treating implantologist confirms the appropriate option after assessment."],
+      ["Do I need a scan before dental implant treatment?", "Appropriate imaging is commonly used to evaluate bone, nearby anatomy and restorative requirements. The exact records needed depend on the individual dental condition and treatment plan."],
+      ["Are dental implants right for every missing tooth?", "No. Dental implants are one tooth-replacement option. The dental team considers the condition of the mouth, medical and periodontal factors, bite, bone, hygiene needs and patient goals before recommending a pathway."],
+    ]}
   />;
 }
