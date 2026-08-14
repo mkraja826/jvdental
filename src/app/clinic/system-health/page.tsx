@@ -22,7 +22,7 @@ export default async function SystemHealthPage() {
   const { supabase, staff } = await requireStaff();
   if (!["owner", "admin"].includes(staff.role)) redirect("/clinic");
 
-  const [errorsResult, registrationsResult, intakesResult, bookingsResult, acceptedPlansResult] = await Promise.all([
+  const [errorsResult, registrationsResult, intakesResult, bookingsResult, acceptedPlansResult, paymentsResult] = await Promise.all([
     supabase
       .from("portal_error_events")
       .select("id,surface,route,error_name,error_digest,created_at")
@@ -32,6 +32,7 @@ export default async function SystemHealthPage() {
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "patient_intake_completed"),
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "booking_requested"),
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "treatment_plan_accepted"),
+    supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "payment_confirmed"),
   ]);
 
   const recent = (errorsResult.data ?? []) as ErrorEvent[];
@@ -43,6 +44,7 @@ export default async function SystemHealthPage() {
   const intakes = intakesResult.count ?? 0;
   const bookings = bookingsResult.count ?? 0;
   const acceptedPlans = acceptedPlansResult.count ?? 0;
+  const confirmedPayments = paymentsResult.count ?? 0;
 
   return (
     <main className="portal-shell">
@@ -71,6 +73,10 @@ export default async function SystemHealthPage() {
           <article className="portal-card">
             <div className="portal-card__header"><h2>Accepted plans</h2><span className="status-pill">{acceptedPlans}</span></div>
             <div className="portal-card__body"><p>Preliminary treatment plans explicitly accepted through the patient portal.</p></div>
+          </article>
+          <article className="portal-card">
+            <div className="portal-card__header"><h2>Confirmed payments</h2><span className="status-pill">{confirmedPayments}</span></div>
+            <div className="portal-card__body"><p>Successful booking payments confirmed by the server reconciliation layer.</p></div>
           </article>
         </div>
 
