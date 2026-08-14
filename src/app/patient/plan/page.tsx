@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { respondToTreatmentPlan } from "@/app/patient/plan/actions";
 import PatientNavigation from "@/components/patient-navigation";
 import { createClient } from "@/lib/supabase/server";
+import TreatmentPlanResponseActions from "./treatment-plan-response-actions";
 
 function money(value: number, currency: string) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
@@ -23,14 +24,13 @@ export default async function PatientPlanPage({ searchParams }: { searchParams: 
     .limit(1)
     .maybeSingle();
 
-  const now = new Date().toISOString();
   const [{ data: appointments }, { data: feedback }] = plan ? await Promise.all([
     supabase
       .from("appointments")
       .select("id,starts_at,ends_at,meeting_url,status,appointment_type,timezone")
       .eq("case_id", plan.case_id)
       .eq("status", "scheduled")
-      .gte("starts_at", now)
+      .gte("starts_at", new Date().toISOString())
       .order("starts_at", { ascending: true }),
     supabase
       .from("treatment_plan_feedback")
@@ -84,16 +84,16 @@ export default async function PatientPlanPage({ searchParams }: { searchParams: 
               </article>
 
               <article className="portal-card">
-                <div className="portal-card__header"><h2>Upcoming consultations</h2><span className="status-pill">{appointments?.length ?? 0}</span></div>
+                <div className="portal-card__header"><h2>Consultation</h2><span className="status-pill">{appointments?.length ?? 0}</span></div>
                 <div className="portal-card__body">
                   {!appointments?.length ? <p>No upcoming consultation is currently scheduled.</p> : appointments.map((appointment) => {
                     const isVideo = appointment.appointment_type === "video_consultation";
                     return (
-                      <div key={appointment.id} style={{ marginBottom: 18 }}>
-                        <p><strong>{isVideo ? "Video consultation" : "Clinic consultation"}</strong><br />{new Date(appointment.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })} IST</p>
+                      <div key={appointment.id}>
+                        <p><strong>{new Date(appointment.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })} IST</strong></p>
                         {isVideo ? (
-                          appointment.meeting_url ? <a className="button button--ghost" href={appointment.meeting_url} target="_blank" rel="noreferrer">Join video consultation →</a> : <p className="form-note">The secure joining link will appear here when it is available.</p>
-                        ) : <p className="form-note">Please arrive a little early for reception and check-in.</p>}
+                          appointment.meeting_url ? <a className="button button--ghost" href={appointment.meeting_url} target="_blank" rel="noreferrer">Join video consultation →</a> : <p>Your video consultation is scheduled. The joining link will appear here when it is ready.</p>
+                        ) : <p>Your in-clinic consultation is scheduled. Please arrive a little early for reception check-in.</p>}
                       </div>
                     );
                   })}
@@ -124,10 +124,7 @@ export default async function PatientPlanPage({ searchParams }: { searchParams: 
                   <form action={respondToTreatmentPlan} style={{ display: "grid", gap: 16 }}>
                     <input type="hidden" name="plan_id" value={plan.id} />
                     <label>Optional note to the clinic<textarea name="message" rows={4} placeholder="Ask for clarification or describe what you would like reviewed." /></label>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-                      <button className="button" type="submit" name="response" value="accepted">Accept this preliminary plan</button>
-                      <button className="button button--ghost" type="submit" name="response" value="request_changes">Request changes</button>
-                    </div>
+                    <TreatmentPlanResponseActions />
                   </form>
                 )}
               </div>
