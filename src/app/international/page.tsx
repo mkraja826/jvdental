@@ -2,12 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { internationalMarkets } from "@/content/international-markets";
+
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com").replace(/\/$/, "");
 
 export const metadata: Metadata = {
   title: "Dental Treatment in India for International Patients",
   description:
     "Plan dental treatment in Hyderabad, India with JV Dental. International patient support includes remote review, treatment scheduling, airport pickup, hotel coordination, local assistance and return transfer.",
-  alternates: { canonical: "/international" },
+  alternates: {
+    canonical: "/international",
+    languages: Object.fromEntries([
+      ["en", `${siteUrl}/international`],
+      ...internationalMarkets.map((market) => [market.hreflang, `${siteUrl}/international/${market.slug}`]),
+    ]),
+  },
   robots: { index: true, follow: true },
 };
 
@@ -48,11 +57,11 @@ const faqs = [
   ],
   [
     "Will a representative stay in contact during my Hyderabad visit?",
-    "JV Dental can provide a representative to support practical coordination during the patient's stay and clinic visits. This is patient and travel assistance and does not replace the treating clinical team.",
+    "JV Dental can provide a representative to support practical coordination during the patient&apos;s stay and clinic visits. This is patient and travel assistance and does not replace the treating clinical team.",
   ],
   [
     "What happens after I return home?",
-    "Post-treatment questions and follow-up communication can continue remotely. The exact follow-up schedule depends on the treatment performed and the treating dentist's recommendations.",
+    "Post-treatment questions and follow-up communication can continue remotely. The exact follow-up schedule depends on the treatment performed and the treating dentist&apos;s recommendations.",
   ],
 ] as const;
 
@@ -91,6 +100,20 @@ export default function InternationalPage() {
         <div className="hero__visual" aria-label="International dental patient journey to Hyderabad">
           <span className="hero__visual-label">Remote review · travel support · Hyderabad treatment · follow-up</span>
           <div className="hero__visual-copy"><p>International patient support</p><strong>One coordinated journey from first contact to return travel.</strong></div>
+        </div>
+      </section>
+
+      <section className="section">
+        <p className="section-kicker">Country-specific planning</p>
+        <h2 className="section-title">Start with guidance written for where you are travelling from.</h2>
+        <p className="section-intro">These regional pages use the same JV Dental clinical pathway but focus on the practical planning questions that matter before travelling from each market.</p>
+        <div className="portal-grid international-grid">
+          {internationalMarkets.map((market) => (
+            <article className="portal-card" key={market.slug}>
+              <div className="portal-card__header"><h3>{market.name}</h3></div>
+              <div className="portal-card__body"><p>{market.intro}</p><Link className="text-link" href={`/international/${market.slug}`}>Planning from {market.name} →</Link></div>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -141,7 +164,7 @@ export default function InternationalPage() {
           {faqs.map(([question, answer], index) => (
             <article className="principle" key={question}>
               <span className="principle__number">{String(index + 1).padStart(2, "0")}</span>
-              <div><h3>{question}</h3><p>{answer}</p></div>
+              <div><h3>{question}</h3><p dangerouslySetInnerHTML={{ __html: answer }} /></div>
             </article>
           ))}
         </div>
