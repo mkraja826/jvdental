@@ -79,6 +79,7 @@ export default function DentistAmeerpetPage() {
           <a className="button" href={mapsUrl} target="_blank" rel="noreferrer">Directions on Google Maps <span aria-hidden="true">→</span></a>
           <a className="button button--ghost" href="tel:+914040208910">Call reception</a>
           <a className="button button--ghost" href="https://wa.me/919666689855" target="_blank" rel="noreferrer">WhatsApp JV Dental</a>
+          <Link className="button button--ghost" href="/hyderabad-dentist">Areas we serve in Hyderabad</Link>
         </div>
       </section>
 
