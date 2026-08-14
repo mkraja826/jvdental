@@ -45,9 +45,43 @@ const implantTreatments = [
   ["Digitally guided implants", "/guided-implants"],
 ] as const;
 
+const faqs = [
+  [
+    "Do I need to know which dental treatment I need before booking?",
+    "No. You can book based on the problem you are experiencing—such as pain, a broken tooth, bleeding gums, missing teeth or difficulty chewing. The dentist can examine the cause and explain the appropriate treatment options.",
+  ],
+  [
+    "Does JV Dental provide treatment other than dental implants?",
+    "Yes. JV Dental provides complete dental care including preventive and restorative dentistry, root canal treatment, crowns and bridges, dentures, gum care, extractions and oral surgery, alongside advanced implant dentistry.",
+  ],
+  [
+    "Can I book JV Dental for a routine dental check-up?",
+    "Yes. Patients can book for routine dental assessment and preventive care as well as for specific dental concerns or advanced treatment planning.",
+  ],
+  [
+    "Where is JV Dental located in Hyderabad?",
+    "JV Dental & Implant Centre is at Sai Ganga Towers on Balkampet Road, S R Nagar, Hyderabad, close to Ameerpet and accessible to patients from surrounding central and western Hyderabad areas.",
+  ],
+  [
+    "Can international patients receive general dental treatment at JV Dental?",
+    "Yes. International patients are not limited to implant treatment. The clinic can coordinate appropriate dental assessment and treatment planning, with travel-support services available for patients coming to Hyderabad.",
+  ],
+] as const;
+
 export default function DentalTreatmentsPage() {
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(([question, answer]) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: { "@type": "Answer", text: answer },
+    })),
+  };
+
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <SiteHeader />
 
       <section className="hero">
@@ -103,6 +137,19 @@ export default function DentalTreatmentsPage() {
       </section>
 
       <section className="section">
+        <p className="section-kicker">Dental treatment questions</p>
+        <h2 className="section-title">Common questions before choosing a dental clinic.</h2>
+        <div className="principle-list">
+          {faqs.map(([question, answer], index) => (
+            <article className="principle" key={question}>
+              <span className="principle__number">{String(index + 1).padStart(2, "0")}</span>
+              <div><h3>{question}</h3><p>{answer}</p></div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section">
         <p className="section-kicker">Local dental care in Hyderabad</p>
         <h2 className="section-title">Conveniently located for Ameerpet, S R Nagar and surrounding Hyderabad.</h2>
         <p className="section-intro">
@@ -110,6 +157,7 @@ export default function DentalTreatmentsPage() {
         </p>
         <div className="hero__actions">
           <Link className="button" href="/book">Request an appointment <span aria-hidden="true">→</span></Link>
+          <Link className="button button--ghost" href="/hyderabad-dentist">Areas we serve in Hyderabad</Link>
           <Link className="button button--ghost" href="/international">International patient support</Link>
         </div>
       </section>
