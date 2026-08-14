@@ -1,31 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-
-export async function reconcileBookingPayment(requestId: string, orderId: string, paymentId: string) {
-  const supabase = createAdminClient();
-  const { data: payment, error: paymentError } = await supabase
-    .from("booking_payments")
-    .select("id,appointment_request_id,status")
-    .eq("provider", "razorpay")
-    .eq("provider_order_id", orderId)
-    .eq("appointment_request_id", requestId)
-    .single();
-  if (paymentError || !payment) return false;
-
-  const { error: paymentUpdateError } = await supabase
-    .from("booking_payments")
-    .update({ provider_payment_id: paymentId, status: "paid" })
-    .eq("id", payment.id);
-  if (paymentUpdateError) return false;
-
-  const { error: requestUpdateError } = await supabase
-    .from("appointment_requests")
-    .update({ status: "paid" })
-    .eq("id", requestId)
-    .in("status", ["requested", "payment_pending", "paid"]);
-  return !requestUpdateError;
-}
+import { reconcileBookingPayment } from "@/lib/payments/razorpay";
 
 export async function POST(request: Request) {
   try {
