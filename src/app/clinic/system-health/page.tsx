@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import DeploymentReadiness from "@/components/deployment-readiness";
 import { requireStaff } from "@/lib/auth/guards";
 
 type ErrorEvent = {
@@ -71,7 +72,7 @@ export default async function SystemHealthPage() {
         <div>
           <p className="portal-overline">Administration</p>
           <h1 className="portal-title">System health</h1>
-          <p className="portal-subtitle">Privacy-safe product funnel, patient activity and operational error monitoring for JV Dental.</p>
+          <p className="portal-subtitle">Privacy-safe product funnel, patient activity, deployment readiness and operational error monitoring for JV Dental.</p>
         </div>
       </header>
 
@@ -114,6 +115,8 @@ export default async function SystemHealthPage() {
             <div className="portal-card__body"><p>Secure non-internal messages successfully sent by patients to the clinic.</p></div>
           </article>
         </div>
+
+        <DeploymentReadiness />
 
         <div className="portal-grid" style={{ marginTop: 24 }}>
           <article className="portal-card">
