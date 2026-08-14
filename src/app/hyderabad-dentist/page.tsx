@@ -93,7 +93,7 @@ export default function HyderabadDentistPage() {
         <p className="section-kicker">Hyderabad catchment</p>
         <h2 className="section-title">Areas from which patients commonly consider JV Dental.</h2>
         <p className="section-intro">
-          These area groups describe the wider Hyderabad catchment around the clinic. They do not imply that JV Dental has branches in those neighbourhoods; the clinic's physical location remains S R Nagar, close to Ameerpet.
+          These area groups describe the wider Hyderabad catchment around the clinic. They do not imply that JV Dental has branches in those neighbourhoods; the clinic&apos;s physical location remains S R Nagar, close to Ameerpet.
         </p>
         <div className="portal-grid international-grid">
           {clusters.map((cluster) => (
