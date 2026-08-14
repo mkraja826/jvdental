@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { trackProductEvent } from "@/lib/product-analytics";
 import { createClient } from "@/lib/supabase/server";
 
 function safeNext(value: FormDataEntryValue | null, fallback: string) {
@@ -75,6 +76,13 @@ export async function signUpPatientWithPassword(formData: FormData) {
   if (error) {
     redirect(`/patient/login?mode=signup&error=signup&next=${encodeURIComponent(next)}`);
   }
+
+  await trackProductEvent({
+    eventName: "patient_registered",
+    surface: "patient",
+    actorType: "patient",
+    actorUserId: data.user?.id ?? null,
+  });
 
   if (data.session) {
     redirect(next);
