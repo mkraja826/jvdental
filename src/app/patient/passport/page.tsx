@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import PatientNavigation from "@/components/patient-navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function ImplantPassportPage() {
@@ -23,15 +24,7 @@ export default async function ImplantPassportPage() {
 
       <div className="portal-layout">
         <aside className="portal-sidebar">
-          <nav aria-label="Patient portal navigation">
-            <Link href="/patient">Overview</Link>
-            <Link href="/patient/intake">My details</Link>
-            <Link href="/patient/documents">Documents</Link>
-            <Link href="/patient/messages">Messages</Link>
-            <Link href="/patient/plan">Treatment plan</Link>
-            <Link href="/patient/travel">Travel</Link>
-            <Link href="/patient/passport">Implant passport</Link>
-          </nav>
+          <PatientNavigation />
         </aside>
 
         <section className="portal-main">
