@@ -26,11 +26,9 @@ export default async function PatientPlanPage({ searchParams }: { searchParams: 
 
   const [{ data: appointments }, { data: feedback }] = plan ? await Promise.all([
     supabase
-      .from("appointments")
+      .from("patient_upcoming_appointments")
       .select("id,starts_at,ends_at,meeting_url,status,appointment_type,timezone")
       .eq("case_id", plan.case_id)
-      .eq("status", "scheduled")
-      .gte("starts_at", new Date().toISOString())
       .order("starts_at", { ascending: true }),
     supabase
       .from("treatment_plan_feedback")
