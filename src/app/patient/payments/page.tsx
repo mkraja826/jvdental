@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import PatientNavigation from "@/components/patient-navigation";
 import StripeCheckoutButton from "@/components/stripe-checkout-button";
 import { createClient } from "@/lib/supabase/server";
 
@@ -56,13 +57,7 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
       </header>
       <div className="portal-layout">
         <aside className="portal-sidebar">
-          <nav aria-label="Patient payments navigation">
-            <Link href="/patient">Overview</Link>
-            <Link href="/patient/plan">Treatment plan</Link>
-            <Link href="/patient/payments">Payments</Link>
-            <Link href="/patient/notifications">Notifications</Link>
-            <Link href="/patient/messages">Messages</Link>
-          </nav>
+          <PatientNavigation />
         </aside>
         <section className="portal-main">
           <p className="portal-overline">Secure finance</p>
