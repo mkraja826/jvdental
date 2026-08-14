@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import PendingSubmitButton from "@/components/pending-submit-button";
+import PatientNavigation from "@/components/patient-navigation";
 import { createClient } from "@/lib/supabase/server";
 import { sendPatientMessage } from "./actions";
 
@@ -40,12 +42,7 @@ export default async function PatientMessagesPage({ searchParams }: { searchPara
       </header>
       <div className="portal-layout">
         <aside className="portal-sidebar">
-          <nav aria-label="Patient portal navigation">
-            <Link href="/patient">Overview</Link>
-            <Link href="/patient/intake">My details</Link>
-            <Link href="/patient/documents">Documents</Link>
-            <Link href="/patient/messages">Messages</Link>
-          </nav>
+          <PatientNavigation />
         </aside>
         <section className="portal-main">
           <p className="portal-overline">Secure clinic communication</p>
@@ -84,7 +81,7 @@ export default async function PatientMessagesPage({ searchParams }: { searchPara
                   Message the clinic
                   <textarea name="message" rows={5} maxLength={10000} required placeholder="Ask about your records, review, consultation or treatment planning." />
                 </label>
-                <button className="button" type="submit">Send securely</button>
+                <PendingSubmitButton className="button" idleLabel="Send securely" pendingLabel="Sending…" />
               </form>
               <p style={{ color: "var(--muted)", fontSize: ".82rem", marginBottom: 0 }}>
                 This portal is not intended for dental or medical emergencies.
