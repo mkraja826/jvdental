@@ -37,6 +37,14 @@ const treatmentGroups = [
   },
 ];
 
+const treatmentDetailLinks = [
+  ["Root canal treatment", "/dental-treatments/root-canal-treatment"],
+  ["Crowns and bridges", "/dental-treatments/dental-crowns-bridges"],
+  ["Dentures", "/dental-treatments/dentures"],
+  ["Gum treatment", "/dental-treatments/gum-treatment"],
+  ["Tooth extraction", "/dental-treatments/tooth-extraction"],
+] as const;
+
 const implantTreatments = [
   ["Dental implants", "/dental-implants"],
   ["Full-arch implant rehabilitation", "/full-arch-implants"],
@@ -102,6 +110,14 @@ export default function DentalTreatmentsPage() {
         <div className="hero__visual" aria-label="Complete dental care at JV Dental Hyderabad">
           <span className="hero__visual-label">Preventive · restorative · surgical · implant dentistry</span>
           <div className="hero__visual-copy"><p>JV Dental &amp; Implant Centre</p><strong>One clinic for complete dental care.</strong></div>
+        </div>
+      </section>
+
+      <section className="section section--tight">
+        <p className="section-kicker">Treatment guides</p>
+        <h2 className="section-title">Read about common dental concerns before your visit.</h2>
+        <div className="treatments">
+          {treatmentDetailLinks.map(([title, href], index) => <Link className="treatment-row" href={href} key={href}><span>{String(index + 1).padStart(2, "0")}</span><strong>{title}</strong><b aria-hidden="true">↗</b></Link>)}
         </div>
       </section>
 
