@@ -3,6 +3,17 @@ import { redirect } from "next/navigation";
 import StripeCheckoutButton from "@/components/stripe-checkout-button";
 import { createClient } from "@/lib/supabase/server";
 
+type RefundRow = {
+  id: string;
+  payment_id: string;
+  amount_minor: number | string;
+  currency: string;
+  status: string;
+  reason: string | null;
+  processed_at: string | null;
+  created_at: string;
+};
+
 function formatMinor(amountMinor: number | string | null | undefined, currency: string) {
   const formatter = new Intl.NumberFormat("en", { style: "currency", currency });
   const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
@@ -27,10 +38,11 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
     supabase.from("payment_refunds").select("id,payment_id,amount_minor,currency,status,reason,processed_at,created_at").in("payment_id", paymentIds).order("created_at", { ascending: false }),
   ]) : [{ data: [] }, { data: [] }];
 
+  const refundRows = (refunds ?? []) as RefundRow[];
   const balanceMap = new Map((balances ?? []).map((item) => [item.payment_request_id, item]));
   const receiptMap = new Map((receipts ?? []).map((item) => [item.payment_id, item]));
-  const refundsByPayment = new Map<string, typeof refunds>();
-  for (const refund of refunds ?? []) {
+  const refundsByPayment = new Map<string, RefundRow[]>();
+  for (const refund of refundRows) {
     const list = refundsByPayment.get(refund.payment_id) ?? [];
     list.push(refund);
     refundsByPayment.set(refund.payment_id, list);
