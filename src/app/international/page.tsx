@@ -29,9 +29,47 @@ const support = [
   ["Connected follow-up", "Questions and follow-up communication can continue remotely after the patient returns home."],
 ] as const;
 
+const faqs = [
+  [
+    "Does JV Dental treat international patients for procedures other than dental implants?",
+    "Yes. International patients can enquire about general, restorative and surgical dental care as well as dental implants and full-mouth rehabilitation. The correct treatment pathway is confirmed after clinical assessment.",
+  ],
+  [
+    "What travel support can JV Dental coordinate for international patients?",
+    "The international patient journey can include airport pickup, hotel coordination, local assistance from a JV Dental representative, clinic transport coordination and return airport transfer around the treatment schedule.",
+  ],
+  [
+    "Can I receive a final treatment plan before travelling to India?",
+    "Remote review and an online consultation can help establish a preliminary pathway, but final diagnosis and treatment planning may require an in-person examination, appropriate imaging and confirmation by the treating dentist.",
+  ],
+  [
+    "Can I send my dental scans or reports before travelling?",
+    "Yes. When individual clinical review is appropriate, patients can use the secure patient portal to share available dental records or imaging with the clinic.",
+  ],
+  [
+    "Will a representative stay in contact during my Hyderabad visit?",
+    "JV Dental can provide a representative to support practical coordination during the patient's stay and clinic visits. This is patient and travel assistance and does not replace the treating clinical team.",
+  ],
+  [
+    "What happens after I return home?",
+    "Post-treatment questions and follow-up communication can continue remotely. The exact follow-up schedule depends on the treatment performed and the treating dentist's recommendations.",
+  ],
+] as const;
+
 export default function InternationalPage() {
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(([question, answer]) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: { "@type": "Answer", text: answer },
+    })),
+  };
+
   return (
     <main className="international-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <SiteHeader />
 
       <section className="hero international-hero">
@@ -93,6 +131,19 @@ export default function InternationalPage() {
           <Link className="button" href="/dental-treatments">View dental treatments <span aria-hidden="true">→</span></Link>
           <Link className="button button--ghost" href="/dental-implants">Dental implant care</Link>
           <Link className="button button--ghost" href="/guided-implants">Guided implants</Link>
+        </div>
+      </section>
+
+      <section className="section">
+        <p className="section-kicker">International dental treatment questions</p>
+        <h2 className="section-title">Questions to answer before planning treatment abroad.</h2>
+        <div className="principle-list international-trust-list">
+          {faqs.map(([question, answer], index) => (
+            <article className="principle" key={question}>
+              <span className="principle__number">{String(index + 1).padStart(2, "0")}</span>
+              <div><h3>{question}</h3><p>{answer}</p></div>
+            </article>
+          ))}
         </div>
       </section>
 
