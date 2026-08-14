@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 const allowedKinds = new Set(["clinic_consultation", "video_consultation"]);
 const allowedWindows = new Set(["morning", "afternoon", "evening"]);
@@ -24,18 +25,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "One or more fields are too long." }, { status: 400 });
     }
 
+    const sessionClient = await createClient();
+    const { data: { user } } = await sessionClient.auth.getUser();
     const supabase = createAdminClient();
+
+    let patientId: string | null = null;
+    if (user) {
+      const { data: staff } = await supabase
+        .from("staff_profiles")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (!staff) patientId = user.id;
+    }
+
     const { data, error } = await supabase
       .from("appointment_requests")
       .insert({
         booking_kind: bookingKind,
         full_name: fullName,
         phone,
-        email,
+        email: email ?? user?.email ?? null,
         city,
         preferred_date: preferredDate,
         preferred_time_window: preferredTimeWindow,
         dental_concern: dentalConcern,
+        patient_id: patientId,
       })
       .select("id,status")
       .single();
