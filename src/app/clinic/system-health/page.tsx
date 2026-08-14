@@ -22,30 +22,16 @@ export default async function SystemHealthPage() {
   const { supabase, staff } = await requireStaff();
   if (!["owner", "admin"].includes(staff.role)) redirect("/clinic");
 
-  const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const since7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const { data } = await supabase
+    .from("portal_error_events")
+    .select("id,surface,route,error_name,error_digest,created_at")
+    .order("created_at", { ascending: false })
+    .limit(50);
 
-  const [recentResult, last24hResult, last7dResult] = await Promise.all([
-    supabase
-      .from("portal_error_events")
-      .select("id,surface,route,error_name,error_digest,created_at")
-      .order("created_at", { ascending: false })
-      .limit(50),
-    supabase
-      .from("portal_error_events")
-      .select("id", { count: "exact", head: true })
-      .gte("created_at", since24h),
-    supabase
-      .from("portal_error_events")
-      .select("id", { count: "exact", head: true })
-      .gte("created_at", since7d),
-  ]);
-
-  const recent = (recentResult.data ?? []) as ErrorEvent[];
-  const last24h = last24hResult.count ?? 0;
-  const last7d = last7dResult.count ?? 0;
+  const recent = (data ?? []) as ErrorEvent[];
   const patientErrors = recent.filter((event) => event.surface === "patient").length;
   const clinicErrors = recent.filter((event) => event.surface === "clinic").length;
+  const uniqueFingerprints = new Set(recent.map((event) => event.error_digest)).size;
 
   return (
     <main className="portal-shell">
@@ -60,15 +46,15 @@ export default async function SystemHealthPage() {
       <section className="portal-main">
         <div className="portal-grid">
           <article className="portal-card">
-            <div className="portal-card__header"><h2>Last 24 hours</h2><span className="status-pill">{last24h}</span></div>
-            <div className="portal-card__body"><p>Authenticated portal failures recorded during the last day.</p></div>
+            <div className="portal-card__header"><h2>Recent errors</h2><span className="status-pill">{recent.length}</span></div>
+            <div className="portal-card__body"><p>Up to the latest 50 authenticated portal failures are shown below.</p></div>
           </article>
           <article className="portal-card">
-            <div className="portal-card__header"><h2>Last 7 days</h2><span className="status-pill">{last7d}</span></div>
-            <div className="portal-card__body"><p>Use this trend to spot recurring production regressions after deployments.</p></div>
+            <div className="portal-card__header"><h2>Unique fingerprints</h2><span className="status-pill">{uniqueFingerprints}</span></div>
+            <div className="portal-card__body"><p>Repeated fingerprints help identify recurring production regressions without storing raw errors.</p></div>
           </article>
           <article className="portal-card">
-            <div className="portal-card__header"><h2>Recent surfaces</h2><span className="status-pill">50 max</span></div>
+            <div className="portal-card__header"><h2>Portal surfaces</h2><span className="status-pill">50 max</span></div>
             <div className="portal-card__body"><p>Patient: <strong>{patientErrors}</strong> · Clinic: <strong>{clinicErrors}</strong></p></div>
           </article>
         </div>
