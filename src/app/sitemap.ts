@@ -11,6 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com").replace(/\/$/, "");
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${siteUrl}/`, changeFrequency: "weekly", priority: 1 },
+    { url: `${siteUrl}/dentist-ameerpet`, changeFrequency: "monthly", priority: 0.95 },
     { url: `${siteUrl}/dental-treatments`, changeFrequency: "monthly", priority: 0.95 },
     { url: `${siteUrl}/dental-implants`, changeFrequency: "monthly", priority: 0.95 },
     { url: `${siteUrl}/full-arch-implants`, changeFrequency: "monthly", priority: 0.95 },
