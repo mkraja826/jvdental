@@ -23,10 +23,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const { doctor } = await getDoctor(slug);
   if (!doctor) return { title: "Doctor | JV Dental" };
+
+  const professionalTitle = doctor.professional_title ?? "Dentist";
+  const title = doctor.seo_title || `${doctor.full_name} | ${professionalTitle} in Hyderabad`;
+  const description = doctor.seo_description || doctor.short_intro || `${doctor.full_name} is part of the clinical team at JV Dental & Implant Centre in S R Nagar, near Ameerpet, Hyderabad.`;
+
   return {
-    title: doctor.seo_title || doctor.full_name,
-    description: doctor.seo_description || doctor.short_intro || `Professional profile for ${doctor.full_name} at JV Dental.`,
+    title,
+    description,
     alternates: { canonical: `/doctors/${doctor.slug}` },
+    openGraph: {
+      type: "profile",
+      title,
+      description,
+      url: `/doctors/${doctor.slug}`,
+    },
+    robots: { index: true, follow: true },
   };
 }
 
@@ -52,9 +64,39 @@ export default async function DoctorPortfolioPage({ params }: PageProps) {
   const links = linksResult.data ?? [];
   const articles = articlesResult.data ?? [];
   const cases = casesResult.data ?? [];
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com").replace(/\/$/, "");
+  const profileUrl = `${siteUrl}/doctors/${doctor.slug}`;
+  const sameAs = Array.from(new Set([
+    doctor.practo_url,
+    ...links.map((item) => item.url),
+  ].filter((value): value is string => Boolean(value))));
+
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": `${profileUrl}#person`,
+    name: doctor.full_name,
+    url: profileUrl,
+    mainEntityOfPage: profileUrl,
+    ...(doctor.professional_title ? { jobTitle: doctor.professional_title } : {}),
+    ...(doctor.short_intro || doctor.biography ? { description: doctor.short_intro || doctor.biography } : {}),
+    ...(imageUrl ? { image: imageUrl } : {}),
+    ...(doctor.specialties?.length ? { knowsAbout: doctor.specialties } : {}),
+    ...(sameAs.length ? { sameAs } : {}),
+    affiliation: {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      name: "JV Dental & Implant Centre",
+      url: siteUrl,
+    },
+  };
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema).replace(/</g, "\\u003c") }}
+      />
       <SiteHeader />
 
       <section className="doctor-profile-hero">
@@ -83,7 +125,7 @@ export default async function DoctorPortfolioPage({ params }: PageProps) {
           </div>
 
           <div className="hero__actions">
-            <Link className="button" href="/book">Book an implant assessment →</Link>
+            <Link className="button" href="/book">Book a dental consultation →</Link>
             {doctor.practo_url ? <a className="button button--ghost" href={doctor.practo_url} target="_blank" rel="noreferrer">View Practo profile</a> : null}
           </div>
         </div>
@@ -180,9 +222,9 @@ export default async function DoctorPortfolioPage({ params }: PageProps) {
       ) : null}
 
       <section className="section final-cta">
-        <p className="eyebrow">International implant assessment</p>
+        <p className="eyebrow">Dental consultation</p>
         <h2>Considering treatment with {doctor.full_name}?</h2>
-        <p>Book a clinic or video consultation first. When individual record review is needed, the secure patient portal can be used to share your dental history and available OPG or CBCT.</p>
+        <p>Book a clinic or video consultation first. When individual record review is needed, the secure patient portal can be used to share your dental history and available imaging.</p>
         <Link className="button" href="/book">Book your consultation →</Link>
       </section>
 
