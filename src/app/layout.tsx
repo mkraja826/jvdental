@@ -47,9 +47,6 @@ export const metadata: Metadata = {
     "dental clinic near Ameerpet",
     "JV Dental",
   ],
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     siteName: "JV Dental & Implant Centre",
