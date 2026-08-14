@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { markAllNotificationsRead, markNotificationRead } from "@/app/notifications/actions";
+import PatientNavigation from "@/components/patient-navigation";
+import PendingSubmit from "@/components/pending-submit";
 import { createClient } from "@/lib/supabase/server";
 
 function destination(eventType: string) {
@@ -38,13 +40,7 @@ export default async function PatientNotificationsPage() {
 
       <div className="portal-layout">
         <aside className="portal-sidebar">
-          <nav aria-label="Patient notification navigation">
-            <Link href="/patient">Overview</Link>
-            <Link href="/patient/notifications">Notifications</Link>
-            <Link href="/patient/messages">Messages</Link>
-            <Link href="/patient/plan">Treatment plan</Link>
-            <Link href="/patient/travel">Travel</Link>
-          </nav>
+          <PatientNavigation unreadNotifications={unread} />
         </aside>
 
         <section className="portal-main">
@@ -54,7 +50,7 @@ export default async function PatientNotificationsPage() {
 
           {unread ? (
             <form action={markAllNotificationsRead} style={{ margin: "24px 0" }}>
-              <button className="button button--ghost" type="submit">Mark all as read</button>
+              <PendingSubmit label="Mark all as read" pendingLabel="Marking…" className="button button--ghost" />
             </form>
           ) : null}
 
@@ -71,11 +67,11 @@ export default async function PatientNotificationsPage() {
                   </div>
                   <p style={{ margin: 0, color: "var(--muted)" }}>{item.body}</p>
                   <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
-                    <Link className="text-link" href={destination(item.event_type)}>Open relevant section →</Link>
+                    <Link className="text-link" href={destination(item.event_type)} prefetch>Open relevant section →</Link>
                     {!item.read_at ? (
                       <form action={markNotificationRead}>
                         <input type="hidden" name="notification_id" value={item.id} />
-                        <button className="text-link" type="submit" style={{ background: "none", border: 0, cursor: "pointer" }}>Mark read</button>
+                        <PendingSubmit label="Mark read" pendingLabel="Marking…" className="text-link" />
                       </form>
                     ) : null}
                   </div>
