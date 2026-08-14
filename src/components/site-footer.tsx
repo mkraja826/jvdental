@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const navigation = [
+  ["Dental treatments", "/dental-treatments"],
   ["Dental implants", "/dental-implants"],
   ["Guided implants", "/guided-implants"],
   ["International patients", "/international"],
@@ -40,9 +41,9 @@ export function SiteFooter() {
     <footer className="footer footer--contact">
       <div className="footer-brand">
         <Link href="/" aria-label="JV Dental home">
-          <Image className="footer-logo" src="/jv-dental-logo.svg" alt="JV Dental Implant Centre" width={480} height={242} unoptimized />
+          <Image className="footer-logo" src="/jv-dental-logo.svg" alt="JV Dental & Implant Centre Hyderabad" width={480} height={242} unoptimized />
         </Link>
-        <p>JV Dental &amp; Implant Centre · Hyderabad, India. Implant dentistry, full-mouth rehabilitation, digital treatment planning and coordinated care.</p>
+        <p>JV Dental &amp; Implant Centre · S R Nagar / Ameerpet, Hyderabad. Complete dental care, restorative dentistry, advanced implant treatment, full-mouth rehabilitation and coordinated care for local and international patients.</p>
       </div>
 
       <nav className="footer-links" aria-label="Footer navigation">
