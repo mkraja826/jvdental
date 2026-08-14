@@ -6,6 +6,15 @@ import { createClient } from "@/lib/supabase/server";
 const allowedKinds = new Set(["clinic_consultation", "video_consultation"]);
 const allowedWindows = new Set(["morning", "afternoon", "evening"]);
 
+async function sha256(value: string) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function createPaymentAccessToken() {
+  return `${crypto.randomUUID()}${crypto.randomUUID()}`.replaceAll("-", "");
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -41,6 +50,10 @@ export async function POST(request: Request) {
       if (!staff) patientId = user.id;
     }
 
+    const paymentAccessToken = createPaymentAccessToken();
+    const paymentAccessTokenHash = await sha256(paymentAccessToken);
+    const paymentAccessTokenExpiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+
     const { data, error } = await supabase
       .from("appointment_requests")
       .insert({
@@ -53,6 +66,8 @@ export async function POST(request: Request) {
         preferred_time_window: preferredTimeWindow,
         dental_concern: dentalConcern,
         patient_id: patientId,
+        payment_access_token_hash: paymentAccessTokenHash,
+        payment_access_token_expires_at: paymentAccessTokenExpiresAt,
       })
       .select("id,status")
       .single();
@@ -66,7 +81,7 @@ export async function POST(request: Request) {
       actorUserId: patientId,
     });
 
-    return NextResponse.json({ requestId: data.id, status: data.status });
+    return NextResponse.json({ requestId: data.id, status: data.status, paymentAccessToken });
   } catch (error) {
     console.error("booking request failed", error);
     return NextResponse.json({ error: "Booking could not be submitted right now." }, { status: 500 });
