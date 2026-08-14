@@ -15,12 +15,13 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/patient/login");
 
+  const now = new Date().toISOString();
   const [profileResult, caseResult, documentResult, conversationResult, appointmentResult, planResult, travelResult, implantResult, notificationResult] = await Promise.all([
     supabase.from("patient_profiles").select("full_name,intake_completed_at").eq("user_id", user.id).maybeSingle(),
     supabase.from("patient_cases").select("id,status,case_number").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("patient_documents").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
     supabase.from("conversations").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
-    supabase.from("appointments").select("id,appointment_type,starts_at,status,meeting_url,conference_provider,external_sync_status").eq("patient_id", user.id).eq("status", "scheduled").order("starts_at", { ascending: true }).limit(1).maybeSingle(),
+    supabase.from("appointments").select("id,appointment_type,starts_at,status,meeting_url,conference_provider,external_sync_status").eq("patient_id", user.id).eq("status", "scheduled").gte("starts_at", now).order("starts_at", { ascending: true }).limit(1).maybeSingle(),
     supabase.from("treatment_plans").select("id,status,version").eq("patient_id", user.id).in("status", ["preliminary", "sent", "requested_changes", "accepted"]).order("version", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("travel_plans").select("id,status,arrival_date").eq("patient_id", user.id).order("updated_at", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("implant_records").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
@@ -40,6 +41,7 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
   const intakeComplete = Boolean(profile?.intake_completed_at);
   const hasDocuments = documentCount > 0;
   const reviewStarted = Boolean(caseRecord?.status && !["new", "records_requested", "records_received"].includes(caseRecord.status));
+  const isVideoAppointment = appointment?.appointment_type === "video_consultation";
 
   const journey = [
     { label: "Account", state: "Complete", active: false },
@@ -138,9 +140,14 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
             </article>
 
             <article className="portal-card" id="appointments">
-              <div className="portal-card__header"><h2>Next consultation</h2><span className="status-pill">{appointment?.conference_provider === "google_meet" ? "Google Meet" : appointment ? "Scheduled" : "Waiting"}</span></div>
+              <div className="portal-card__header"><h2>Next consultation</h2><span className="status-pill">{isVideoAppointment ? (appointment?.conference_provider === "google_meet" ? "Google Meet" : "Video") : appointment ? "Clinic visit" : "Waiting"}</span></div>
               <div className="portal-card__body">
-                {appointment ? <><p><strong>{appointment.appointment_type.replaceAll("_", " ")}</strong><br />{new Date(appointment.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })} IST</p>{appointment.meeting_url ? <a className="button button--ghost" href={appointment.meeting_url} target="_blank" rel="noreferrer">Join consultation →</a> : <p className="form-note">The clinic has scheduled the consultation. Joining information will appear here when the meeting link is ready.</p>}</> : <p>No consultation has been scheduled yet.</p>}
+                {appointment ? <>
+                  <p><strong>{appointment.appointment_type.replaceAll("_", " ")}</strong><br />{new Date(appointment.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })} IST</p>
+                  {isVideoAppointment ? (
+                    appointment.meeting_url ? <a className="button button--ghost" href={appointment.meeting_url} target="_blank" rel="noreferrer">Join consultation →</a> : <p className="form-note">Your video consultation is scheduled. The secure joining link will appear here when it is available.</p>
+                  ) : <p className="form-note">Your clinic appointment is scheduled. Please arrive a little early for reception and check-in.</p>}
+                </> : <p>No upcoming consultation has been scheduled yet.</p>}
               </div>
             </article>
 
