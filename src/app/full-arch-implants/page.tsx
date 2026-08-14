@@ -3,7 +3,8 @@ import { ImplantServicePage } from "@/components/implant-service-page";
 
 export const metadata: Metadata = {
   title: "Full-Arch Dental Implants in Hyderabad",
-  description: "Learn how JV Dental approaches full-arch implant rehabilitation in Hyderabad with diagnosis-led surgical and prosthetic planning.",
+  description: "Full-arch implant rehabilitation at JV Dental near Ameerpet, Hyderabad, with diagnosis-led surgical and prosthetic planning for complex tooth replacement.",
+  alternates: { canonical: "/full-arch-implants" },
 };
 
 export default function FullArchImplantsPage() {
