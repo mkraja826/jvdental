@@ -68,6 +68,7 @@ export default function ClinicNavigation({
       label: "Administration",
       items: [
         { href: "/clinic/staff", label: "Staff access", show: canManageStaff },
+        { href: "/clinic/system-health", label: "System health", show: canManageStaff },
         { href: "/clinic/integrations", label: "Integrations", show: canManageIntegrations },
         { href: "/clinic/assistant", label: "Public AI assistant", show: canManageAssistant },
       ],
