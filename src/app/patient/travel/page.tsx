@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { saveTravelPlan } from "@/app/patient/travel/actions";
+import PatientNavigation from "@/components/patient-navigation";
+import PendingSubmit from "@/components/pending-submit";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function PatientTravelPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -34,12 +36,7 @@ export default async function PatientTravelPage({ searchParams }: { searchParams
       </header>
       <div className="portal-layout">
         <aside className="portal-sidebar">
-          <nav aria-label="Patient travel navigation">
-            <Link href="/patient">Overview</Link>
-            <Link href="/patient/plan">Treatment plan</Link>
-            <Link href="/patient/messages">Messages</Link>
-            <Link href="/patient/travel">Travel</Link>
-          </nav>
+          <PatientNavigation />
         </aside>
         <section className="portal-main">
           <p className="portal-overline">International patient journey</p>
@@ -85,7 +82,7 @@ export default async function PatientTravelPage({ searchParams }: { searchParams
                       <label>Companion phone<input name="companion_phone" defaultValue={travel?.companion_phone ?? ""} /></label>
                     </div>
                     <label>Notes for the international patient coordinator<textarea name="patient_notes" rows={4} defaultValue={travel?.patient_notes ?? ""} placeholder="Mobility, arrival timing, accommodation questions or other practical details." /></label>
-                    <button className="button" type="submit">Send travel details →</button>
+                    <PendingSubmit label="Send travel details →" pendingLabel="Sending…" />
                   </form>
                 )}
               </div>
