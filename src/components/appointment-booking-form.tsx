@@ -62,7 +62,11 @@ export default function AppointmentBookingForm() {
       const orderResponse = await fetch("/api/payments/razorpay/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ requestId: booking.requestId, bookingKind }),
+        body: JSON.stringify({
+          requestId: booking.requestId,
+          bookingKind,
+          paymentAccessToken: booking.paymentAccessToken,
+        }),
       });
       const order = await orderResponse.json();
       if (!orderResponse.ok) throw new Error(order.error || "Payment could not be started.");
