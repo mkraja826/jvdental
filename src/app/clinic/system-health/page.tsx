@@ -22,16 +22,27 @@ export default async function SystemHealthPage() {
   const { supabase, staff } = await requireStaff();
   if (!["owner", "admin"].includes(staff.role)) redirect("/clinic");
 
-  const { data } = await supabase
-    .from("portal_error_events")
-    .select("id,surface,route,error_name,error_digest,created_at")
-    .order("created_at", { ascending: false })
-    .limit(50);
+  const [errorsResult, registrationsResult, intakesResult, bookingsResult, acceptedPlansResult] = await Promise.all([
+    supabase
+      .from("portal_error_events")
+      .select("id,surface,route,error_name,error_digest,created_at")
+      .order("created_at", { ascending: false })
+      .limit(50),
+    supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "patient_registered"),
+    supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "patient_intake_completed"),
+    supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "booking_requested"),
+    supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "treatment_plan_accepted"),
+  ]);
 
-  const recent = (data ?? []) as ErrorEvent[];
+  const recent = (errorsResult.data ?? []) as ErrorEvent[];
   const patientErrors = recent.filter((event) => event.surface === "patient").length;
   const clinicErrors = recent.filter((event) => event.surface === "clinic").length;
   const uniqueFingerprints = new Set(recent.map((event) => event.error_digest)).size;
+
+  const registrations = registrationsResult.count ?? 0;
+  const intakes = intakesResult.count ?? 0;
+  const bookings = bookingsResult.count ?? 0;
+  const acceptedPlans = acceptedPlansResult.count ?? 0;
 
   return (
     <main className="portal-shell">
@@ -39,12 +50,31 @@ export default async function SystemHealthPage() {
         <div>
           <p className="portal-overline">Administration</p>
           <h1 className="portal-title">System health</h1>
-          <p className="portal-subtitle">Privacy-safe operational errors from authenticated clinic and patient portal sessions.</p>
+          <p className="portal-subtitle">Privacy-safe product funnel and operational error monitoring for JV Dental.</p>
         </div>
       </header>
 
       <section className="portal-main">
         <div className="portal-grid">
+          <article className="portal-card">
+            <div className="portal-card__header"><h2>Patient registrations</h2><span className="status-pill">{registrations}</span></div>
+            <div className="portal-card__body"><p>Successful patient account creation events recorded by the server.</p></div>
+          </article>
+          <article className="portal-card">
+            <div className="portal-card__header"><h2>Completed intakes</h2><span className="status-pill">{intakes}</span></div>
+            <div className="portal-card__body"><p>Patients who successfully completed the structured medical and dental intake workflow.</p></div>
+          </article>
+          <article className="portal-card">
+            <div className="portal-card__header"><h2>Booking requests</h2><span className="status-pill">{bookings}</span></div>
+            <div className="portal-card__body"><p>Submitted clinic and video consultation booking requests.</p></div>
+          </article>
+          <article className="portal-card">
+            <div className="portal-card__header"><h2>Accepted plans</h2><span className="status-pill">{acceptedPlans}</span></div>
+            <div className="portal-card__body"><p>Preliminary treatment plans explicitly accepted through the patient portal.</p></div>
+          </article>
+        </div>
+
+        <div className="portal-grid" style={{ marginTop: 24 }}>
           <article className="portal-card">
             <div className="portal-card__header"><h2>Recent errors</h2><span className="status-pill">{recent.length}</span></div>
             <div className="portal-card__body"><p>Up to the latest 50 authenticated portal failures are shown below.</p></div>
@@ -81,7 +111,7 @@ export default async function SystemHealthPage() {
               </div>
             )}
             <p className="form-note" style={{ marginTop: 20 }}>
-              This monitor intentionally excludes clinical content, form values, raw exception messages and stack traces.
+              Product analytics and error monitoring intentionally exclude clinical content, form values, raw exception messages, stack traces and payment-card data.
             </p>
           </div>
         </article>
