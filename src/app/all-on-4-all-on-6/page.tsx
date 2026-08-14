@@ -3,7 +3,8 @@ import { ImplantServicePage } from "@/components/implant-service-page";
 
 export const metadata: Metadata = {
   title: "All-on-4 & All-on-6 Dental Implants in Hyderabad",
-  description: "Learn how JV Dental evaluates All-on-4 and All-on-6 full-arch implant options in Hyderabad using diagnosis-led restorative and surgical planning.",
+  description: "All-on-4 and All-on-6 assessment at JV Dental near Ameerpet, Hyderabad, using diagnosis-led full-arch restorative and surgical planning.",
+  alternates: { canonical: "/all-on-4-all-on-6" },
 };
 
 export default function AllOnFourSixPage() {
