@@ -3,6 +3,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
 type ServiceStep = { title: string; body: string };
+type ServiceFaq = readonly [question: string, answer: string];
 
 type ImplantServicePageProps = {
   eyebrow: string;
@@ -12,11 +13,25 @@ type ImplantServicePageProps = {
   suitability: string;
   steps: ServiceStep[];
   considerations: string[];
+  faqs?: readonly ServiceFaq[];
 };
 
-export function ImplantServicePage({ eyebrow, title, accent, description, suitability, steps, considerations }: ImplantServicePageProps) {
+export function ImplantServicePage({ eyebrow, title, accent, description, suitability, steps, considerations, faqs = [] }: ImplantServicePageProps) {
+  const faqSchema = faqs.length
+    ? {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqs.map(([question, answer]) => ({
+        "@type": "Question",
+        name: question,
+        acceptedAnswer: { "@type": "Answer", text: answer },
+      })),
+    }
+    : null;
+
   return (
     <main className="treatment-page">
+      {faqSchema ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} /> : null}
       <SiteHeader />
 
       <section className="hero treatment-hero">
@@ -77,6 +92,19 @@ export function ImplantServicePage({ eyebrow, title, accent, description, suitab
           </div>
         </div>
       </section>
+
+      {faqs.length ? <section className="section section--tight">
+        <p className="section-kicker">Implant treatment questions</p>
+        <h2 className="section-title">Clear answers before an implant assessment.</h2>
+        <div className="principle-list treatment-steps">
+          {faqs.map(([question, answer], index) => (
+            <article className="principle treatment-step" key={question}>
+              <span className="principle__number">{String(index + 1).padStart(2, "0")}</span>
+              <div><h3>{question}</h3><p>{answer}</p></div>
+            </article>
+          ))}
+        </div>
+      </section> : null}
 
       <section className="section section--tight treatment-next-step">
         <p className="section-kicker">Talk to the dental team</p>
