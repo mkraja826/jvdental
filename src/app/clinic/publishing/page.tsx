@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PendingSubmit from "@/components/pending-submit";
 import { publishBlogToBlogger, saveBlogPost, setBlogStatus } from "@/app/clinic/publishing/actions";
 import { requireClinicalPublisher } from "@/lib/content/permissions";
 
@@ -102,7 +103,7 @@ export default async function PublishingPage({ searchParams }: { searchParams: P
                       <option value="published">Publish on JV Dental</option>
                     </select>
                   </label>
-                  <button className="button" type="submit">Save article</button>
+                  <PendingSubmit label="Save article" pendingLabel="Saving article…" className="button" />
                 </form>
               </div>
             </article>
@@ -139,12 +140,16 @@ export default async function PublishingPage({ searchParams }: { searchParams: P
                               <option value="published">Published</option>
                               <option value="archived">Archived</option>
                             </select>
-                            <button className="text-link" type="submit" style={{ marginLeft: 8, background: "none", border: 0, cursor: "pointer" }}>Update</button>
+                            <PendingSubmit label="Update" pendingLabel="Updating…" className="text-link" />
                           </form>
                           {canPush ? (
                             <form action={publishBlogToBlogger}>
                               <input type="hidden" name="blog_post_id" value={post.id} />
-                              <button className="button button--ghost" type="submit">{bloggerPublication?.external_post_id ? "Sync Blogger" : "Publish to Blogger"}</button>
+                              <PendingSubmit
+                                label={bloggerPublication?.external_post_id ? "Sync Blogger" : "Publish to Blogger"}
+                                pendingLabel={bloggerPublication?.external_post_id ? "Syncing…" : "Publishing…"}
+                                className="button button--ghost"
+                              />
                             </form>
                           ) : null}
                         </div>
