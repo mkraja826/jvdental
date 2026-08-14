@@ -23,12 +23,14 @@ export default async function PatientPlanPage({ searchParams }: { searchParams: 
     .limit(1)
     .maybeSingle();
 
+  const now = new Date().toISOString();
   const [{ data: appointments }, { data: feedback }] = plan ? await Promise.all([
     supabase
       .from("appointments")
       .select("id,starts_at,ends_at,meeting_url,status,appointment_type,timezone")
       .eq("case_id", plan.case_id)
       .eq("status", "scheduled")
+      .gte("starts_at", now)
       .order("starts_at", { ascending: true }),
     supabase
       .from("treatment_plan_feedback")
@@ -82,14 +84,19 @@ export default async function PatientPlanPage({ searchParams }: { searchParams: 
               </article>
 
               <article className="portal-card">
-                <div className="portal-card__header"><h2>Consultation</h2><span className="status-pill">{appointments?.length ?? 0}</span></div>
+                <div className="portal-card__header"><h2>Upcoming consultations</h2><span className="status-pill">{appointments?.length ?? 0}</span></div>
                 <div className="portal-card__body">
-                  {!appointments?.length ? <p>No upcoming consultation is currently scheduled.</p> : appointments.map((appointment) => (
-                    <div key={appointment.id}>
-                      <p><strong>{new Date(appointment.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })} IST</strong></p>
-                      {appointment.meeting_url ? <a className="button button--ghost" href={appointment.meeting_url} target="_blank" rel="noreferrer">Join video consultation →</a> : <p>Your clinic team will share the meeting link here.</p>}
-                    </div>
-                  ))}
+                  {!appointments?.length ? <p>No upcoming consultation is currently scheduled.</p> : appointments.map((appointment) => {
+                    const isVideo = appointment.appointment_type === "video_consultation";
+                    return (
+                      <div key={appointment.id} style={{ marginBottom: 18 }}>
+                        <p><strong>{isVideo ? "Video consultation" : "Clinic consultation"}</strong><br />{new Date(appointment.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })} IST</p>
+                        {isVideo ? (
+                          appointment.meeting_url ? <a className="button button--ghost" href={appointment.meeting_url} target="_blank" rel="noreferrer">Join video consultation →</a> : <p className="form-note">The secure joining link will appear here when it is available.</p>
+                        ) : <p className="form-note">Please arrive a little early for reception and check-in.</p>}
+                      </div>
+                    );
+                  })}
                 </div>
               </article>
             </div>
