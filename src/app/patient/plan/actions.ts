@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { trackProductEvent } from "@/lib/product-analytics";
 import { createClient } from "@/lib/supabase/server";
 
 export async function respondToTreatmentPlan(formData: FormData) {
@@ -24,6 +25,13 @@ export async function respondToTreatmentPlan(formData: FormData) {
     message,
   });
   if (error) redirect("/patient/plan?error=response");
+
+  await trackProductEvent({
+    eventName: response === "accepted" ? "treatment_plan_accepted" : "treatment_plan_changes_requested",
+    surface: "patient",
+    actorType: "patient",
+    actorUserId: user.id,
+  });
 
   revalidatePath("/patient/plan");
   revalidatePath("/patient");
