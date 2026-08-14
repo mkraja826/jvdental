@@ -23,7 +23,7 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
     supabase.from("treatment_plans").select("id,status,version").eq("patient_id", user.id).in("status", ["preliminary", "sent", "requested_changes", "accepted"]).order("version", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("travel_plans").select("id,status,arrival_date").eq("patient_id", user.id).order("updated_at", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("implant_records").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
-    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("recipient_type", "patient").is("read_at", null),
+    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("recipient_user_id", user.id).eq("recipient_type", "patient").is("read_at", null),
   ]);
 
   const profile = profileResult.data;
