@@ -8,7 +8,7 @@ export default async function ClinicInboxPage() {
     .from("conversations")
     .select("id,patient_id,case_id,subject,updated_at")
     .order("updated_at", { ascending: false })
-    .limit(100);
+    .limit(60);
 
   const patientIds = [...new Set((conversations ?? []).map((item) => item.patient_id))];
   const caseIds = [...new Set((conversations ?? []).map((item) => item.case_id).filter((id): id is string => Boolean(id)))];
@@ -56,7 +56,7 @@ export default async function ClinicInboxPage() {
                     const profile = profileMap.get(conversation.patient_id);
                     const caseRecord = conversation.case_id ? caseMap.get(conversation.case_id) : null;
                     return (
-                      <Link className="status-row" href={`/clinic/inbox/${conversation.id}`} key={conversation.id}>
+                      <Link className="status-row" href={`/clinic/inbox/${conversation.id}`} key={conversation.id} prefetch>
                         <strong>{profile?.full_name ?? "Patient"}<br /><small>{profile?.country ?? "Country not recorded"}</small></strong>
                         <span>{caseRecord ? `JV-${caseRecord.case_number}` : "General enquiry"}</span>
                         <span className="status-pill">{caseRecord?.status?.replaceAll("_", " ") ?? "Message"}</span>
