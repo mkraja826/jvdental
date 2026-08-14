@@ -19,16 +19,18 @@ export default async function PatientMessagesPage({ searchParams }: { searchPara
     .limit(1)
     .maybeSingle();
 
-  const { data: messages } = conversation
+  const { data: recentMessages } = conversation
     ? await supabase
         .from("messages")
         .select("id,sender_user_id,body,created_at")
         .eq("conversation_id", conversation.id)
         .eq("is_internal", false)
-        .order("created_at", { ascending: true })
+        .order("created_at", { ascending: false })
+        .limit(100)
     : { data: [] };
 
-  const staffIds = [...new Set((messages ?? []).map((message) => message.sender_user_id).filter((id) => id !== user.id))];
+  const messages = [...(recentMessages ?? [])].reverse();
+  const staffIds = [...new Set(messages.map((message) => message.sender_user_id).filter((id) => id !== user.id))];
   const { data: staffRows } = staffIds.length
     ? await supabase.from("staff_profiles").select("user_id,full_name,role").in("user_id", staffIds)
     : { data: [] };
@@ -60,7 +62,7 @@ export default async function PatientMessagesPage({ searchParams }: { searchPara
             </div>
             <div className="portal-card__body">
               <div style={{ display: "grid", gap: 14, marginBottom: 24 }}>
-                {(messages ?? []).length ? (messages ?? []).map((message) => {
+                {messages.length ? messages.map((message) => {
                   const mine = message.sender_user_id === user.id;
                   const sender = staff.get(message.sender_user_id);
                   return (
@@ -75,6 +77,7 @@ export default async function PatientMessagesPage({ searchParams }: { searchPara
                   <p>No messages yet. Send a question to start the secure case conversation.</p>
                 )}
               </div>
+              {messages.length === 100 ? <p className="form-note">Showing the 100 most recent messages in this conversation.</p> : null}
 
               <form action={sendPatientMessage} style={{ display: "grid", gap: 12 }}>
                 <label>
