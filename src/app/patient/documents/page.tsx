@@ -24,7 +24,8 @@ export default async function PatientDocumentsPage() {
     .select("id,category,storage_path,file_name,file_size_bytes,created_at")
     .eq("patient_id", user.id)
     .eq("case_id", caseRecord.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(30);
 
   const records = await Promise.all((documents ?? []).map(async (document) => {
     const { data } = await supabase.storage
@@ -80,6 +81,7 @@ export default async function PatientDocumentsPage() {
                   ))}
                 </div>
               ) : <p>No clinical records uploaded yet.</p>}
+              {records.length === 30 ? <p className="form-note">Showing your 30 most recent uploads.</p> : null}
             </div>
           </article>
         </section>
