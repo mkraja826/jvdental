@@ -15,13 +15,12 @@ export default async function PatientDashboard({ searchParams }: PatientDashboar
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/patient/login");
 
-  const now = new Date().toISOString();
   const [profileResult, caseResult, documentResult, conversationResult, appointmentResult, planResult, travelResult, implantResult, notificationResult] = await Promise.all([
     supabase.from("patient_profiles").select("full_name,intake_completed_at").eq("user_id", user.id).maybeSingle(),
     supabase.from("patient_cases").select("id,status,case_number").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("patient_documents").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
     supabase.from("conversations").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
-    supabase.from("appointments").select("id,appointment_type,starts_at,status,meeting_url,conference_provider,external_sync_status").eq("patient_id", user.id).eq("status", "scheduled").gte("starts_at", now).order("starts_at", { ascending: true }).limit(1).maybeSingle(),
+    supabase.from("patient_upcoming_appointments").select("id,appointment_type,starts_at,status,meeting_url,conference_provider,external_sync_status").eq("patient_id", user.id).order("starts_at", { ascending: true }).limit(1).maybeSingle(),
     supabase.from("treatment_plans").select("id,status,version").eq("patient_id", user.id).in("status", ["preliminary", "sent", "requested_changes", "accepted"]).order("version", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("travel_plans").select("id,status,arrival_date").eq("patient_id", user.id).order("updated_at", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("implant_records").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
