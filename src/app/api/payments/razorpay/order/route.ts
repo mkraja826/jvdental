@@ -40,6 +40,9 @@ export async function POST(request: Request) {
     if (bookingError || !booking || booking.booking_kind !== bookingKind) {
       return NextResponse.json({ error: "Booking request was not found." }, { status: 404 });
     }
+    if (booking.status !== "requested") {
+      return NextResponse.json({ error: "Payment checkout has already been started for this booking." }, { status: 409 });
+    }
 
     const suppliedTokenHash = await sha256(paymentAccessToken);
     const tokenExpired = !booking.payment_access_token_expires_at || new Date(booking.payment_access_token_expires_at).getTime() <= Date.now();
@@ -77,7 +80,15 @@ export async function POST(request: Request) {
       currency: "INR",
       status: "created",
     });
-    await supabase.from("appointment_requests").update({ status: "payment_pending" }).eq("id", requestId);
+    await supabase
+      .from("appointment_requests")
+      .update({
+        status: "payment_pending",
+        payment_access_token_hash: null,
+        payment_access_token_expires_at: null,
+      })
+      .eq("id", requestId)
+      .eq("status", "requested");
 
     return NextResponse.json({
       paymentRequired: true,
