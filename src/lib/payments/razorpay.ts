@@ -1,3 +1,4 @@
+import { trackProductEvent } from "@/lib/product-analytics";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function reconcileBookingPayment(requestId: string, orderId: string, paymentId: string) {
@@ -11,6 +12,7 @@ export async function reconcileBookingPayment(requestId: string, orderId: string
     .single();
   if (paymentError || !payment) return false;
 
+  const alreadyPaid = payment.status === "paid";
   const { error: paymentUpdateError } = await supabase
     .from("booking_payments")
     .update({ provider_payment_id: paymentId, status: "paid" })
@@ -22,7 +24,17 @@ export async function reconcileBookingPayment(requestId: string, orderId: string
     .update({ status: "paid" })
     .eq("id", requestId)
     .in("status", ["requested", "payment_pending", "paid"]);
-  return !requestUpdateError;
+  if (requestUpdateError) return false;
+
+  if (!alreadyPaid) {
+    await trackProductEvent({
+      eventName: "payment_confirmed",
+      surface: "public",
+      actorType: "system",
+    });
+  }
+
+  return true;
 }
 
 export async function markBookingPaymentFailed(orderId: string, paymentId: string | null) {
