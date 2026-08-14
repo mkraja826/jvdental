@@ -1,7 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Dental Treatment Cases in Hyderabad",
+  description: "Explore consented, anonymised dental treatment cases from JV Dental in Hyderabad, including diagnosis, planning, restorative treatment and implant workflows.",
+  alternates: { canonical: "/cases" },
+  openGraph: {
+    title: "Dental Treatment Cases in Hyderabad | JV Dental",
+    description: "See how selected dental cases are assessed, planned and treated at JV Dental & Implant Centre in Hyderabad.",
+    url: "/cases",
+  },
+};
 
 export default async function CasesPage() {
   const supabase = await createClient();
@@ -19,8 +31,8 @@ export default async function CasesPage() {
 
       <section className="section public-listing-page">
         <p className="section-kicker">Selected clinical work</p>
-        <h1 className="section-title">Cases that show how treatment is actually planned.</h1>
-        <p className="section-intro">Approved, anonymised clinical stories from diagnosis through planning, guided surgery, prosthetic rehabilitation and follow-up. Individual outcomes vary and every treatment plan begins with assessment.</p>
+        <h1 className="section-title">Cases that show how dental treatment is actually planned.</h1>
+        <p className="section-intro">Approved, anonymised clinical stories from diagnosis through treatment planning, restorative care, guided surgery where used and follow-up. Individual outcomes vary and every treatment plan begins with assessment.</p>
 
         <div className="principle-list public-listing-list">
           {(cases ?? []).map((item, index) => (
@@ -37,8 +49,9 @@ export default async function CasesPage() {
           {!cases?.length ? <p className="public-listing-empty">Selected cases are being prepared for publication.</p> : null}
         </div>
 
-        <div className="public-listing-cta">
-          <Link className="button" href="/book">Book an implant assessment</Link>
+        <div className="public-listing-cta hero__actions">
+          <Link className="button" href="/book">Book a dental consultation</Link>
+          <Link className="button button--ghost" href="/dental-treatments">Explore dental treatments</Link>
         </div>
       </section>
 
