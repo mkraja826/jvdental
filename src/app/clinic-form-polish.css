@@ -69,7 +69,13 @@
   width: 100%;
 }
 
+.clinic-workspace-content .portal-card__body > form,
+.clinic-workspace-content .form-grid {
+  row-gap: 16px;
+}
+
 .clinic-workspace-content .form-note {
+  max-width: 72ch;
   color: #68756f;
   font-size: .75rem;
   line-height: 1.55;
@@ -88,6 +94,13 @@
   min-width: 0;
 }
 
+.clinic-workspace-content .clinic-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
 @media (max-width: 760px) {
   .clinic-workspace-content form [style*="grid-template-columns: 1fr 1fr"],
   .clinic-workspace-content form [style*="gridTemplateColumns"] {
@@ -97,5 +110,23 @@
   .clinic-workspace-content form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
   .clinic-workspace-content form select {
     min-height: 46px;
+    font-size: 16px;
+  }
+
+  .clinic-workspace-content form textarea {
+    font-size: 16px;
+  }
+
+  .clinic-workspace-content .clinic-page-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin-top: 18px;
+  }
+
+  .clinic-workspace-content .clinic-page-actions .button,
+  .clinic-workspace-content .portal-card__body form > .button,
+  .clinic-workspace-content .portal-card__body form > button.button {
+    width: 100%;
+    justify-content: center;
   }
 }
