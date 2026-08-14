@@ -57,7 +57,7 @@ export default async function InternationalMarketPage({ params }: PageProps) {
         name: market.title,
         description: market.description,
         isPartOf: { "@id": `${siteUrl}/#website` },
-        about: { "@id": `${siteUrl}/#dentist` },
+        about: { "@id": `${siteUrl}/#dental-clinic` },
       },
       {
         "@type": "BreadcrumbList",
