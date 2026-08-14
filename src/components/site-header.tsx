@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 const navItems = [
+  ["Treatments", "/dental-treatments"],
   ["Dental implants", "/dental-implants"],
   ["Guided implants", "/guided-implants"],
   ["Dentists", "/doctors"],
@@ -23,7 +24,7 @@ export function SiteHeader() {
           <Image
             className="clinic-wordmark__image"
             src="/jv-dental-logo.svg"
-            alt="JV Dental Implant Centre"
+            alt="JV Dental & Implant Centre in Hyderabad"
             width={480}
             height={242}
             priority
