@@ -22,5 +22,10 @@ export default function BoneGraftingPage() {
       { title: "Healing and implant restoration", body: "Healing, implant timing and restoration are reviewed according to the procedure performed and the patient's individual response." },
     ]}
     considerations={["Amount and shape of available bone", "Nearby anatomical structures", "Soft-tissue and periodontal condition", "Medical and healing factors", "Final implant and restorative position"]}
+    faqs={[
+      ["Why might bone grafting be considered before an implant?", "Bone grafting may be considered when available bone does not support the intended implant position or restoration. Whether it is needed and the approach used are individual clinical decisions."],
+      ["Can an implant and bone graft be done together?", "In some cases procedures may be combined; in others they may be staged. The timing depends on the defect, anatomy, implant stability requirements and the treating dentist's judgement."],
+      ["How is bone grafting planned?", "The plan is based on clinical examination, appropriate imaging, available bone, soft tissues, medical factors and the intended final tooth position."],
+    ]}
   />;
 }
