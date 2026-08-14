@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-async function markPaid(requestId: string, orderId: string, paymentId: string) {
+export async function reconcileBookingPayment(requestId: string, orderId: string, paymentId: string) {
   const supabase = createAdminClient();
   const { data: payment, error: paymentError } = await supabase
     .from("booking_payments")
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Payment signature could not be verified." }, { status: 400 });
     }
 
-    const reconciled = await markPaid(requestId, orderId, paymentId);
+    const reconciled = await reconcileBookingPayment(requestId, orderId, paymentId);
     if (!reconciled) {
       return NextResponse.json({ error: "Payment record could not be reconciled." }, { status: 409 });
     }
