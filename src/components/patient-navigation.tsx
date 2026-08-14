@@ -63,6 +63,20 @@ export default function PatientNavigation({ unreadNotifications = 0 }: { unreadN
             display: block;
           }
 
+          .portal-header {
+            min-height: 64px;
+            padding: 10px 16px;
+            flex-wrap: wrap;
+            row-gap: 8px;
+          }
+
+          .portal-header__right {
+            margin-left: auto;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+          }
+
           .portal-sidebar {
             display: block;
             position: sticky;
@@ -105,6 +119,35 @@ export default function PatientNavigation({ unreadNotifications = 0 }: { unreadN
           .portal-sidebar a[data-active="true"] {
             border-color: #d7ddd9;
             box-shadow: none;
+          }
+        }
+
+        @media (max-width: 560px) {
+          .portal-header__right > span:not(.status-pill) {
+            display: none;
+          }
+
+          .portal-header__right {
+            font-size: 0.72rem;
+          }
+
+          .portal-header__right .text-link {
+            white-space: nowrap;
+          }
+
+          .portal-title {
+            font-size: clamp(2rem, 10vw, 3rem);
+          }
+
+          .portal-card__header {
+            min-height: 56px;
+            padding: 12px 16px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+          }
+
+          .portal-card__body {
+            padding: 16px;
           }
         }
       `}</style>
