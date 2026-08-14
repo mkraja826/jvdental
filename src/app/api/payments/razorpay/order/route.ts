@@ -9,6 +9,11 @@ function getAmount(kind: string) {
   return Number.isInteger(amount) && amount > 100 ? amount : null;
 }
 
+async function sha256(value: string) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 export async function POST(request: Request) {
   try {
     const keyId = process.env.RAZORPAY_KEY_ID;
@@ -20,19 +25,26 @@ export async function POST(request: Request) {
     const body = await request.json();
     const requestId = String(body.requestId ?? "");
     const bookingKind = String(body.bookingKind ?? "");
+    const paymentAccessToken = String(body.paymentAccessToken ?? "");
     const amount = getAmount(bookingKind);
-    if (!requestId || !amount) {
-      return NextResponse.json({ paymentRequired: false, reason: "fee_not_configured" });
+    if (!requestId || !amount || !paymentAccessToken) {
+      return NextResponse.json({ error: "Booking checkout authorization is missing." }, { status: 400 });
     }
 
     const supabase = createAdminClient();
     const { data: booking, error: bookingError } = await supabase
       .from("appointment_requests")
-      .select("id,booking_kind,full_name,email,phone,status")
+      .select("id,booking_kind,full_name,email,phone,status,payment_access_token_hash,payment_access_token_expires_at")
       .eq("id", requestId)
       .single();
     if (bookingError || !booking || booking.booking_kind !== bookingKind) {
       return NextResponse.json({ error: "Booking request was not found." }, { status: 404 });
+    }
+
+    const suppliedTokenHash = await sha256(paymentAccessToken);
+    const tokenExpired = !booking.payment_access_token_expires_at || new Date(booking.payment_access_token_expires_at).getTime() <= Date.now();
+    if (!booking.payment_access_token_hash || suppliedTokenHash !== booking.payment_access_token_hash || tokenExpired) {
+      return NextResponse.json({ error: "Booking checkout authorization is invalid or expired." }, { status: 403 });
     }
 
     const receipt = `jv-${requestId.replaceAll("-", "").slice(0, 24)}`;
