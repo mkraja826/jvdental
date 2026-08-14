@@ -10,7 +10,7 @@ export default async function DoctorReviewQueue() {
     .select("id,patient_id,case_number,status,treatment_interest,country_snapshot,updated_at")
     .in("status", reviewStatuses)
     .order("updated_at", { ascending: false })
-    .limit(100);
+    .limit(60);
 
   const patientIds = [...new Set((cases ?? []).map((item) => item.patient_id))];
   const { data: profiles } = patientIds.length
@@ -22,7 +22,7 @@ export default async function DoctorReviewQueue() {
     <main className="portal-shell">
       <header className="portal-header">
         <Link className="wordmark" href="/clinic"><span>JV</span><span>Clinic</span></Link>
-        <Link className="text-link" href="/clinic">Back to overview</Link>
+        <Link className="text-link" href="/clinic" prefetch>Back to overview</Link>
       </header>
       <div className="portal-layout">
         <aside className="portal-sidebar">
@@ -48,7 +48,7 @@ export default async function DoctorReviewQueue() {
                   {(cases ?? []).map((caseRecord) => {
                     const profile = profileMap.get(caseRecord.patient_id);
                     return (
-                      <Link className="status-row" href={`/clinic/reviews/${caseRecord.id}`} key={caseRecord.id}>
+                      <Link className="status-row" href={`/clinic/reviews/${caseRecord.id}`} key={caseRecord.id} prefetch>
                         <strong>{profile?.full_name ?? "Patient"}<br /><small>{profile?.country ?? caseRecord.country_snapshot ?? "Country not recorded"}</small></strong>
                         <span>JV-{caseRecord.case_number}<br /><small>{caseRecord.treatment_interest ?? "Implant assessment"}</small></span>
                         <span className="status-pill">{caseRecord.status.replaceAll("_", " ")}</span>
