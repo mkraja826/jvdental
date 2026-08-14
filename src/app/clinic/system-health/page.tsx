@@ -22,7 +22,18 @@ export default async function SystemHealthPage() {
   const { supabase, staff } = await requireStaff();
   if (!["owner", "admin"].includes(staff.role)) redirect("/clinic");
 
-  const [errorsResult, registrationsResult, intakesResult, bookingsResult, acceptedPlansResult, paymentsResult] = await Promise.all([
+  const [
+    errorsResult,
+    registrationsResult,
+    intakesResult,
+    bookingsResult,
+    confirmedBookingsResult,
+    completedBookingsResult,
+    acceptedPlansResult,
+    paymentsResult,
+    documentsResult,
+    messagesResult,
+  ] = await Promise.all([
     supabase
       .from("portal_error_events")
       .select("id,surface,route,error_name,error_digest,created_at")
@@ -31,8 +42,12 @@ export default async function SystemHealthPage() {
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "patient_registered"),
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "patient_intake_completed"),
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "booking_requested"),
+    supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "booking_confirmed"),
+    supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "booking_completed"),
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "treatment_plan_accepted"),
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "payment_confirmed"),
+    supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "patient_document_uploaded"),
+    supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "patient_message_sent"),
   ]);
 
   const recent = (errorsResult.data ?? []) as ErrorEvent[];
@@ -43,8 +58,12 @@ export default async function SystemHealthPage() {
   const registrations = registrationsResult.count ?? 0;
   const intakes = intakesResult.count ?? 0;
   const bookings = bookingsResult.count ?? 0;
+  const confirmedBookings = confirmedBookingsResult.count ?? 0;
+  const completedBookings = completedBookingsResult.count ?? 0;
   const acceptedPlans = acceptedPlansResult.count ?? 0;
   const confirmedPayments = paymentsResult.count ?? 0;
+  const patientDocuments = documentsResult.count ?? 0;
+  const patientMessages = messagesResult.count ?? 0;
 
   return (
     <main className="portal-shell">
@@ -52,7 +71,7 @@ export default async function SystemHealthPage() {
         <div>
           <p className="portal-overline">Administration</p>
           <h1 className="portal-title">System health</h1>
-          <p className="portal-subtitle">Privacy-safe product funnel and operational error monitoring for JV Dental.</p>
+          <p className="portal-subtitle">Privacy-safe product funnel, patient activity and operational error monitoring for JV Dental.</p>
         </div>
       </header>
 
@@ -71,12 +90,28 @@ export default async function SystemHealthPage() {
             <div className="portal-card__body"><p>Submitted clinic and video consultation booking requests.</p></div>
           </article>
           <article className="portal-card">
+            <div className="portal-card__header"><h2>Confirmed bookings</h2><span className="status-pill">{confirmedBookings}</span></div>
+            <div className="portal-card__body"><p>Booking requests that successfully transitioned into a clinic-confirmed appointment.</p></div>
+          </article>
+          <article className="portal-card">
+            <div className="portal-card__header"><h2>Completed bookings</h2><span className="status-pill">{completedBookings}</span></div>
+            <div className="portal-card__body"><p>Confirmed bookings marked complete by the clinic workflow.</p></div>
+          </article>
+          <article className="portal-card">
             <div className="portal-card__header"><h2>Accepted plans</h2><span className="status-pill">{acceptedPlans}</span></div>
             <div className="portal-card__body"><p>Preliminary treatment plans explicitly accepted through the patient portal.</p></div>
           </article>
           <article className="portal-card">
             <div className="portal-card__header"><h2>Confirmed payments</h2><span className="status-pill">{confirmedPayments}</span></div>
             <div className="portal-card__body"><p>Successful booking payments confirmed by the server reconciliation layer.</p></div>
+          </article>
+          <article className="portal-card">
+            <div className="portal-card__header"><h2>Patient uploads</h2><span className="status-pill">{patientDocuments}</span></div>
+            <div className="portal-card__body"><p>Clinical records successfully attached to patient cases from the secure patient vault.</p></div>
+          </article>
+          <article className="portal-card">
+            <div className="portal-card__header"><h2>Patient messages</h2><span className="status-pill">{patientMessages}</span></div>
+            <div className="portal-card__body"><p>Secure non-internal messages successfully sent by patients to the clinic.</p></div>
           </article>
         </div>
 
