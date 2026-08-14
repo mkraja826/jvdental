@@ -10,11 +10,26 @@ function text(formData: FormData, key: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+async function syncGoogleCalendar(
+  supabase: Awaited<ReturnType<typeof requireStaff>>["supabase"],
+  appointmentId: string,
+  action: "create" | "update" | "cancel" | "refresh",
+) {
+  try {
+    await supabase.functions.invoke("google-calendar-event", {
+      body: { appointmentId, action },
+    });
+  } catch {
+    // JV Dental remains the source of truth if Google Calendar is unavailable.
+  }
+}
+
 function revalidateBookingViews() {
   revalidatePath("/clinic/bookings");
   revalidatePath("/clinic");
   revalidatePath("/patient");
   revalidatePath("/patient/plan");
+  revalidatePath("/patient/notifications");
 }
 
 export async function confirmBookingRequest(formData: FormData) {
@@ -54,6 +69,7 @@ export async function confirmBookingRequest(formData: FormData) {
 
   if (error) redirect("/clinic/bookings?error=confirm");
 
+  let appointmentId: string | null = null;
   if (booking.patient_id) {
     const admin = createAdminClient();
     const { data: caseRecord } = await admin
@@ -77,12 +93,15 @@ export async function confirmBookingRequest(formData: FormData) {
     };
 
     if (booking.converted_appointment_id) {
-      const { error: appointmentError } = await admin
+      const { data: updatedAppointment, error: appointmentError } = await admin
         .from("appointments")
         .update(appointment)
         .eq("id", booking.converted_appointment_id)
-        .eq("patient_id", booking.patient_id);
-      if (appointmentError) redirect("/clinic/bookings?error=convert");
+        .eq("patient_id", booking.patient_id)
+        .select("id")
+        .maybeSingle();
+      if (appointmentError || !updatedAppointment) redirect("/clinic/bookings?error=convert");
+      appointmentId = updatedAppointment.id;
     } else {
       const { data: createdAppointment, error: appointmentError } = await admin
         .from("appointments")
@@ -90,6 +109,7 @@ export async function confirmBookingRequest(formData: FormData) {
         .select("id")
         .single();
       if (appointmentError || !createdAppointment) redirect("/clinic/bookings?error=convert");
+      appointmentId = createdAppointment.id;
 
       const { error: linkError } = await admin
         .from("appointment_requests")
@@ -100,6 +120,7 @@ export async function confirmBookingRequest(formData: FormData) {
     }
   }
 
+  if (appointmentId) await syncGoogleCalendar(supabase, appointmentId, "create");
   revalidateBookingViews();
 }
 
@@ -147,12 +168,20 @@ export async function updateBookingRequest(formData: FormData) {
       appointmentUpdate.ends_at = endsAt.toISOString();
     }
     const admin = createAdminClient();
-    const { error: appointmentError } = await admin
+    const { data: appointmentRecord, error: appointmentError } = await admin
       .from("appointments")
       .update(appointmentUpdate)
       .eq("id", booking.converted_appointment_id)
-      .eq("patient_id", booking.patient_id);
-    if (appointmentError) redirect("/clinic/bookings?error=convert");
+      .eq("patient_id", booking.patient_id)
+      .select("id,external_event_id")
+      .maybeSingle();
+    if (appointmentError || !appointmentRecord) redirect("/clinic/bookings?error=convert");
+
+    await syncGoogleCalendar(
+      supabase,
+      appointmentRecord.id,
+      appointmentRecord.external_event_id ? "update" : "create",
+    );
   }
 
   revalidateBookingViews();
@@ -178,13 +207,16 @@ export async function cancelBookingRequest(formData: FormData) {
 
   if (booking?.converted_appointment_id && booking.patient_id) {
     const admin = createAdminClient();
-    const { error: appointmentError } = await admin
+    const { data: appointmentRecord, error: appointmentError } = await admin
       .from("appointments")
       .update({ status: "cancelled" })
       .eq("id", booking.converted_appointment_id)
       .eq("patient_id", booking.patient_id)
-      .neq("status", "completed");
+      .neq("status", "completed")
+      .select("id")
+      .maybeSingle();
     if (appointmentError) redirect("/clinic/bookings?error=convert");
+    if (appointmentRecord) await syncGoogleCalendar(supabase, appointmentRecord.id, "cancel");
   }
 
   revalidateBookingViews();
