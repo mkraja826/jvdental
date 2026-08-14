@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import PublicDentalAssistant from "@/components/public-dental-assistant";
+import { SiteStructuredData } from "@/components/site-structured-data";
 import "./globals.css";
 import "./assistant.css";
 import "./accessibility.css";
@@ -32,24 +33,36 @@ export const metadata: Metadata = {
   metadataBase: siteUrl,
   applicationName: "JV Dental & Implant Centre",
   title: {
-    default: "JV Dental & Implant Centre",
+    default: "Dentist in Ameerpet, Hyderabad | JV Dental & Implant Centre",
     template: "%s | JV Dental",
   },
   description:
-    "Advanced implant dentistry and full-mouth rehabilitation in Hyderabad, India, for patients from India and around the world.",
+    "Complete dental care near Ameerpet and S R Nagar, Hyderabad, including general dentistry, restorative care, root canal treatment, crowns, dentures, oral surgery and advanced dental implants.",
+  keywords: [
+    "dentist Ameerpet",
+    "dental clinic Ameerpet",
+    "dentist SR Nagar",
+    "dentist Hyderabad",
+    "dental implants Hyderabad",
+    "dental clinic near Ameerpet",
+    "JV Dental",
+  ],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     siteName: "JV Dental & Implant Centre",
-    title: "JV Dental & Implant Centre",
+    title: "Dentist in Ameerpet, Hyderabad | JV Dental & Implant Centre",
     description:
-      "Advanced implant dentistry and full-mouth rehabilitation in Hyderabad, India, for patients from India and around the world.",
+      "Complete dental care in Hyderabad with advanced implant dentistry, restorative treatment and support for local and international patients.",
     url: "/",
   },
   twitter: {
     card: "summary_large_image",
-    title: "JV Dental & Implant Centre",
+    title: "Dentist in Ameerpet, Hyderabad | JV Dental",
     description:
-      "Advanced implant dentistry and full-mouth rehabilitation in Hyderabad, India, for patients from India and around the world.",
+      "Complete dental care in Hyderabad with advanced implant dentistry and coordinated patient support.",
   },
   robots: {
     index: true,
@@ -65,6 +78,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <SiteStructuredData />
         {children}
         <PublicDentalAssistant />
       </body>
