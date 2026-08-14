@@ -22,5 +22,10 @@ export default function AllOnFourSixPage() {
       { title: "Provisional, healing & final restoration", body: "The restorative sequence and loading approach are selected according to implant stability, clinical findings and prosthetic requirements." },
     ]}
     considerations={["Available bone and anatomical limitations", "Prosthetic space and tooth position", "Implant distribution and load", "Bite, parafunction and medical factors", "Maintenance access and long-term review"]}
+    faqs={[
+      ["What is the difference between All-on-4 and All-on-6?", "These terms describe full-arch implant concepts using different numbers of implants. The appropriate configuration depends on anatomy, bone distribution, restorative design, bite and clinical assessment."],
+      ["Is All-on-4 suitable for everyone?", "No. A numerical implant concept does not replace diagnosis. The treating implantologist evaluates the individual clinical situation before recommending a suitable approach."],
+      ["How do I know which full-arch implant option is appropriate?", "Begin with a clinical assessment and the records considered necessary by the dental team. Implant number, position and restoration are planned together around long-term function and maintenance."],
+    ]}
   />;
 }

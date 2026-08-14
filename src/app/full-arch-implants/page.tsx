@@ -22,5 +22,10 @@ export default function FullArchImplantsPage() {
       { title: "Provisional & final restoration", body: "Where clinically appropriate, provisional and final prosthetic stages are sequenced with healing, function and maintenance requirements in mind." },
     ]}
     considerations={["Condition of remaining teeth and tissues", "Bone distribution and anatomy", "Bite and vertical space", "Prosthetic design and cleansability", "Healing, maintenance and follow-up needs"]}
+    faqs={[
+      ["What are full-arch dental implants?", "Full-arch implant rehabilitation is a treatment pathway for replacing teeth across an entire upper or lower dental arch. It connects diagnosis, implant planning, surgery, restorative design and long-term maintenance."],
+      ["Can full-arch treatment be completed in one visit?", "The timing depends on the diagnosis, treatment sequence, healing requirements and the treating implantologist's assessment. A visit plan should be confirmed only after the clinical review and appropriate records."],
+      ["How is a full-arch plan chosen?", "The team considers remaining teeth, gums, bone, bite, medical history, prosthetic space, hygiene access and treatment goals rather than applying a standard plan to every patient."],
+    ]}
   />;
 }
