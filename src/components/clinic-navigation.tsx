@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -25,6 +26,7 @@ export default function ClinicNavigation({
   unreadNotifications = 0,
 }: ClinicNavigationProps) {
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const groups: Array<{ label: string; items: NavItem[] }> = [
     {
@@ -72,20 +74,42 @@ export default function ClinicNavigation({
     },
   ];
 
+  const visibleGroups = groups
+    .map((group) => ({ ...group, items: group.items.filter((item) => item.show !== false) }))
+    .filter((group) => group.items.length);
+
   const isActive = (href: string) =>
     href === "/clinic" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
-  return (
-    <nav className="clinic-nav" aria-label="Clinic portal navigation">
-      {groups.map((group) => {
-        const visibleItems = group.items.filter((item) => item.show !== false);
-        if (!visibleItems.length) return null;
+  const currentItem = visibleGroups.flatMap((group) => group.items).find((item) => isActive(item.href));
 
-        return (
+  return (
+    <>
+      <button
+        className="clinic-nav-mobile-toggle"
+        type="button"
+        aria-expanded={mobileOpen}
+        aria-controls="clinic-primary-nav"
+        onClick={() => setMobileOpen((open) => !open)}
+      >
+        <span>
+          <small>Workspace</small>
+          <strong>{currentItem?.label ?? "Clinic"}</strong>
+        </span>
+        <span aria-hidden="true">{mobileOpen ? "Close" : "Menu"}</span>
+      </button>
+
+      <nav
+        id="clinic-primary-nav"
+        className="clinic-nav"
+        data-mobile-open={mobileOpen ? "true" : "false"}
+        aria-label="Clinic portal navigation"
+      >
+        {visibleGroups.map((group) => (
           <section className="clinic-nav__group" key={group.label}>
             <p className="clinic-nav__label">{group.label}</p>
             <div className="clinic-nav__items">
-              {visibleItems.map((item) => {
+              {group.items.map((item) => {
                 const active = isActive(item.href);
                 return (
                   <Link
@@ -94,6 +118,7 @@ export default function ClinicNavigation({
                     aria-current={active ? "page" : undefined}
                     data-active={active ? "true" : undefined}
                     prefetch
+                    onClick={() => setMobileOpen(false)}
                   >
                     {item.label}
                   </Link>
@@ -101,8 +126,8 @@ export default function ClinicNavigation({
               })}
             </div>
           </section>
-        );
-      })}
-    </nav>
+        ))}
+      </nav>
+    </>
   );
 }
