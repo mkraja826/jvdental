@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${siteUrl}/`, changeFrequency: "weekly", priority: 1 },
     { url: `${siteUrl}/dentist-ameerpet`, changeFrequency: "monthly", priority: 0.95 },
+    { url: `${siteUrl}/hyderabad-dentist`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${siteUrl}/dental-treatments`, changeFrequency: "monthly", priority: 0.95 },
     { url: `${siteUrl}/dental-implants`, changeFrequency: "monthly", priority: 0.95 },
     { url: `${siteUrl}/full-arch-implants`, changeFrequency: "monthly", priority: 0.95 },
