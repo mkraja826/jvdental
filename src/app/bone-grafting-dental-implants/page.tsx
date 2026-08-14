@@ -3,7 +3,8 @@ import { ImplantServicePage } from "@/components/implant-service-page";
 
 export const metadata: Metadata = {
   title: "Bone Grafting for Dental Implants in Hyderabad",
-  description: "Learn how JV Dental evaluates bone grafting and complex implant cases in Hyderabad as part of diagnosis-led implant treatment planning.",
+  description: "Bone grafting and complex implant assessment at JV Dental near Ameerpet, Hyderabad, as part of diagnosis-led implant treatment planning.",
+  alternates: { canonical: "/bone-grafting-dental-implants" },
 };
 
 export default function BoneGraftingPage() {
