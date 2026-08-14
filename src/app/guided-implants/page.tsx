@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Guided Dental Implants & DIOnavi in Hyderabad",
+  description: "Learn about digitally guided dental implant planning with DIOnavi at JV Dental near Ameerpet, Hyderabad, for clinically suitable implant cases.",
+  alternates: { canonical: "/guided-implants" },
+};
 
 const workflow = [
   ["01", "Clinical assessment", "The implantologist reviews the dental condition, medical history and treatment goals before deciding whether guided implant surgery is appropriate."],
