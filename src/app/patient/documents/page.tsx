@@ -4,7 +4,9 @@ import PatientNavigation from "@/components/patient-navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DocumentUploader } from "./document-uploader";
 
-export default async function PatientDocumentsPage() {
+export default async function PatientDocumentsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const query = await searchParams;
+  const showOlder = query.history === "older";
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/patient/login");
@@ -19,13 +21,13 @@ export default async function PatientDocumentsPage() {
 
   if (!caseRecord) redirect("/patient/intake");
 
-  const { data: documents } = await supabase
+  const { data: documents, count: documentCount } = await supabase
     .from("patient_documents")
-    .select("id,category,storage_path,file_name,file_size_bytes,created_at")
+    .select("id,category,storage_path,file_name,file_size_bytes,created_at", { count: "exact" })
     .eq("patient_id", user.id)
     .eq("case_id", caseRecord.id)
     .order("created_at", { ascending: false })
-    .limit(30);
+    .limit(showOlder ? 100 : 30);
 
   const records = await Promise.all((documents ?? []).map(async (document) => {
     const { data } = await supabase.storage
@@ -33,6 +35,7 @@ export default async function PatientDocumentsPage() {
       .createSignedUrl(document.storage_path, 300);
     return { ...document, signedUrl: data?.signedUrl ?? null };
   }));
+  const totalDocuments = documentCount ?? records.length;
 
   return (
     <main className="portal-shell">
@@ -68,7 +71,7 @@ export default async function PatientDocumentsPage() {
           </div>
 
           <article className="portal-card" style={{ marginTop: 24 }}>
-            <div className="portal-card__header"><h2>Your uploaded records</h2><span className="status-pill">{records.length}</span></div>
+            <div className="portal-card__header"><h2>Your uploaded records</h2><span className="status-pill">{totalDocuments ? `${records.length} of ${totalDocuments}` : "0"}</span></div>
             <div className="portal-card__body">
               {records.length ? (
                 <div className="status-list">
@@ -81,7 +84,12 @@ export default async function PatientDocumentsPage() {
                   ))}
                 </div>
               ) : <p>No clinical records uploaded yet.</p>}
-              {records.length === 30 ? <p className="form-note">Showing your 30 most recent uploads.</p> : null}
+
+              {totalDocuments > records.length ? (
+                <p className="form-note">Showing the {records.length} most recent uploads. <Link className="text-link" href="/patient/documents?history=older">Show older records →</Link></p>
+              ) : showOlder && totalDocuments > 30 ? (
+                <p className="form-note"><Link className="text-link" href="/patient/documents">Show recent records only</Link></p>
+              ) : null}
             </div>
           </article>
         </section>
