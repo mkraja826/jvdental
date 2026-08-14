@@ -1,12 +1,19 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = {
-  title: "Dentists & Implant Team | JV Dental",
-  description: "Meet the dentists behind JV Dental's implant dentistry, full-mouth rehabilitation and digital guided treatment workflows in Hyderabad.",
+export const metadata: Metadata = {
+  title: "Dentists in Ameerpet & S R Nagar, Hyderabad",
+  description: "Meet the JV Dental clinical team in S R Nagar near Ameerpet, Hyderabad. Explore each dentist's clinical focus, experience, selected cases and educational writing.",
+  alternates: { canonical: "/doctors" },
+  openGraph: {
+    title: "Dentists in Ameerpet & S R Nagar, Hyderabad | JV Dental",
+    description: "Meet the dentists behind complete dental care, restorative treatment and advanced implant dentistry at JV Dental in Hyderabad.",
+    url: "/doctors",
+  },
 };
 
 export default async function DoctorsPage() {
@@ -22,9 +29,9 @@ export default async function DoctorsPage() {
     <main>
       <SiteHeader />
       <section className="doctor-directory-hero">
-        <p className="eyebrow">JV DENTAL · DENTISTS &amp; IMPLANT TEAM</p>
+        <p className="eyebrow">JV DENTAL · CLINICAL TEAM</p>
         <h1>Meet the dentists behind your treatment plan.</h1>
-        <p>Explore each dentist&apos;s clinical focus, experience, implant technologies, selected dental cases and educational writing before you begin treatment.</p>
+        <p>Explore each dentist&apos;s clinical focus, experience, treatment interests, selected dental cases and educational writing before you begin treatment.</p>
       </section>
 
       <section className="section doctor-directory-grid" aria-label="JV Dental dentists">
@@ -62,6 +69,15 @@ export default async function DoctorsPage() {
           );
         })}
         {!doctors?.length ? <p>No public dentist profiles are available yet.</p> : null}
+      </section>
+
+      <section className="section section--tight final-cta">
+        <p className="eyebrow">Complete dental care</p>
+        <h2>Find the right starting point for your dental concern.</h2>
+        <div className="hero__actions">
+          <Link className="button" href="/book">Book a dental consultation</Link>
+          <Link className="button button--ghost" href="/dental-treatments">Explore dental treatments</Link>
+        </div>
       </section>
 
       <SiteFooter />
