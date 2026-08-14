@@ -27,17 +27,25 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/patient/login?next=/patient/payments");
 
-  const [{ data: requests }, { data: balances }, { data: payments }] = await Promise.all([
-    supabase.from("payment_requests").select("id,request_number,title,description,request_type,amount_minor,currency,status,due_at,expires_at,created_at,provider_preference").eq("patient_id", user.id).order("created_at", { ascending: false }),
-    supabase.from("payment_request_balances").select("payment_request_id,requested_minor,gross_paid_minor,refunded_minor,remaining_minor,currency").eq("patient_id", user.id),
-    supabase.from("payments").select("id,payment_request_id,provider,amount_minor,currency,status,payment_method_summary,paid_at,receipt_url,created_at").eq("patient_id", user.id).order("created_at", { ascending: false }),
+  const [{ data: requests }, { data: payments }] = await Promise.all([
+    supabase.from("payment_requests").select("id,request_number,title,description,request_type,amount_minor,currency,status,due_at,expires_at,created_at,provider_preference").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(30),
+    supabase.from("payments").select("id,payment_request_id,provider,amount_minor,currency,status,payment_method_summary,paid_at,receipt_url,created_at").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(30),
   ]);
 
+  const requestIds = (requests ?? []).map((request) => request.id);
   const paymentIds = (payments ?? []).map((payment) => payment.id);
-  const [{ data: receipts }, { data: refunds }] = paymentIds.length ? await Promise.all([
-    supabase.from("payment_receipts").select("payment_id,receipt_number,issued_at").in("payment_id", paymentIds),
-    supabase.from("payment_refunds").select("id,payment_id,amount_minor,currency,status,reason,processed_at,created_at").in("payment_id", paymentIds).order("created_at", { ascending: false }),
-  ]) : [{ data: [] }, { data: [] }];
+
+  const [{ data: balances }, { data: receipts }, { data: refunds }] = await Promise.all([
+    requestIds.length
+      ? supabase.from("payment_request_balances").select("payment_request_id,requested_minor,gross_paid_minor,refunded_minor,remaining_minor,currency").in("payment_request_id", requestIds)
+      : Promise.resolve({ data: [] }),
+    paymentIds.length
+      ? supabase.from("payment_receipts").select("payment_id,receipt_number,issued_at").in("payment_id", paymentIds)
+      : Promise.resolve({ data: [] }),
+    paymentIds.length
+      ? supabase.from("payment_refunds").select("id,payment_id,amount_minor,currency,status,reason,processed_at,created_at").in("payment_id", paymentIds).order("created_at", { ascending: false })
+      : Promise.resolve({ data: [] }),
+  ]);
 
   const refundRows = (refunds ?? []) as RefundRow[];
   const balanceMap = new Map((balances ?? []).map((item) => [item.payment_request_id, item]));
@@ -98,6 +106,7 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
                   })}
                 </div>
               )}
+              {(requests?.length ?? 0) === 30 ? <p className="form-note">Showing your 30 most recent payment requests.</p> : null}
             </div>
           </article>
 
@@ -120,6 +129,7 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
                   })}
                 </div>
               )}
+              {(payments?.length ?? 0) === 30 ? <p className="form-note">Showing your 30 most recent payments.</p> : null}
             </div>
           </article>
         </section>
