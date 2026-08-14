@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { trackProductEvent } from "@/lib/product-analytics";
 import { createClient } from "@/lib/supabase/server";
 
 function getText(formData: FormData, key: string) {
@@ -119,6 +120,13 @@ export async function savePatientIntake(formData: FormData) {
       treatment_interest: treatmentInterest.join(", ") || null,
     });
   }
+
+  await trackProductEvent({
+    eventName: "patient_intake_completed",
+    surface: "patient",
+    actorType: "patient",
+    actorUserId: user.id,
+  });
 
   redirect("/patient?intake=complete");
 }
