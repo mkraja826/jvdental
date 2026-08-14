@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -5,22 +6,51 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
+type PageProps = { params: Promise<{ slug: string }> };
+
 function publicMediaUrl(supabaseUrl: string | undefined, path: string) {
   if (!supabaseUrl) return null;
   return `${supabaseUrl}/storage/v1/object/public/public-content/${path}`;
 }
 
-export default async function CaseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+async function getPublishedCase(slug: string) {
   const supabase = await createClient();
   const { data: item } = await supabase
     .from("signature_cases")
-    .select("id,title,treatment_type,short_summary,diagnosis_summary,challenge_summary,treatment_plan_summary,final_outcome_summary,patient_age_band,patient_country,guided_implant,dionavi_used,full_arch,published_at,doctor_profiles(full_name,slug,professional_title)")
+    .select("id,slug,title,treatment_type,short_summary,diagnosis_summary,challenge_summary,treatment_plan_summary,final_outcome_summary,patient_age_band,patient_country,guided_implant,dionavi_used,full_arch,published_at,doctor_profiles(full_name,slug,professional_title)")
     .eq("slug", slug)
     .eq("publication_status", "published")
     .eq("consent_for_website", true)
     .maybeSingle();
+  return { supabase, item };
+}
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const { item } = await getPublishedCase(slug);
+  if (!item) return { title: "Dental Case | JV Dental" };
+
+  const title = `${item.title} | Dental Case in Hyderabad`;
+  const description = item.short_summary || item.diagnosis_summary || `A published ${item.treatment_type} case from JV Dental & Implant Centre in Hyderabad.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/cases/${item.slug}` },
+    openGraph: {
+      type: "article",
+      title,
+      description,
+      url: `/cases/${item.slug}`,
+      ...(item.published_at ? { publishedTime: item.published_at } : {}),
+    },
+    robots: { index: true, follow: true },
+  };
+}
+
+export default async function CaseDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+  const { supabase, item } = await getPublishedCase(slug);
   if (!item) notFound();
   const doctor = Array.isArray(item.doctor_profiles) ? item.doctor_profiles[0] : item.doctor_profiles;
 
@@ -30,9 +60,42 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ slu
   ]);
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com").replace(/\/$/, "");
+  const caseUrl = `${siteUrl}/cases/${item.slug}`;
+  const schemaDescription = item.short_summary || item.diagnosis_summary || `A published ${item.treatment_type} clinical case from JV Dental & Implant Centre.`;
+
+  const caseSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": `${caseUrl}#case-study`,
+    headline: item.title,
+    description: schemaDescription,
+    url: caseUrl,
+    mainEntityOfPage: caseUrl,
+    about: item.treatment_type,
+    ...(item.published_at ? { datePublished: item.published_at } : {}),
+    ...(doctor?.slug ? {
+      author: {
+        "@type": "Person",
+        "@id": `${siteUrl}/doctors/${doctor.slug}#person`,
+        name: doctor.full_name,
+        url: `${siteUrl}/doctors/${doctor.slug}`,
+      },
+    } : {}),
+    publisher: {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      name: "JV Dental & Implant Centre",
+      url: siteUrl,
+    },
+  };
 
   return (
     <main className="case-detail-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(caseSchema).replace(/</g, "\\u003c") }}
+      />
       <SiteHeader />
 
       <section className="section">
@@ -50,7 +113,7 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ slu
 
       <section className="section section--tight">
         <div className="editorial-split">
-          <div className="editorial-quote">Planning before placement.<small>{item.dionavi_used ? "DIOnavi digital guided workflow" : "Structured implant workflow"}</small></div>
+          <div className="editorial-quote">Planning before placement.<small>{item.dionavi_used ? "DIOnavi digital guided workflow" : "Structured dental workflow"}</small></div>
           <div className="principle-list">
             {item.diagnosis_summary ? <div className="principle"><span className="principle__number">01</span><div><h3>Diagnosis</h3><p>{item.diagnosis_summary}</p></div></div> : null}
             {item.challenge_summary ? <div className="principle"><span className="principle__number">02</span><div><h3>Clinical challenge</h3><p>{item.challenge_summary}</p></div></div> : null}
@@ -113,7 +176,10 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ slu
 
       <section className="section section--tight case-detail-cta">
         <p>This case is shown with recorded publication consent and is presented for education. Treatment recommendations and outcomes vary according to anatomy, oral health, medical history and clinical findings.</p>
-        <Link className="button" href="/book">Book your implant assessment</Link>
+        <div className="hero__actions">
+          <Link className="button" href="/book">Book a dental consultation</Link>
+          <Link className="button button--ghost" href="/dental-treatments">Explore dental treatments</Link>
+        </div>
       </section>
 
       <SiteFooter />
