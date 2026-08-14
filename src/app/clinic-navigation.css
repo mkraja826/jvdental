@@ -1,3 +1,7 @@
+.clinic-nav-mobile-toggle {
+  display: none;
+}
+
 .clinic-nav {
   display: grid;
   gap: 20px;
@@ -24,23 +28,105 @@
 }
 
 @media (max-width: 900px) {
-  .clinic-nav {
+  .clinic-nav-mobile-toggle {
+    width: 100%;
+    min-height: 54px;
     display: flex;
-    min-width: max-content;
-    gap: 6px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 8px 12px;
+    border: 1px solid #dbe4df;
+    border-radius: 11px;
+    background: #fff;
+    color: #173f37;
+    text-align: left;
+    box-shadow: 0 5px 18px rgba(21, 45, 38, .06);
+    cursor: pointer;
+  }
+
+  .clinic-nav-mobile-toggle > span:first-child {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+  }
+
+  .clinic-nav-mobile-toggle small {
+    color: #819089;
+    font-size: .58rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .clinic-nav-mobile-toggle strong {
+    overflow: hidden;
+    color: #14201d;
+    font-size: .82rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .clinic-nav-mobile-toggle > span:last-child {
+    flex: 0 0 auto;
+    font-size: .7rem;
+    font-weight: 700;
+  }
+
+  .clinic-nav {
+    display: none;
+    margin-top: 8px;
+    padding: 10px;
+    gap: 14px;
+    border: 1px solid #dbe4df;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 16px 34px rgba(21, 45, 38, .10);
+  }
+
+  .clinic-nav[data-mobile-open="true"] {
+    display: grid;
   }
 
   .clinic-nav__group {
-    display: flex;
-    gap: 4px;
+    display: grid;
+    gap: 6px;
   }
 
   .clinic-nav__label {
-    display: none;
+    display: block;
+    padding: 2px 6px;
+    font-size: .56rem;
   }
 
   .clinic-nav__items {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .clinic-nav__items a {
+    min-height: 42px;
     display: flex;
-    gap: 4px;
+    align-items: center;
+    padding: 8px 10px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    color: #4e5b56;
+    font-size: .72rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .clinic-nav__items a[data-active="true"] {
+    border-color: #cbdcd5;
+    background: #e7f0ec;
+    color: #173f37;
+  }
+}
+
+@media (max-width: 520px) {
+  .clinic-nav__items {
+    grid-template-columns: 1fr;
   }
 }
