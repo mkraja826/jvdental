@@ -4,6 +4,15 @@ import { cancelPaymentRequest, createPaymentRequest, sendPaymentRequest } from "
 
 const FINANCE_ROLES = new Set(["owner", "admin", "coordinator", "receptionist"]);
 
+type RefundRow = {
+  id: string;
+  payment_id: string;
+  amount_minor: number | string;
+  status: string;
+  reason: string | null;
+  created_at: string;
+};
+
 function formatMinor(amountMinor: number | string | null | undefined, currency: string) {
   const formatter = new Intl.NumberFormat("en", { style: "currency", currency });
   const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
@@ -41,10 +50,10 @@ export default async function ClinicFinanceSections({
   ]);
 
   const balanceMap = new Map((balances ?? []).map((row) => [row.payment_request_id, row]));
-  const refundsByPayment = new Map<string, NonNullable<typeof refunds>>();
+  const refundsByPayment = new Map<string, RefundRow[]>();
   for (const refund of refunds ?? []) {
     const list = refundsByPayment.get(refund.payment_id) ?? [];
-    list.push(refund);
+    list.push(refund as RefundRow);
     refundsByPayment.set(refund.payment_id, list);
   }
 
