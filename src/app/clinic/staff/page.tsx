@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { updateStaffMember } from "@/app/clinic/staff/actions";
+import PendingSubmit from "@/components/pending-submit";
 import StaffInviteForm from "@/components/staff-invite-form";
 import { requireStaff } from "@/lib/auth/guards";
 
@@ -122,7 +123,7 @@ export default async function StaffManagementPage({ searchParams }: { searchPara
                               <span>{member.is_active ? "Active access" : "Access disabled"}{isSelf ? " · your account" : ""}</span>
                               {isSelf && member.is_active ? <input type="hidden" name="is_active" value="on" /> : null}
                             </label>
-                            <button className="button button--ghost" type="submit">Save access</button>
+                            <PendingSubmit label="Save access" pendingLabel="Saving…" className="button button--ghost" />
                           </form>
                         ) : (
                           <div className="staff-access-row__locked">
