@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { getWebsiteMedia } from "@/lib/content/website-media";
 
 type ServiceStep = { title: string; body: string };
 
@@ -14,7 +15,12 @@ type ImplantServicePageProps = {
   considerations: string[];
 };
 
-export function ImplantServicePage({ eyebrow, title, accent, description, suitability, steps, considerations }: ImplantServicePageProps) {
+export async function ImplantServicePage({ eyebrow, title, accent, description, suitability, steps, considerations }: ImplantServicePageProps) {
+  const managedHero = await getWebsiteMedia("implant-hero", "Dental implant planning at JV Dental Hyderabad");
+  const heroStyle = managedHero.url
+    ? { backgroundImage: `linear-gradient(180deg, rgba(20,35,32,.06), rgba(20,35,32,.5)), url(${managedHero.url})`, backgroundSize: "cover", backgroundPosition: "center" }
+    : undefined;
+
   return (
     <main className="treatment-page">
       <SiteHeader />
@@ -32,9 +38,9 @@ export function ImplantServicePage({ eyebrow, title, accent, description, suitab
           </div>
           <p className="hero__note">Treatment suitability, implant number, surgical approach, restorative design and timing depend on clinical examination, medical history and appropriate imaging. Online information is educational and does not replace diagnosis.</p>
         </div>
-        <div className="hero__visual treatment-hero__visual">
+        <div className="hero__visual treatment-hero__visual" aria-label={managedHero.alt} style={heroStyle}>
           <span className="hero__visual-label">Dental implant treatment · clinical assessment · restorative planning</span>
-          <div className="treatment-visual__marker" aria-hidden="true"><span /><span /><span /></div>
+          {!managedHero.url ? <div className="treatment-visual__marker" aria-hidden="true"><span /><span /><span /></div> : null}
           <div className="hero__visual-copy">
             <p>Diagnosis-led dental implant care</p>
             <strong>{suitability}</strong>
@@ -59,12 +65,7 @@ export function ImplantServicePage({ eyebrow, title, accent, description, suitab
       <section className="dark-band treatment-considerations">
         <div className="section">
           <p className="section-kicker">Before treatment is recommended</p>
-          <h2
-            className="section-title"
-            style={{ color: "#ffffff", display: "block", visibility: "visible", opacity: 1 }}
-          >
-            What your implant dentist evaluates.
-          </h2>
+          <h2 className="section-title" style={{ color: "#ffffff", display: "block", visibility: "visible", opacity: 1 }}>What your implant dentist evaluates.</h2>
           <p className="section-intro">The right treatment pathway depends on your teeth, gums, bone, bite, medical history and restorative goals—not on a treatment label alone.</p>
           <div className="treatments">
             {considerations.map((item, index) => (
