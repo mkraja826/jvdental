@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { getWebsiteMedia } from "@/lib/content/website-media";
 
 const principles = [
   { title: "Diagnosis before treatment", body: "Dental care starts with understanding the problem, the condition of the teeth and gums, and the patient’s priorities before recommending a procedure." },
@@ -33,13 +34,25 @@ const clinicVisuals = [
   { key: "cases", label: "Clinical evidence", title: "Documented dental cases", href: "/cases" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const [homeHero, clinicTeam] = await Promise.all([
+    getWebsiteMedia("home-hero", "JV Dental implant-focused dental clinic in Hyderabad"),
+    getWebsiteMedia("clinic-team", "JV Dental clinical team in Hyderabad"),
+  ]);
+
+  const homeHeroStyle = homeHero.url
+    ? { backgroundImage: `linear-gradient(180deg, rgba(20,35,32,.06), rgba(20,35,32,.48)), url(${homeHero.url})`, backgroundSize: "cover", backgroundPosition: "center" }
+    : undefined;
+
   return <main className="home-page"><SiteHeader />
-    <section className="hero" aria-labelledby="hero-title"><div className="hero__copy"><div><p className="eyebrow">Implant-focused dental clinic · Ameerpet / S R Nagar · Hyderabad</p><h1 className="display-title" id="hero-title">Advanced dental implants<br />&amp; <em>complete adult dentistry.</em></h1><p className="hero__description">JV Dental focuses on dental implants, guided implant surgery and complex full-mouth rehabilitation, supported by comprehensive adult dental care when patients need treatment beyond implants.</p><div className="hero__actions"><Link className="button" href="/book">Request an implant assessment <span aria-hidden="true">→</span></Link><Link className="button button--ghost" href="/dental-implants">Explore dental implants</Link></div></div><p className="hero__note">Treatment begins with clinical assessment and appropriate diagnosis. Online review can support planning before a clinic visit or international travel, but does not replace an in-person dental examination.</p></div><div className="hero__visual" aria-label="Dental implant planning at JV Dental Hyderabad"><span className="hero__visual-label">Dental implants · guided surgery · full-mouth rehabilitation</span><div className="hero__visual-copy"><p>JV Dental &amp; Implant Centre</p><strong>Implant dentistry, carefully planned.</strong></div></div></section>
+    <section className="hero" aria-labelledby="hero-title"><div className="hero__copy"><div><p className="eyebrow">Implant-focused dental clinic · Ameerpet / S R Nagar · Hyderabad</p><h1 className="display-title" id="hero-title">Advanced dental implants<br />&amp; <em>complete adult dentistry.</em></h1><p className="hero__description">JV Dental focuses on dental implants, guided implant surgery and complex full-mouth rehabilitation, supported by comprehensive adult dental care when patients need treatment beyond implants.</p><div className="hero__actions"><Link className="button" href="/book">Request an implant assessment <span aria-hidden="true">→</span></Link><Link className="button button--ghost" href="/dental-implants">Explore dental implants</Link></div></div><p className="hero__note">Treatment begins with clinical assessment and appropriate diagnosis. Online review can support planning before a clinic visit or international travel, but does not replace an in-person dental examination.</p></div><div className="hero__visual" aria-label={homeHero.alt} style={homeHeroStyle}><span className="hero__visual-label">Dental implants · guided surgery · full-mouth rehabilitation</span><div className="hero__visual-copy"><p>JV Dental &amp; Implant Centre</p><strong>Implant dentistry, carefully planned.</strong></div></div></section>
 
     <section className="data-strip" aria-label="JV Dental focus areas"><div className="data-strip__item"><span>Primary focus</span><strong>Dental implants</strong></div><div className="data-strip__item"><span>Advanced workflow</span><strong>Guided implant surgery</strong></div><div className="data-strip__item"><span>Complex care</span><strong>Full-mouth rehabilitation</strong></div><div className="data-strip__item"><span>Supporting care</span><strong>Complete adult dentistry</strong></div></section>
 
-    <section className="clinic-evidence" aria-label="JV Dental clinical environment">{clinicVisuals.map((item) => <Link className={`clinic-evidence__item clinic-evidence__item--${item.key}`} href={item.href} key={item.key}><span className="clinic-evidence__visual" aria-hidden="true"><i /><i /><i /></span><span className="clinic-evidence__copy"><small>{item.label}</small><strong>{item.title}</strong><b aria-hidden="true">↗</b></span></Link>)}</section>
+    <section className="clinic-evidence" aria-label="JV Dental clinical environment">{clinicVisuals.map((item) => {
+      const isTeam = item.key === "team" && clinicTeam.url;
+      return <Link className={`clinic-evidence__item clinic-evidence__item--${item.key}`} href={item.href} key={item.key}><span className="clinic-evidence__visual" aria-label={isTeam ? clinicTeam.alt : undefined} aria-hidden={isTeam ? undefined : "true"} style={isTeam ? { backgroundImage: `linear-gradient(180deg, rgba(9,25,31,.04), rgba(9,25,31,.36)), url(${clinicTeam.url})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}>{!isTeam ? <><i /><i /><i /></> : null}</span><span className="clinic-evidence__copy"><small>{item.label}</small><strong>{item.title}</strong><b aria-hidden="true">↗</b></span></Link>;
+    })}</section>
 
     <section className="section" id="approach"><p className="section-kicker">Implant philosophy</p><h2 className="section-title">Plan the final tooth first. Build the implant treatment around long-term function.</h2><p className="section-intro">Implant care is the major clinical focus at JV Dental. Every case starts with diagnosis, restorative planning and an assessment of bone, gums, bite and maintainability before the surgical pathway is chosen.</p><div className="editorial-split"><div className="editorial-quote">“Understand the problem. Plan the restoration. Treat with the long term in mind.”<small>Diagnosis-led implant dentistry</small></div><div className="principle-list">{principles.map((p, i) => <article className="principle" key={p.title}><span className="principle__number">0{i + 1}</span><div><h3>{p.title}</h3><p>{p.body}</p></div></article>)}</div></div></section>
 

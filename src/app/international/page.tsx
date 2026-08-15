@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { internationalMarkets } from "@/content/international-markets";
+import { getWebsiteMedia } from "@/lib/content/website-media";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com").replace(/\/$/, "");
 
@@ -39,33 +40,20 @@ const support = [
 ] as const;
 
 const faqs = [
-  [
-    "Does JV Dental treat international patients for procedures other than dental implants?",
-    "Yes. International patients can enquire about general, restorative and surgical dental care as well as dental implants and full-mouth rehabilitation. The correct treatment pathway is confirmed after clinical assessment.",
-  ],
-  [
-    "What travel support can JV Dental coordinate for international patients?",
-    "The international patient journey can include airport pickup, hotel coordination, local assistance from a JV Dental representative, clinic transport coordination and return airport transfer around the treatment schedule.",
-  ],
-  [
-    "Can I receive a final treatment plan before travelling to India?",
-    "Remote review and an online consultation can help establish a preliminary pathway, but final diagnosis and treatment planning may require an in-person examination, appropriate imaging and confirmation by the treating dentist.",
-  ],
-  [
-    "Can I send my dental scans or reports before travelling?",
-    "Yes. When individual clinical review is appropriate, patients can use the secure patient portal to share available dental records or imaging with the clinic.",
-  ],
-  [
-    "Will a representative stay in contact during my Hyderabad visit?",
-    "JV Dental can provide a representative to support practical coordination during the patient&apos;s stay and clinic visits. This is patient and travel assistance and does not replace the treating clinical team.",
-  ],
-  [
-    "What happens after I return home?",
-    "Post-treatment questions and follow-up communication can continue remotely. The exact follow-up schedule depends on the treatment performed and the treating dentist&apos;s recommendations.",
-  ],
+  ["Does JV Dental treat international patients for procedures other than dental implants?", "Yes. International patients can enquire about general, restorative and surgical dental care as well as dental implants and full-mouth rehabilitation. The correct treatment pathway is confirmed after clinical assessment."],
+  ["What travel support can JV Dental coordinate for international patients?", "The international patient journey can include airport pickup, hotel coordination, local assistance from a JV Dental representative, clinic transport coordination and return airport transfer around the treatment schedule."],
+  ["Can I receive a final treatment plan before travelling to India?", "Remote review and an online consultation can help establish a preliminary pathway, but final diagnosis and treatment planning may require an in-person examination, appropriate imaging and confirmation by the treating dentist."],
+  ["Can I send my dental scans or reports before travelling?", "Yes. When individual clinical review is appropriate, patients can use the secure patient portal to share available dental records or imaging with the clinic."],
+  ["Will a representative stay in contact during my Hyderabad visit?", "JV Dental can provide a representative to support practical coordination during the patient&apos;s stay and clinic visits. This is patient and travel assistance and does not replace the treating clinical team."],
+  ["What happens after I return home?", "Post-treatment questions and follow-up communication can continue remotely. The exact follow-up schedule depends on the treatment performed and the treating dentist&apos;s recommendations."],
 ] as const;
 
-export default function InternationalPage() {
+export default async function InternationalPage() {
+  const internationalHero = await getWebsiteMedia("international-hero", "International dental patient journey to Hyderabad");
+  const heroStyle = internationalHero.url
+    ? { backgroundImage: `linear-gradient(180deg, rgba(20,35,32,.08), rgba(20,35,32,.52)), url(${internationalHero.url})`, backgroundSize: "cover", backgroundPosition: "center" }
+    : undefined;
+
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -86,9 +74,7 @@ export default function InternationalPage() {
           <div>
             <p className="eyebrow">International dental patients · Hyderabad, India</p>
             <h1 className="display-title">Dental treatment in India<br /><em>with support from arrival to return.</em></h1>
-            <p className="hero__description">
-              JV Dental &amp; Implant Centre supports international patients seeking general, restorative and advanced dental treatment in Hyderabad—not only dental implants. Start remotely, plan the clinical journey before travel and coordinate the practical parts of your stay with one team.
-            </p>
+            <p className="hero__description">JV Dental &amp; Implant Centre supports international patients seeking general, restorative and advanced dental treatment in Hyderabad—not only dental implants. Start remotely, plan the clinical journey before travel and coordinate the practical parts of your stay with one team.</p>
             <div className="hero__actions">
               <Link className="button" href="/book">Book an online consultation <span aria-hidden="true">→</span></Link>
               <Link className="button button--ghost" href="/dental-treatments">Explore dental treatments</Link>
@@ -97,7 +83,7 @@ export default function InternationalPage() {
           </div>
           <p className="hero__note">Online review and preliminary planning do not replace an in-person examination. Final diagnosis, treatment sequence and timelines depend on the treating dentist’s clinical assessment and any required imaging.</p>
         </div>
-        <div className="hero__visual" aria-label="International dental patient journey to Hyderabad">
+        <div className="hero__visual" aria-label={internationalHero.alt} style={heroStyle}>
           <span className="hero__visual-label">Remote review · travel support · Hyderabad treatment · follow-up</span>
           <div className="hero__visual-copy"><p>International patient support</p><strong>One coordinated journey from first contact to return travel.</strong></div>
         </div>
