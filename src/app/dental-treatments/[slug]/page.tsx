@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { createClient } from "@/lib/supabase/server";
 
 type Treatment = {
   title: string;
@@ -25,6 +26,18 @@ const treatmentImages: Record<string, string> = {
   "gum-care": "https://images.pexels.com/photos/13264624/pexels-photo-13264624.jpeg?auto=compress&cs=tinysrgb&w=1400",
   "scaling-cleaning": "https://images.pexels.com/photos/3845723/pexels-photo-3845723.jpeg?auto=compress&cs=tinysrgb&w=1400",
   fillings: "https://images.pexels.com/photos/6528869/pexels-photo-6528869.jpeg?auto=compress&cs=tinysrgb&w=1400",
+};
+
+const treatmentMediaSlots: Record<string, string> = {
+  "root-canal-treatment": "treatment-root-canal",
+  "crowns-bridges": "treatment-crowns-bridges",
+  "cosmetic-dentistry": "treatment-cosmetic",
+  "teeth-whitening": "treatment-whitening",
+  "clear-aligners": "treatment-aligners",
+  braces: "treatment-braces",
+  "gum-care": "treatment-gum-care",
+  "scaling-cleaning": "treatment-cleaning",
+  fillings: "treatment-fillings",
 };
 
 const treatments: Record<string, Treatment> = {
@@ -161,13 +174,30 @@ export default async function TreatmentPage({ params }: { params: Promise<{ slug
     mainEntity: faqs.map(([question, answer]) => ({ "@type": "Question", name: question, acceptedAnswer: { "@type": "Answer", text: answer } })),
   };
 
-  const image = treatmentImages[slug];
+  const fallbackImage = treatmentImages[slug];
+  const mediaSlot = treatmentMediaSlots[slug];
+  let image = fallbackImage;
+  let imageAlt = `${treatment.title} at JV Dental`;
+
+  if (mediaSlot) {
+    const supabase = await createClient();
+    const { data: managedImage } = await supabase
+      .from("website_media")
+      .select("storage_path,alt_text")
+      .eq("slot_key", mediaSlot)
+      .maybeSingle();
+
+    if (managedImage?.storage_path) {
+      image = supabase.storage.from("public-content").getPublicUrl(managedImage.storage_path).data.publicUrl;
+      imageAlt = managedImage.alt_text || imageAlt;
+    }
+  }
 
   return <main>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
     <SiteHeader />
-    <section className="hero"><div className="hero__copy"><div><p className="eyebrow">Complete dental care · JV Dental Hyderabad</p><h1 className="display-title">{treatment.title}</h1><p className="hero__description">{treatment.summary}</p><div className="hero__actions"><Link className="button" href="/book">Book a consultation <span aria-hidden="true">→</span></Link><Link className="button button--ghost" href="/dental-treatments">All treatments</Link></div></div><p className="hero__note">Treatment suitability and recommendations are confirmed only after clinical examination and any required diagnostic imaging.</p></div><div className="hero__visual" aria-label={`${treatment.title} at JV Dental`} style={{ backgroundImage: `linear-gradient(180deg, rgba(20,35,32,.08), rgba(20,35,32,.48)), url(${image})`, backgroundSize: "cover", backgroundPosition: "center" }}><span className="hero__visual-label">Adult dental care · diagnosis-led treatment</span><div className="hero__visual-copy"><p>JV Dental &amp; Implant Centre</p><strong>{treatment.title}</strong></div></div></section>
+    <section className="hero"><div className="hero__copy"><div><p className="eyebrow">Complete dental care · JV Dental Hyderabad</p><h1 className="display-title">{treatment.title}</h1><p className="hero__description">{treatment.summary}</p><div className="hero__actions"><Link className="button" href="/book">Book a consultation <span aria-hidden="true">→</span></Link><Link className="button button--ghost" href="/dental-treatments">All treatments</Link></div></div><p className="hero__note">Treatment suitability and recommendations are confirmed only after clinical examination and any required diagnostic imaging.</p></div><div className="hero__visual" aria-label={imageAlt} style={{ backgroundImage: `linear-gradient(180deg, rgba(20,35,32,.08), rgba(20,35,32,.48)), url(${image})`, backgroundSize: "cover", backgroundPosition: "center" }}><span className="hero__visual-label">Adult dental care · diagnosis-led treatment</span><div className="hero__visual-copy"><p>JV Dental &amp; Implant Centre</p><strong>{treatment.title}</strong></div></div></section>
     <section className="section"><p className="section-kicker">Understanding your treatment</p><h2 className="section-title">What is {treatment.title.toLowerCase()}?</h2><p className="section-intro">{treatment.intro}</p></section>
     <section className="section"><p className="section-kicker">When to seek an assessment</p><h2 className="section-title">You may benefit from a consultation if:</h2><div className="portal-grid international-grid">{treatment.signs.map((item) => <article className="portal-card" key={item}><div className="portal-card__body"><p>{item}</p></div></article>)}</div></section>
     <section className="dark-band"><div className="section"><p className="section-kicker">Treatment pathway</p><h2 className="section-title">A diagnosis-first approach.</h2><div className="principle-list">{treatment.steps.map((step, i) => <article className="principle" key={step}><span className="principle__number">{String(i + 1).padStart(2, "0")}</span><div><h3>{step}</h3></div></article>)}</div></div></section>
