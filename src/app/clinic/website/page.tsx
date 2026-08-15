@@ -55,7 +55,7 @@ export default async function WebsiteMediaPage() {
     <main className="clinic-page-shell">
       <header className="clinic-page-header">
         <div><p className="portal-overline">Website</p><h1>Website photos</h1></div>
-        <p>Change public website images without touching code. Upload any suitable photo, crop it to the fixed frame, publish it, or restore the website's default image at any time.</p>
+        <p>Change public website images without touching code. Upload any suitable photo, crop it to the fixed frame, publish it, or restore the website default image at any time.</p>
       </header>
 
       <div style={{ display: "grid", gap: 36 }}>
