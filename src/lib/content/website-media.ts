@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export type WebsiteMedia = {
@@ -7,6 +8,11 @@ export type WebsiteMedia = {
 
 export async function getWebsiteMedia(slotKey: string, fallbackAlt: string): Promise<WebsiteMedia> {
   try {
+    // Website media is CMS content and must be resolved at request time.
+    // This prevents Cloudflare/OpenNext from serving a prerendered page after
+    // an owner replaces an image in the clinic portal.
+    await connection();
+
     const supabase = await createClient();
     const { data } = await supabase
       .from("website_media")
