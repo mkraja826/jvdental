@@ -14,6 +14,19 @@ type Treatment = {
   related: { label: string; href: string }[];
 };
 
+const treatmentImages: Record<string, string> = {
+  "general-dentistry": "https://images.pexels.com/photos/3845723/pexels-photo-3845723.jpeg?auto=compress&cs=tinysrgb&w=1400",
+  "root-canal-treatment": "https://images.pexels.com/photos/6528869/pexels-photo-6528869.jpeg?auto=compress&cs=tinysrgb&w=1400",
+  "crowns-bridges": "https://images.pexels.com/photos/6812520/pexels-photo-6812520.jpeg?auto=compress&cs=tinysrgb&w=1400",
+  "cosmetic-dentistry": "https://images.pexels.com/photos/3764014/pexels-photo-3764014.jpeg?auto=compress&cs=tinysrgb&w=1400",
+  "teeth-whitening": "https://images.pexels.com/photos/3764014/pexels-photo-3764014.jpeg?auto=compress&cs=tinysrgb&w=1400",
+  "clear-aligners": "https://images.pexels.com/photos/6812520/pexels-photo-6812520.jpeg?auto=compress&cs=tinysrgb&w=1400",
+  braces: "https://images.pexels.com/photos/6812520/pexels-photo-6812520.jpeg?auto=compress&cs=tinysrgb&w=1400",
+  "gum-care": "https://images.pexels.com/photos/13264624/pexels-photo-13264624.jpeg?auto=compress&cs=tinysrgb&w=1400",
+  "scaling-cleaning": "https://images.pexels.com/photos/3845723/pexels-photo-3845723.jpeg?auto=compress&cs=tinysrgb&w=1400",
+  fillings: "https://images.pexels.com/photos/6528869/pexels-photo-6528869.jpeg?auto=compress&cs=tinysrgb&w=1400",
+};
+
 const treatments: Record<string, Treatment> = {
   "general-dentistry": {
     title: "General Dentistry",
@@ -113,19 +126,54 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const treatment = treatments[slug];
   if (!treatment) return {};
-  return { title: `${treatment.title} in Hyderabad | JV Dental`, description: treatment.summary, alternates: { canonical: `/dental-treatments/${slug}` } };
+  return {
+    title: `${treatment.title} in Hyderabad | JV Dental`,
+    description: treatment.summary,
+    alternates: { canonical: `/dental-treatments/${slug}` },
+    openGraph: { title: `${treatment.title} in Hyderabad | JV Dental`, description: treatment.summary, type: "website" },
+  };
 }
 
 export default async function TreatmentPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const treatment = treatments[slug];
   if (!treatment) notFound();
-  return <main><SiteHeader />
-    <section className="hero"><div className="hero__copy"><div><p className="eyebrow">Complete dental care · JV Dental Hyderabad</p><h1 className="display-title">{treatment.title}</h1><p className="hero__description">{treatment.summary}</p><div className="hero__actions"><Link className="button" href="/book">Book a consultation <span aria-hidden="true">→</span></Link><Link className="button button--ghost" href="/dental-treatments">All treatments</Link></div></div><p className="hero__note">Treatment suitability and recommendations are confirmed only after clinical examination and any required diagnostic imaging.</p></div><div className="hero__visual" aria-label={`${treatment.title} at JV Dental`}><span className="hero__visual-label">Adult dental care · diagnosis-led treatment</span><div className="hero__visual-copy"><p>JV Dental &amp; Implant Centre</p><strong>{treatment.title}</strong></div></div></section>
+
+  const faqs = [
+    ["How do I know if this treatment is right for me?", `Suitability for ${treatment.title.toLowerCase()} depends on your symptoms, oral health and clinical findings. The dentist will examine the area and explain the appropriate options.`],
+    ["Will I need dental X-rays or scans?", "Imaging is requested only when it is clinically useful for diagnosis or treatment planning. The type of imaging depends on the problem being assessed."],
+    ["How many visits will treatment take?", "The number of visits varies with the diagnosis, complexity of treatment and healing or laboratory stages involved. Your expected sequence is explained after assessment."],
+    ["Can I book if I am not sure what treatment I need?", "Yes. You can book based on your symptom or concern. You do not need to choose a procedure before the dentist has examined you."],
+  ] as const;
+
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: treatment.title,
+    description: treatment.summary,
+    provider: { "@type": "Dentist", name: "JV Dental & Implant Centre", address: { "@type": "PostalAddress", addressLocality: "Hyderabad", addressRegion: "Telangana", addressCountry: "IN" } },
+    areaServed: { "@type": "City", name: "Hyderabad" },
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(([question, answer]) => ({ "@type": "Question", name: question, acceptedAnswer: { "@type": "Answer", text: answer } })),
+  };
+
+  const image = treatmentImages[slug];
+
+  return <main>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+    <SiteHeader />
+    <section className="hero"><div className="hero__copy"><div><p className="eyebrow">Complete dental care · JV Dental Hyderabad</p><h1 className="display-title">{treatment.title}</h1><p className="hero__description">{treatment.summary}</p><div className="hero__actions"><Link className="button" href="/book">Book a consultation <span aria-hidden="true">→</span></Link><Link className="button button--ghost" href="/dental-treatments">All treatments</Link></div></div><p className="hero__note">Treatment suitability and recommendations are confirmed only after clinical examination and any required diagnostic imaging.</p></div><div className="hero__visual" aria-label={`${treatment.title} at JV Dental`} style={{ backgroundImage: `linear-gradient(180deg, rgba(20,35,32,.08), rgba(20,35,32,.48)), url(${image})`, backgroundSize: "cover", backgroundPosition: "center" }}><span className="hero__visual-label">Adult dental care · diagnosis-led treatment</span><div className="hero__visual-copy"><p>JV Dental &amp; Implant Centre</p><strong>{treatment.title}</strong></div></div></section>
     <section className="section"><p className="section-kicker">Understanding your treatment</p><h2 className="section-title">What is {treatment.title.toLowerCase()}?</h2><p className="section-intro">{treatment.intro}</p></section>
     <section className="section"><p className="section-kicker">When to seek an assessment</p><h2 className="section-title">You may benefit from a consultation if:</h2><div className="portal-grid international-grid">{treatment.signs.map((item) => <article className="portal-card" key={item}><div className="portal-card__body"><p>{item}</p></div></article>)}</div></section>
     <section className="dark-band"><div className="section"><p className="section-kicker">Treatment pathway</p><h2 className="section-title">A diagnosis-first approach.</h2><div className="principle-list">{treatment.steps.map((step, i) => <article className="principle" key={step}><span className="principle__number">{String(i + 1).padStart(2, "0")}</span><div><h3>{step}</h3></div></article>)}</div></div></section>
     <section className="section"><p className="section-kicker">Benefits</p><h2 className="section-title">Treatment planned around health, function and maintainability.</h2><div className="portal-grid international-grid">{treatment.benefits.map((item) => <article className="portal-card" key={item}><div className="portal-card__body"><p>{item}</p></div></article>)}</div></section>
+    <section className="section"><p className="section-kicker">Common questions</p><h2 className="section-title">Before your appointment.</h2><div className="principle-list">{faqs.map(([question, answer], i) => <article className="principle" key={question}><span className="principle__number">{String(i + 1).padStart(2, "0")}</span><div><h3>{question}</h3><p>{answer}</p></div></article>)}</div></section>
     <section className="section"><p className="section-kicker">Related care</p><h2 className="section-title">Explore connected treatment pathways.</h2><div className="hero__actions">{treatment.related.map((item) => <Link className="button button--ghost" href={item.href} key={item.href}>{item.label}</Link>)}<Link className="button" href="/book">Request an appointment <span aria-hidden="true">→</span></Link></div></section>
-    <SiteFooter /></main>;
+    <SiteFooter />
+  </main>;
 }
