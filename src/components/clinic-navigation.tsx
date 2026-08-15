@@ -9,6 +9,7 @@ type ClinicNavigationProps = {
   canManageDoctors?: boolean;
   canManageIntegrations?: boolean;
   canManageAssistant?: boolean;
+  canManageWebsite?: boolean;
   unreadNotifications?: number;
 };
 
@@ -23,6 +24,7 @@ export default function ClinicNavigation({
   canManageDoctors = false,
   canManageIntegrations = false,
   canManageAssistant = false,
+  canManageWebsite = false,
   unreadNotifications = 0,
 }: ClinicNavigationProps) {
   const pathname = usePathname();
@@ -59,6 +61,7 @@ export default function ClinicNavigation({
     {
       label: "Content",
       items: [
+        { href: "/clinic/website", label: "Website photos", show: canManageWebsite },
         { href: "/clinic/cases", label: "Signature cases" },
         { href: "/clinic/publishing", label: "Publishing" },
         { href: "/clinic/doctors", label: "Doctor portfolios", show: canManageDoctors },
