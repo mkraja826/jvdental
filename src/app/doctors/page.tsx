@@ -7,11 +7,11 @@ import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Dentists in Ameerpet & S R Nagar, Hyderabad",
-  description: "Meet the JV Dental clinical team in S R Nagar near Ameerpet, Hyderabad. Explore each dentist's clinical focus, experience, selected cases and educational writing.",
+  description: "Meet the JV Dental clinical team in S R Nagar near Ameerpet, Hyderabad. Open a dentist profile to view their experience, clinical focus, selected cases and educational writing.",
   alternates: { canonical: "/doctors" },
   openGraph: {
     title: "Dentists in Ameerpet & S R Nagar, Hyderabad | JV Dental",
-    description: "Meet the dentists behind complete dental care, restorative treatment and advanced implant dentistry at JV Dental in Hyderabad.",
+    description: "Meet the dentists behind complete dental care and advanced implant dentistry at JV Dental in Hyderabad.",
     url: "/doctors",
   },
 };
@@ -20,7 +20,7 @@ export default async function DoctorsPage() {
   const supabase = await createClient();
   const { data: doctors } = await supabase
     .from("doctor_profiles")
-    .select("id,full_name,slug,professional_title,short_intro,overall_experience_years,specialist_experience_years,specialties,technologies,profile_image_path,featured")
+    .select("id,full_name,slug,professional_title,profile_image_path,featured")
     .eq("status", "published")
     .order("display_order", { ascending: true })
     .order("full_name", { ascending: true });
@@ -31,7 +31,7 @@ export default async function DoctorsPage() {
       <section className="doctor-directory-hero">
         <p className="eyebrow">JV DENTAL · CLINICAL TEAM</p>
         <h1>Meet the dentists behind your treatment plan.</h1>
-        <p>Explore each dentist&apos;s clinical focus, experience, treatment interests, selected dental cases and educational writing before you begin treatment.</p>
+        <p>Select a dentist to view their complete profile, experience, clinical interests, cases and professional background.</p>
       </section>
 
       <section className="section doctor-directory-grid" aria-label="JV Dental dentists">
@@ -39,6 +39,7 @@ export default async function DoctorsPage() {
           const imageUrl = doctor.profile_image_path
             ? supabase.storage.from("public-content").getPublicUrl(doctor.profile_image_path).data.publicUrl
             : null;
+
           return (
             <article className="doctor-card" key={doctor.id}>
               <Link className="doctor-card__portrait" href={`/doctors/${doctor.slug}`} aria-label={`View ${doctor.full_name} dentist profile`}>
@@ -53,17 +54,12 @@ export default async function DoctorsPage() {
                   />
                 ) : <span>{doctor.full_name.split(/\s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J"}</span>}
               </Link>
+
               <div className="doctor-card__body">
                 {doctor.featured ? <p className="eyebrow">Featured dentist</p> : <p className="eyebrow">JV Dental team</p>}
                 <h2>{doctor.full_name}</h2>
                 <p className="doctor-card__title">{doctor.professional_title ?? "JV Dental dentist"}</p>
-                <div className="doctor-card__experience">
-                  {doctor.overall_experience_years != null ? <span><strong>{doctor.overall_experience_years}</strong> years overall experience</span> : null}
-                  {doctor.specialist_experience_years != null ? <span><strong>{doctor.specialist_experience_years}</strong> years specialist experience</span> : null}
-                </div>
-                {doctor.short_intro ? <p>{doctor.short_intro}</p> : null}
-                <div className="doctor-card__tags">{(doctor.specialties ?? []).slice(0, 4).map((item: string) => <span key={item}>{item}</span>)}</div>
-                <Link className="text-link" href={`/doctors/${doctor.slug}`}>View dentist profile &amp; cases →</Link>
+                <Link className="text-link" href={`/doctors/${doctor.slug}`}>View full profile →</Link>
               </div>
             </article>
           );
