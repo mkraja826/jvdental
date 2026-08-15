@@ -13,6 +13,68 @@
   color: #bcd2eb !important;
 }
 
+/* Treatment-specific hero imagery. These override the inline fallback images so
+   each adult treatment route has a distinct visual that matches the treatment. */
+.hero__visual[aria-label="General Dentistry at JV Dental"] {
+  background-image: linear-gradient(180deg, rgba(9,25,31,.03), rgba(9,25,31,.46)), url("https://images.pexels.com/photos/6812534/pexels-photo-6812534.jpeg?auto=compress&cs=tinysrgb&w=1600") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.hero__visual[aria-label="Root Canal Treatment at JV Dental"] {
+  background-image: linear-gradient(180deg, rgba(9,25,31,.03), rgba(9,25,31,.46)), url("https://images.pexels.com/photos/6529120/pexels-photo-6529120.jpeg?auto=compress&cs=tinysrgb&w=1600") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.hero__visual[aria-label="Crowns & Bridges at JV Dental"] {
+  background-image: linear-gradient(180deg, rgba(9,25,31,.03), rgba(9,25,31,.46)), url("https://images.pexels.com/photos/4270096/pexels-photo-4270096.jpeg?auto=compress&cs=tinysrgb&w=1600") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.hero__visual[aria-label="Cosmetic Dentistry at JV Dental"] {
+  background-image: linear-gradient(180deg, rgba(9,25,31,.03), rgba(9,25,31,.42)), url("https://images.pexels.com/photos/3764014/pexels-photo-3764014.jpeg?auto=compress&cs=tinysrgb&w=1600") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.hero__visual[aria-label="Teeth Whitening at JV Dental"] {
+  background-image: linear-gradient(180deg, rgba(9,25,31,.02), rgba(9,25,31,.42)), url("https://images.pexels.com/photos/6529116/pexels-photo-6529116.jpeg?auto=compress&cs=tinysrgb&w=1600") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.hero__visual[aria-label="Clear Aligners at JV Dental"] {
+  background-image: linear-gradient(180deg, rgba(9,25,31,.02), rgba(9,25,31,.42)), url("https://images.pexels.com/photos/28407749/pexels-photo-28407749.jpeg?auto=compress&cs=tinysrgb&w=1600") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.hero__visual[aria-label="Braces at JV Dental"] {
+  background-image: linear-gradient(180deg, rgba(9,25,31,.03), rgba(9,25,31,.46)), url("https://images.pexels.com/photos/19147369/pexels-photo-19147369.jpeg?auto=compress&cs=tinysrgb&w=1600") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.hero__visual[aria-label="Gum & Periodontal Care at JV Dental"] {
+  background-image: linear-gradient(180deg, rgba(9,25,31,.03), rgba(9,25,31,.46)), url("https://images.pexels.com/photos/3845954/pexels-photo-3845954.jpeg?auto=compress&cs=tinysrgb&w=1600") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.hero__visual[aria-label="Scaling & Professional Cleaning at JV Dental"] {
+  background-image: linear-gradient(180deg, rgba(9,25,31,.03), rgba(9,25,31,.46)), url("https://images.pexels.com/photos/3779706/pexels-photo-3779706.jpeg?auto=compress&cs=tinysrgb&w=1600") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.hero__visual[aria-label="Dental Fillings at JV Dental"] {
+  background-image: linear-gradient(180deg, rgba(9,25,31,.03), rgba(9,25,31,.46)), url("https://images.pexels.com/photos/3946836/pexels-photo-3946836.jpeg?auto=compress&cs=tinysrgb&w=1600") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
 @media (min-width: 821px) {
   .treatment-page .dark-band .section {
     padding-top: 96px;
