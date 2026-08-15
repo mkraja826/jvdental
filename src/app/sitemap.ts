@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { internationalMarkets } from "@/content/international-markets";
+import { researchArticles } from "@/content/research-articles";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/doctors`, changeFrequency: "weekly", priority: 0.9 },
     { url: `${siteUrl}/cases`, changeFrequency: "weekly", priority: 0.85 },
     { url: `${siteUrl}/journal`, changeFrequency: "weekly", priority: 0.8 },
+    ...researchArticles.map((article) => ({ url: `${siteUrl}/journal/${article.slug}`, lastModified: asDate(article.updatedAt), changeFrequency: "monthly" as const, priority: 0.82 })),
     { url: `${siteUrl}/book`, changeFrequency: "monthly", priority: 0.7 },
   ];
 
@@ -51,7 +53,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
 
     const doctorRoutes: MetadataRoute.Sitemap = (doctorsResult.data ?? []).map((doctor) => ({ url: `${siteUrl}/doctors/${doctor.slug}`, lastModified: asDate(doctor.updated_at), changeFrequency: "monthly", priority: 0.8 }));
-    const journalRoutes: MetadataRoute.Sitemap = (postsResult.data ?? []).map((post) => ({ url: `${siteUrl}/journal/${post.slug}`, lastModified: asDate(post.updated_at), changeFrequency: "monthly", priority: 0.7 }));
+    const researchSlugs = new Set(researchArticles.map((article) => article.slug));
+    const journalRoutes: MetadataRoute.Sitemap = (postsResult.data ?? []).filter((post) => !researchSlugs.has(post.slug)).map((post) => ({ url: `${siteUrl}/journal/${post.slug}`, lastModified: asDate(post.updated_at), changeFrequency: "monthly", priority: 0.7 }));
     const caseRoutes: MetadataRoute.Sitemap = (casesResult.data ?? []).map((caseRecord) => ({ url: `${siteUrl}/cases/${caseRecord.slug}`, lastModified: asDate(caseRecord.updated_at), changeFrequency: "monthly", priority: 0.7 }));
 
     return [...staticRoutes, ...doctorRoutes, ...caseRoutes, ...journalRoutes];
