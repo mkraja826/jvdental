@@ -25,6 +25,7 @@ export default async function ClinicLayout({ children }: Readonly<{ children: Re
           canManageDoctors={canManage}
           canManageIntegrations={canManage}
           canManageAssistant={canManage}
+          canManageWebsite={canManage}
         />
       </aside>
       <div className="clinic-workspace-content">{children}</div>
