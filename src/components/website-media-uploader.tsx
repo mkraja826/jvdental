@@ -1,6 +1,7 @@
 "use client";
 
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -10,13 +11,15 @@ type Props = {
   description: string;
   width: number;
   height: number;
+  previewHref: string;
   currentPath?: string | null;
   currentUrl?: string | null;
   currentAlt?: string | null;
 };
 
-export default function WebsiteMediaUploader({ slotKey, label, description, width, height, currentPath, currentUrl, currentAlt }: Props) {
+export default function WebsiteMediaUploader({ slotKey, label, description, width, height, previewHref, currentPath, currentUrl, currentAlt }: Props) {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [sourceUrl, setSourceUrl] = useState<string | null>(null);
   const [sourceFile, setSourceFile] = useState<File | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -27,6 +30,7 @@ export default function WebsiteMediaUploader({ slotKey, label, description, widt
   const [message, setMessage] = useState<string | null>(null);
 
   const aspect = useMemo(() => `${width} / ${height}`, [width, height]);
+  const hasCustomImage = Boolean(currentPath && currentUrl);
 
   function chooseFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
@@ -128,7 +132,7 @@ export default function WebsiteMediaUploader({ slotKey, label, description, widt
         await supabase.storage.from("public-content").remove([currentPath]);
       }
 
-      setMessage("Published. The website will use this image automatically.");
+      setMessage("Published. The website now uses this image.");
       setSourceFile(null);
       if (sourceUrl) URL.revokeObjectURL(sourceUrl);
       setSourceUrl(null);
@@ -140,22 +144,63 @@ export default function WebsiteMediaUploader({ slotKey, label, description, widt
     }
   }
 
+  async function restoreDefault() {
+    if (!currentPath) return;
+    const confirmed = window.confirm(`Restore the default image for ${label}? The current custom image will be removed.`);
+    if (!confirmed) return;
+
+    setBusy(true);
+    setMessage(null);
+    try {
+      const supabase = createClient();
+      const { error: deleteRowError } = await supabase.from("website_media").delete().eq("slot_key", slotKey);
+      if (deleteRowError) throw deleteRowError;
+
+      const { error: removeError } = await supabase.storage.from("public-content").remove([currentPath]);
+      if (removeError) setMessage("Default restored. The old file could not be removed from storage, but it is no longer used.");
+      else setMessage("Default image restored.");
+
+      setAltText("");
+      router.refresh();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not restore the default image.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <article className="portal-card" style={{ overflow: "hidden" }}>
-      <div className="portal-card__header"><div><p className="portal-overline">Website photo</p><h3>{label}</h3></div><span>{width} × {height}</span></div>
+      <div className="portal-card__header">
+        <div><p className="portal-overline">{hasCustomImage ? "Custom image live" : "Using website default"}</p><h3>{label}</h3></div>
+        <span>{width} × {height}</span>
+      </div>
       <div className="portal-card__body" style={{ display: "grid", gap: 16 }}>
         <p>{description}</p>
+
         <div style={{ width: "100%", aspectRatio: aspect, overflow: "hidden", borderRadius: 16, background: "#e8eceb", position: "relative" }}>
-          {sourceUrl ? <img src={sourceUrl} alt="Crop preview" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${x}% ${y}%`, transform: `scale(${zoom})`, transformOrigin: `${x}% ${y}%` }} /> : currentUrl ? <img src={currentUrl} alt={currentAlt ?? label} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ height: "100%", display: "grid", placeItems: "center", color: "var(--muted)" }}>No custom image published</div>}
+          {sourceUrl ? <img src={sourceUrl} alt="Crop preview" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${x}% ${y}%`, transform: `scale(${zoom})`, transformOrigin: `${x}% ${y}%` }} /> : currentUrl ? <img src={currentUrl} alt={currentAlt ?? label} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ height: "100%", display: "grid", placeItems: "center", padding: 24, textAlign: "center", color: "var(--muted)" }}>The website is currently using its built-in default image.</div>}
         </div>
-        <label>Choose photo<input type="file" accept="image/jpeg,image/png,image/webp" onChange={chooseFile} /></label>
+
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          <button className="button" type="button" onClick={() => fileInputRef.current?.click()} disabled={busy}>{hasCustomImage ? "Replace photo" : "Choose photo"}</button>
+          <Link className="button button--ghost" href={previewHref} target="_blank">Preview on website ↗</Link>
+          {hasCustomImage ? <button className="button button--ghost" type="button" onClick={restoreDefault} disabled={busy}>Restore default</button> : null}
+        </div>
+
+        <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={chooseFile} style={{ display: "none" }} />
+
         {sourceUrl ? <>
-          <label>Zoom<input type="range" min="1" max="2.5" step="0.05" value={zoom} onChange={(e) => setZoom(Number(e.target.value))} /></label>
-          <label>Horizontal position<input type="range" min="0" max="100" value={x} onChange={(e) => setX(Number(e.target.value))} /></label>
-          <label>Vertical position<input type="range" min="0" max="100" value={y} onChange={(e) => setY(Number(e.target.value))} /></label>
-        </> : null}
-        <label>Image description<input value={altText} onChange={(e) => setAltText(e.target.value)} placeholder={`${label} at JV Dental`} /></label>
-        <button className="button" type="button" disabled={busy || !sourceFile} onClick={save}>{busy ? "Publishing…" : "Crop & publish"}</button>
+          <div style={{ padding: 14, borderRadius: 14, background: "rgba(0,0,0,.035)", display: "grid", gap: 12 }}>
+            <strong>Adjust crop</strong>
+            <label>Zoom<input type="range" min="1" max="2.5" step="0.05" value={zoom} onChange={(e) => setZoom(Number(e.target.value))} /></label>
+            <label>Horizontal position<input type="range" min="0" max="100" value={x} onChange={(e) => setX(Number(e.target.value))} /></label>
+            <label>Vertical position<input type="range" min="0" max="100" value={y} onChange={(e) => setY(Number(e.target.value))} /></label>
+          </div>
+          <label>Image description<input value={altText} onChange={(e) => setAltText(e.target.value)} placeholder={`${label} at JV Dental`} /></label>
+          <button className="button" type="button" disabled={busy || !sourceFile} onClick={save}>{busy ? "Publishing…" : "Crop & publish"}</button>
+        </> : hasCustomImage ? <p style={{ margin: 0, color: "var(--muted)", fontSize: ".85rem" }}>Current description: {currentAlt || "No description saved"}</p> : null}
+
         {message ? <p role="status" style={{ margin: 0 }}>{message}</p> : null}
       </div>
     </article>
