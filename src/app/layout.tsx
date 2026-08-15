@@ -19,6 +19,7 @@ import "./mobile-stabilization.css";
 import "./route-mobile-qa.css";
 import "./detail-mobile-qa.css";
 import "./treatment-contrast.css";
+import "./complete-care.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com");
 
@@ -33,33 +34,34 @@ export const metadata: Metadata = {
   metadataBase: siteUrl,
   applicationName: "JV Dental & Implant Centre",
   title: {
-    default: "Dentist in Ameerpet, Hyderabad | JV Dental & Implant Centre",
+    default: "Dental Implants in Hyderabad | JV Dental & Implant Centre",
     template: "%s | JV Dental",
   },
   description:
-    "Complete dental care near Ameerpet and S R Nagar, Hyderabad, including general dentistry, restorative care, root canal treatment, crowns, dentures, oral surgery and advanced dental implants.",
+    "Implant-focused dental care in Hyderabad with guided implant surgery, full-mouth rehabilitation and complete adult dentistry at JV Dental near Ameerpet and S R Nagar.",
   keywords: [
+    "dental implants Hyderabad",
+    "implant dentist Hyderabad",
+    "guided dental implants Hyderabad",
+    "full mouth dental implants Hyderabad",
     "dentist Ameerpet",
     "dental clinic Ameerpet",
     "dentist SR Nagar",
-    "dentist Hyderabad",
-    "dental implants Hyderabad",
-    "dental clinic near Ameerpet",
     "JV Dental",
   ],
   openGraph: {
     type: "website",
     siteName: "JV Dental & Implant Centre",
-    title: "Dentist in Ameerpet, Hyderabad | JV Dental & Implant Centre",
+    title: "Dental Implants in Hyderabad | JV Dental & Implant Centre",
     description:
-      "Complete dental care in Hyderabad with advanced implant dentistry, restorative treatment and support for local and international patients.",
+      "Implant-focused dentistry in Hyderabad with guided implant planning, full-mouth rehabilitation and complete adult dental care.",
     url: "/",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dentist in Ameerpet, Hyderabad | JV Dental",
+    title: "Dental Implants in Hyderabad | JV Dental",
     description:
-      "Complete dental care in Hyderabad with advanced implant dentistry and coordinated patient support.",
+      "Implant-focused dentistry with guided planning, complex rehabilitation and complete adult dental care in Hyderabad.",
   },
   robots: {
     index: true,
