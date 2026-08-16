@@ -73,6 +73,60 @@ async function recordFailure(
   }).eq("id", provider.id);
 }
 
+async function callCompatibleProvider(args: {
+  endpoint: string;
+  apiKey: string;
+  model: string;
+  system: string;
+  message: string;
+  maxTokens: number;
+}) {
+  const response = await fetch(args.endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${args.apiKey}`,
+    },
+    body: JSON.stringify({
+      model: args.model,
+      messages: [
+        { role: "system", content: args.system },
+        { role: "user", content: args.message },
+      ],
+      temperature: 0.2,
+      max_tokens: args.maxTokens,
+    }),
+  });
+
+  if (!response.ok) {
+    return { ok: false as const, status: response.status, error: await response.text().catch(() => response.statusText) };
+  }
+
+  const payload = await response.json();
+  const content = payload?.choices?.[0]?.message?.content;
+  if (typeof content !== "string" || !content.trim()) {
+    return { ok: false as const, status: 502, error: "Provider returned an empty or incompatible response" };
+  }
+
+  return { ok: true as const, text: content.trim().slice(0, 4000) };
+}
+
+async function generateFromLegacyProvider(system: string, message: string, maxTokens: number): Promise<ProviderResult | null> {
+  const endpoint = Deno.env.get("AI_CHAT_COMPLETIONS_URL")?.trim();
+  const apiKey = Deno.env.get("AI_API_KEY")?.trim();
+  const model = Deno.env.get("AI_MODEL")?.trim();
+  const provider = Deno.env.get("AI_PROVIDER_NAME")?.trim() || "legacy-compatible";
+  if (!endpoint || !apiKey || !model) return null;
+
+  try {
+    const result = await callCompatibleProvider({ endpoint, apiKey, model, system, message, maxTokens });
+    if (!result.ok) return null;
+    return { text: result.text, provider, model };
+  } catch {
+    return null;
+  }
+}
+
 export async function generateFromProviderPool(args: {
   supabase: SupabaseClient;
   system: string;
@@ -111,40 +165,24 @@ export async function generateFromProviderPool(args: {
     }
 
     try {
-      const response = await fetch(provider.endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: provider.model_name,
-          messages: [
-            { role: "system", content: system },
-            { role: "user", content: message },
-          ],
-          temperature: 0.2,
-          max_tokens: maxTokens,
-        }),
+      const result = await callCompatibleProvider({
+        endpoint: provider.endpoint,
+        apiKey,
+        model: provider.model_name,
+        system,
+        message,
+        maxTokens,
       });
 
-      if (!response.ok) {
-        const errorBody = await response.text().catch(() => "");
-        await recordFailure(supabase, provider, response.status, errorBody || response.statusText);
-        if (RETRYABLE.has(response.status) || response.status === 401 || response.status === 403) continue;
-        continue;
-      }
-
-      const payload = await response.json();
-      const content = payload?.choices?.[0]?.message?.content;
-      if (typeof content !== "string" || !content.trim()) {
-        await recordFailure(supabase, provider, 502, "Provider returned an empty or incompatible response");
+      if (!result.ok) {
+        await recordFailure(supabase, provider, result.status, result.error || `HTTP ${result.status}`);
+        if (RETRYABLE.has(result.status) || result.status === 401 || result.status === 403) continue;
         continue;
       }
 
       await recordSuccess(supabase, provider);
       return {
-        text: content.trim().slice(0, 4000),
+        text: result.text,
         provider: provider.provider_name,
         model: provider.model_name,
       };
@@ -153,5 +191,5 @@ export async function generateFromProviderPool(args: {
     }
   }
 
-  return null;
+  return generateFromLegacyProvider(system, message, maxTokens);
 }
