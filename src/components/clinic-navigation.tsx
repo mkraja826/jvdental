@@ -61,7 +61,7 @@ export default function ClinicNavigation({
     {
       label: "Content",
       items: [
-        { href: "/clinic/website", label: "Website photos", show: canManageWebsite },
+        { href: "/clinic/website", label: "Website art", show: canManageWebsite },
         { href: "/clinic/cases", label: "Signature cases" },
         { href: "/clinic/publishing", label: "Publishing" },
         { href: "/clinic/doctors", label: "Doctor portfolios", show: canManageDoctors },
