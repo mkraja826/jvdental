@@ -62,7 +62,7 @@ export default async function WebsiteMediaPage() {
     <main className="clinic-page-shell">
       <header className="clinic-page-header">
         <div><p className="portal-overline">Website</p><h1>Website art</h1></div>
-        <p>Control the public website's approved visual style from one place. Choose a preset theme or manage website photography without touching code.</p>
+        <p>Control the public website&apos;s approved visual style from one place. Choose a preset theme or manage website photography without touching code.</p>
       </header>
 
       <WebsiteThemePicker currentTheme={currentTheme} />
