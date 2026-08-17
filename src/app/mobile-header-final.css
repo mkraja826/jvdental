@@ -1,6 +1,7 @@
 /* Final mobile header override. Loaded last to prevent earlier mobile layers from undoing the approved client layout. */
 @media (max-width: 820px) {
   .site-header__inner {
+    position: relative;
     width: 100%;
     min-height: 64px;
     padding: 7px 10px;
@@ -20,16 +21,18 @@
     width: 42px;
     height: 42px;
     margin: 0;
+    z-index: 2;
   }
 
   .clinic-wordmark {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-    justify-self: center !important;
-    align-self: center;
-    width: min(94px, 100%) !important;
-    max-width: 100% !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 32px !important;
+    transform: translate(-50%, -50%) !important;
+    width: 94px !important;
+    max-width: 28vw !important;
     margin: 0 !important;
+    z-index: 1;
   }
 
   .header-actions {
@@ -39,6 +42,7 @@
     width: 112px;
     margin: 0;
     justify-self: end;
+    z-index: 2;
   }
 
   .header-logins { display: none !important; }
@@ -77,7 +81,11 @@
   }
 
   .mobile-menu-toggle { width: 38px; height: 38px; }
-  .clinic-wordmark { width: min(84px, 100%) !important; }
+  .clinic-wordmark {
+    top: 30px !important;
+    width: 84px !important;
+    max-width: 26vw !important;
+  }
   .header-actions { width: 102px; }
   .header-assessment {
     width: 102px !important;
@@ -96,7 +104,7 @@
     gap: 0 4px;
   }
   .mobile-menu-toggle { width: 36px; height: 36px; }
-  .clinic-wordmark { width: min(76px, 100%) !important; }
+  .clinic-wordmark { width: 76px !important; max-width: 25vw !important; }
   .header-actions { width: 94px; }
   .header-assessment { width: 94px !important; max-width: 94px !important; font-size: .48rem !important; }
 }
