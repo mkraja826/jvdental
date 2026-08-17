@@ -20,6 +20,7 @@ import "./route-mobile-qa.css";
 import "./detail-mobile-qa.css";
 import "./treatment-contrast.css";
 import "./complete-care.css";
+import "./mobile-header-final.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com");
 
