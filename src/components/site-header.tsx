@@ -49,6 +49,22 @@ export function SiteHeader() {
   return (
     <header className={`site-header${menuOpen ? " site-header--menu-open" : ""}`}>
       <div className="site-header__inner">
+        <button
+          className="mobile-menu-toggle"
+          type="button"
+          aria-expanded={menuOpen}
+          aria-controls="mobile-primary-navigation"
+          aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+          onClick={() => {
+            setMenuOpen((open) => !open);
+            setOpenDropdown(null);
+          }}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
         <Link className="clinic-wordmark" href="/" aria-label="JV Dental & Implant Centre home" onClick={closeMenus}>
           <Image
             className="clinic-wordmark__image"
@@ -99,21 +115,6 @@ export function SiteHeader() {
           <Link className="button header-assessment" href="/book" onClick={closeMenus}>
             Book Consultation <span aria-hidden="true">→</span>
           </Link>
-          <button
-            className="mobile-menu-toggle"
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls="mobile-primary-navigation"
-            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-            onClick={() => {
-              setMenuOpen((open) => !open);
-              setOpenDropdown(null);
-            }}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
         </div>
       </div>
     </header>
