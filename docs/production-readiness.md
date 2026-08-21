@@ -6,12 +6,12 @@ This document is the launch gate for the JV Dental patient and clinic platform. 
 
 - Supabase project: `jvdental` (`awajvlxdifnkhngbdron`), Mumbai / `ap-south-1`.
 - Supabase organization plan at the time of this review: **Free**.
-- Supabase security advisor: clean after the production RLS hardening pass.
+- Supabase security advisor: application/schema findings are cleared; **Auth leaked-password protection remains disabled and is still a launch warning**.
 - Supabase performance advisor: no WARN-level findings after FK indexing, auth init-plan optimization and policy consolidation. INFO-level unused-index observations are intentionally retained until real workload data exists.
 - Private patient Storage: 50 MB per object with server-side MIME + extension restrictions.
 - Public case media Storage: 25 MB per object, JPEG/PNG/WebP/MP4 only.
 - Application dependency versions are pinned with a committed npm lockfile.
-- CI uses `npm ci`, audits production dependencies at high severity, type-checks, lints, builds, and smoke-tests production security headers/routes.
+- CI uses `npm ci`, audits production dependencies at high severity, type-checks, lints, builds, and smoke-tests production security headers/routes. RC4 validation run #859 passed all blocking checks; ESLint reported only three non-blocking `<img>` warnings in local uploader preview components.
 - Public assistant has both per-session rate limiting and an atomic salted-network-fingerprint limit. Raw client IP addresses are not stored by JV Dental for this limiter.
 
 ## Blocker: production Supabase plan, backup and disaster recovery
@@ -21,6 +21,20 @@ Do not place real production patient records in the current Free-plan project un
 For a clinic production deployment, moving JV Dental to a paid Supabase plan with managed daily database backups is the preferred baseline. Free projects can be paused for low activity and do not provide the same managed-backup/availability posture expected for a patient-facing clinical system.
 
 Database backups do not contain the underlying Storage objects, so a database backup alone is not sufficient for JV Dental because radiographs, CBCT archives and clinical media are stored in Supabase Storage.
+
+### Recovery audit completed 2026-08-21
+
+The pre-launch read-only integrity audit confirmed:
+
+- all public foreign-key constraints are validated;
+- row-level security is enabled on every public table;
+- the current patient-document Storage reference resolves to an existing object;
+- the current homepage-hero Storage reference resolves to an existing object;
+- no missing Storage reference was found among the records currently present;
+- Dr. Jaya Prakash currently has no portrait path, so that is a missing launch asset rather than a broken Storage reference;
+- current production data volume is still small: 1 patient profile, 1 case, 1 appointment, 1 treatment plan, 1 doctor profile and 1 homepage-media row; booking payments, treatment payments and inventory remain empty.
+
+This integrity audit is **not** a backup restore drill and does not close the disaster-recovery launch gate.
 
 ### Minimum launch requirement
 
@@ -51,6 +65,7 @@ Before production:
 - enable MFA on administrative Supabase/GitHub accounts and organization-level enforcement where practical
 - review Supabase Auth rate limits for the expected clinic/public workload
 - enable CAPTCHA/Turnstile protection for public Auth entry points before a public launch
+- enable Supabase Auth leaked-password protection
 - configure a JV Dental-controlled custom SMTP provider for Auth emails
 - use an OTP/magic-link expiry no longer than the clinic's approved security window; Supabase recommends one hour or less
 - disable email-provider click/link tracking for Auth links if the SMTP provider enables it by default
@@ -123,9 +138,9 @@ All acceptance tests must use test/sandbox identities until the final controlled
 - [x] Committed npm lockfile and reproducible `npm ci` validation.
 - [x] Production dependency audit at high severity in CI.
 - [x] Standalone TypeScript validation in CI.
-- [x] Warning-free ESLint validation.
+- [x] ESLint validation with zero errors; three known uploader-preview performance warnings remain non-blocking.
 - [x] Production Next.js build.
-- [x] Production-server smoke tests for security headers, robots rules and private-cache/indexing behavior.
+- [x] Production-server smoke tests for security headers, robots rules, private-cache/indexing behavior and legacy redirects.
 - [x] Visible keyboard focus safeguards and reduced-motion support.
 - [ ] Automated accessibility audit plus manual keyboard/screen-reader pass on deployed pages.
 - [ ] Cross-browser/mobile acceptance matrix on the deployed release candidate.
@@ -173,7 +188,7 @@ A healthcare/privacy notice, terms, consent language, retention schedule and int
 
 Production launch is approved only when:
 
-1. security advisor is clean,
+1. security advisor is clean, including leaked-password protection,
 2. CI is green on the exact release SHA,
 3. production Supabase availability + backup + Storage recovery is operational and restore-tested,
 4. real role provisioning is verified,
