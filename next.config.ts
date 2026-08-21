@@ -52,6 +52,30 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/services",
+        destination: "/dental-treatments",
+        permanent: true,
+      },
+      {
+        source: "/services/:path*",
+        destination: "/dental-treatments",
+        permanent: true,
+      },
+      {
+        source: "/contact-us",
+        destination: "/book",
+        permanent: true,
+      },
+      {
+        source: "/contact-us/:path*",
+        destination: "/book",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
