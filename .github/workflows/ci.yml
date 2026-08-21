@@ -51,32 +51,45 @@ jobs:
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
 
+          fail() {
+            echo "::error::$1"
+            echo "--- next-server log ---"
+            cat /tmp/jv-next.log || true
+            exit 1
+          }
+
           READY=0
           for attempt in $(seq 1 20); do
-            if curl -fsS -o /dev/null http://127.0.0.1:3000/robots.txt; then
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              fail "Production server exited before becoming ready"
+            fi
+            STATUS=$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/robots.txt || true)
+            if [ "$STATUS" = "200" ]; then
               READY=1
+              echo "Production server ready on attempt ${attempt}"
               break
             fi
             sleep 1
           done
           if [ "$READY" -ne 1 ]; then
-            cat /tmp/jv-next.log
-            exit 1
+            fail "Production server did not become ready within 20 seconds"
           fi
 
-          PUBLIC_HEADERS=$(curl -fsSI http://127.0.0.1:3000/robots.txt)
-          echo "$PUBLIC_HEADERS" | grep -qi '^content-security-policy:'
-          echo "$PUBLIC_HEADERS" | grep -qi '^x-content-type-options: nosniff'
-          echo "$PUBLIC_HEADERS" | grep -qi '^x-frame-options: DENY'
-          echo "$PUBLIC_HEADERS" | grep -qi '^referrer-policy: strict-origin-when-cross-origin'
-          echo "$PUBLIC_HEADERS" | grep -qi '^strict-transport-security:'
+          PUBLIC_HEADERS=$(curl -sSI http://127.0.0.1:3000/robots.txt) || fail "Could not read public security headers"
+          echo "$PUBLIC_HEADERS" | grep -qi '^content-security-policy:' || fail "Missing Content-Security-Policy header"
+          echo "$PUBLIC_HEADERS" | grep -qi '^x-content-type-options: nosniff' || fail "Missing X-Content-Type-Options: nosniff"
+          echo "$PUBLIC_HEADERS" | grep -qi '^x-frame-options: DENY' || fail "Missing X-Frame-Options: DENY"
+          echo "$PUBLIC_HEADERS" | grep -qi '^referrer-policy: strict-origin-when-cross-origin' || fail "Unexpected Referrer-Policy"
+          echo "$PUBLIC_HEADERS" | grep -qi '^strict-transport-security:' || fail "Missing Strict-Transport-Security header"
+          echo "Public security headers passed"
 
-          ROBOTS=$(curl -fsS http://127.0.0.1:3000/robots.txt)
-          echo "$ROBOTS" | grep -q 'Disallow: /patient'
-          echo "$ROBOTS" | grep -q 'Disallow: /clinic'
-          echo "$ROBOTS" | grep -q 'Disallow: /staff'
-          echo "$ROBOTS" | grep -q 'Disallow: /auth'
-          echo "$ROBOTS" | grep -q 'Sitemap: http://localhost:3000/sitemap.xml'
+          ROBOTS=$(curl -sS http://127.0.0.1:3000/robots.txt) || fail "Could not read robots.txt"
+          echo "$ROBOTS" | grep -Fq 'Disallow: /patient' || fail "robots.txt does not exclude /patient"
+          echo "$ROBOTS" | grep -Fq 'Disallow: /clinic' || fail "robots.txt does not exclude /clinic"
+          echo "$ROBOTS" | grep -Fq 'Disallow: /staff' || fail "robots.txt does not exclude /staff"
+          echo "$ROBOTS" | grep -Fq 'Disallow: /auth' || fail "robots.txt does not exclude /auth"
+          echo "$ROBOTS" | grep -Fq 'Sitemap: http://localhost:3000/sitemap.xml' || fail "robots.txt sitemap URL is incorrect"
+          echo "robots.txt checks passed"
 
           for ROUTE in \
             '/patient/login' \
@@ -86,12 +99,11 @@ jobs:
             '/auth/update-password?audience=patient' \
             '/auth/update-password?audience=staff' \
             '/book'; do
-            STATUS=$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:3000${ROUTE}")
+            STATUS=$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:3000${ROUTE}" || true)
             if [ "$STATUS" != "200" ]; then
-              echo "Route smoke test failed: ${ROUTE} returned ${STATUS}"
-              cat /tmp/jv-next.log
-              exit 1
+              fail "Route smoke test failed: ${ROUTE} returned ${STATUS}"
             fi
+            echo "Route passed: ${ROUTE}"
           done
 
           for REDIRECT_SPEC in \
@@ -100,9 +112,16 @@ jobs:
             '/contact-us|/book'; do
             SOURCE=${REDIRECT_SPEC%%|*}
             DESTINATION=${REDIRECT_SPEC#*|}
-            REDIRECT_HEADERS=$(curl -sSI "http://127.0.0.1:3000${SOURCE}")
-            echo "$REDIRECT_HEADERS" | grep -Eq '^HTTP/[^ ]+ 30(7|8)'
-            echo "$REDIRECT_HEADERS" | grep -qi "^location: ${DESTINATION}\r\?$"
+            REDIRECT_HEADERS=$(curl -sS -D - -o /dev/null "http://127.0.0.1:3000${SOURCE}") || fail "Could not request legacy route ${SOURCE}"
+            REDIRECT_STATUS=$(printf '%s\n' "$REDIRECT_HEADERS" | awk 'NR == 1 { print $2 }')
+            REDIRECT_LOCATION=$(printf '%s\n' "$REDIRECT_HEADERS" | awk 'tolower($1) == "location:" { print $2; exit }' | tr -d '\r')
+            if [ "$REDIRECT_STATUS" != "307" ] && [ "$REDIRECT_STATUS" != "308" ]; then
+              fail "Legacy route ${SOURCE} returned ${REDIRECT_STATUS}, expected 307/308"
+            fi
+            if [ "$REDIRECT_LOCATION" != "$DESTINATION" ]; then
+              fail "Legacy route ${SOURCE} redirected to '${REDIRECT_LOCATION}', expected '${DESTINATION}'"
+            fi
+            echo "Legacy redirect passed: ${SOURCE} -> ${DESTINATION}"
           done
 
           for PRIVATE_ROUTE in \
@@ -110,7 +129,10 @@ jobs:
             '/staff/login' \
             '/auth/forgot-password?audience=staff' \
             '/auth/update-password?audience=staff'; do
-            PRIVATE_HEADERS=$(curl -fsSI "http://127.0.0.1:3000${PRIVATE_ROUTE}")
-            echo "$PRIVATE_HEADERS" | grep -qi '^cache-control: private, no-store, max-age=0'
-            echo "$PRIVATE_HEADERS" | grep -qi '^x-robots-tag: noindex, nofollow, noarchive, nosnippet'
+            PRIVATE_HEADERS=$(curl -sSI "http://127.0.0.1:3000${PRIVATE_ROUTE}") || fail "Could not read private headers for ${PRIVATE_ROUTE}"
+            echo "$PRIVATE_HEADERS" | grep -qi '^cache-control: private, no-store, max-age=0' || fail "Private cache header missing on ${PRIVATE_ROUTE}"
+            echo "$PRIVATE_HEADERS" | grep -qi '^x-robots-tag: noindex, nofollow, noarchive, nosnippet' || fail "Private X-Robots-Tag missing on ${PRIVATE_ROUTE}"
+            echo "Private headers passed: ${PRIVATE_ROUTE}"
           done
+
+          echo "All production security and route smoke tests passed"
