@@ -3,9 +3,12 @@ import { notFound } from "next/navigation";
 import { confirmTravelPlan } from "@/app/clinic/commercial/actions";
 import { requireStaff } from "@/lib/auth/guards";
 
+const TRAVEL_CONFIRM_ROLES = new Set(["owner", "admin", "coordinator", "receptionist"]);
+
 export default async function ClinicTravelDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { supabase } = await requireStaff();
+  const { supabase, staff } = await requireStaff();
+  const canConfirmTravel = TRAVEL_CONFIRM_ROLES.has(staff.role);
 
   const { data: travel } = await supabase
     .from("travel_plans")
@@ -66,13 +69,15 @@ export default async function ClinicTravelDetail({ params }: { params: Promise<{
             <div className="portal-card__body">
               {travel.status === "confirmed" || travel.status === "completed" ? (
                 <><p><strong>Travel plan confirmed.</strong></p>{travel.coordinator_notes ? <p>{travel.coordinator_notes}</p> : null}{travel.confirmed_at ? <p style={{ color: "var(--muted)" }}>Confirmed {new Date(travel.confirmed_at).toLocaleString("en-IN")}</p> : null}</>
-              ) : (
+              ) : canConfirmTravel ? (
                 <form action={confirmTravelPlan} style={{ display: "grid", gap: 16 }}>
                   <input type="hidden" name="travel_id" value={travel.id} />
                   <input type="hidden" name="case_id" value={travel.case_id} />
                   <label>Coordinator note to patient<textarea name="coordinator_notes" rows={4} placeholder="Confirm practical arrangements and any clinic instructions for arrival." /></label>
                   <button className="button" type="submit">Confirm travel plan →</button>
                 </form>
+              ) : (
+                <p className="form-note">Travel details are read-only for your role. An owner, admin, coordinator or receptionist must confirm international logistics.</p>
               )}
             </div>
           </article>
