@@ -48,6 +48,17 @@ export async function createPaymentRequest(formData: FormData) {
 
   if (!caseId || !amountMinor || !CURRENCIES.has(currency) || !REQUEST_TYPES.has(requestType)) redirect("/clinic/finance?error=request");
 
+  const now = Date.now();
+  const dueMs = dueAt ? new Date(dueAt).getTime() : null;
+  const expiresMs = expiresAt ? new Date(expiresAt).getTime() : null;
+  if (
+    (dueMs != null && dueMs <= now)
+    || (expiresMs != null && expiresMs <= now)
+    || (dueMs != null && expiresMs != null && expiresMs < dueMs)
+  ) {
+    redirect("/clinic/finance?error=date");
+  }
+
   const { data: caseRecord } = await supabase.from("patient_cases").select("id,patient_id").eq("id", caseId).maybeSingle();
   if (!caseRecord) redirect("/clinic/finance?error=case");
 
@@ -82,6 +93,17 @@ export async function sendPaymentRequest(formData: FormData) {
   const { supabase } = await requireFinanceStaff();
   const requestId = text(formData, "payment_request_id");
   if (!requestId) return;
+
+  const { data: request } = await supabase
+    .from("payment_requests")
+    .select("id,status,expires_at")
+    .eq("id", requestId)
+    .maybeSingle();
+  if (!request || request.status !== "draft") return;
+  if (request.expires_at && new Date(request.expires_at).getTime() <= Date.now()) {
+    redirect("/clinic/finance?error=expired");
+  }
+
   const { error } = await supabase.from("payment_requests").update({ status: "sent", sent_at: new Date().toISOString() }).eq("id", requestId).eq("status", "draft");
   if (error) redirect("/clinic/finance?error=send");
   revalidatePath("/clinic/finance");
