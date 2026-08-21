@@ -150,10 +150,24 @@ export default function AppointmentBookingForm() {
   }
 
   return (
-    <form className="booking-form" onSubmit={submit}>
+    <form className="booking-form" onSubmit={submit} aria-busy={busy || undefined}>
       <div className="booking-type" role="group" aria-label="Consultation type">
-        <button type="button" className={bookingKind === "clinic_consultation" ? "is-active" : ""} onClick={() => setBookingKind("clinic_consultation")}>Clinic appointment</button>
-        <button type="button" className={bookingKind === "video_consultation" ? "is-active" : ""} onClick={() => setBookingKind("video_consultation")}>Video consultation</button>
+        <button
+          type="button"
+          className={bookingKind === "clinic_consultation" ? "is-active" : ""}
+          aria-pressed={bookingKind === "clinic_consultation"}
+          onClick={() => setBookingKind("clinic_consultation")}
+        >
+          Clinic appointment
+        </button>
+        <button
+          type="button"
+          className={bookingKind === "video_consultation" ? "is-active" : ""}
+          aria-pressed={bookingKind === "video_consultation"}
+          onClick={() => setBookingKind("video_consultation")}
+        >
+          Video consultation
+        </button>
       </div>
 
       <div className="booking-grid">
@@ -168,8 +182,26 @@ export default function AppointmentBookingForm() {
       <label className="field"><span>What would you like the dentist to look at?</span><textarea name="dentalConcern" rows={5} maxLength={1500} placeholder="For example: missing tooth, implant consultation, pain, full-mouth treatment, second opinion..." /></label>
 
       <p className="booking-note">Submitting this form requests a preferred date/time. The clinic confirms the final appointment after reviewing availability. Online information does not replace a dental examination.</p>
-      <button className="button booking-submit" disabled={busy} type="submit">{busy ? "Submitting…" : bookingKind === "video_consultation" ? "Book consultation →" : "Book appointment →"}</button>
-      {message ? <p className={success ? "booking-message booking-message--success" : "booking-message"} role="status" aria-live="polite">{message}</p> : null}
+      <button
+        className="button booking-submit"
+        disabled={busy}
+        aria-disabled={busy || undefined}
+        aria-busy={busy || undefined}
+        data-state={busy ? "pending" : "idle"}
+        type="submit"
+      >
+        <span>{busy ? "Submitting…" : bookingKind === "video_consultation" ? "Book consultation →" : "Book appointment →"}</span>
+      </button>
+      {message ? (
+        <p
+          className={success ? "booking-message booking-message--success" : "booking-message"}
+          role={success ? "status" : "alert"}
+          aria-live={success ? "polite" : "assertive"}
+          aria-atomic="true"
+        >
+          {message}
+        </p>
+      ) : null}
     </form>
   );
 }
