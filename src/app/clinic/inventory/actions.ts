@@ -28,6 +28,19 @@ function validUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
+function todayInIndia() {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const year = parts.find((part) => part.type === "year")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const day = parts.find((part) => part.type === "day")?.value;
+  return year && month && day ? `${year}-${month}-${day}` : new Date().toISOString().slice(0, 10);
+}
+
 export async function createInventoryItem(formData: FormData) {
   const { supabase, staff } = await requireStaff();
   if (!ITEM_EDITORS.has(staff.role)) redirect("/clinic/inventory?error=role");
@@ -67,10 +80,13 @@ export async function receiveInventory(formData: FormData) {
   const itemId = text(formData, "item_id");
   const lotNumber = text(formData, "lot_number");
   const quantity = requiredPositiveInteger(text(formData, "quantity"));
-  if (!validUuid(itemId) || !lotNumber || !quantity) redirect("/clinic/inventory/receive?error=required");
+  const idempotencyKey = text(formData, "idempotency_key");
+  if (!validUuid(itemId) || !lotNumber || !quantity || !validUuid(idempotencyKey)) redirect("/clinic/inventory/receive?error=required");
 
   const vendorId = text(formData, "vendor_id");
   const unitCost = optionalNumber(text(formData, "unit_cost"));
+  if (unitCost != null && unitCost < 0) redirect("/clinic/inventory/receive?error=cost");
+
   const { error } = await supabase.rpc("receive_inventory_batch", {
     p_item_id: itemId,
     p_lot_number: lotNumber,
@@ -80,7 +96,7 @@ export async function receiveInventory(formData: FormData) {
     p_unit_cost: unitCost,
     p_storage_location: text(formData, "storage_location") || null,
     p_scan_code: text(formData, "scan_code") || null,
-    p_idempotency_key: null,
+    p_idempotency_key: idempotencyKey,
   });
 
   if (error) redirect(`/clinic/inventory/receive?error=${encodeURIComponent(error.message.slice(0, 80))}`);
@@ -96,15 +112,16 @@ export async function placeImplant(formData: FormData) {
   const batchId = text(formData, "batch_id");
   const caseId = text(formData, "case_id");
   const toothSite = text(formData, "tooth_site");
-  if (!validUuid(batchId) || !validUuid(caseId) || !toothSite) redirect("/clinic/inventory/place?error=required");
+  const idempotencyKey = text(formData, "idempotency_key");
+  if (!validUuid(batchId) || !validUuid(caseId) || !toothSite || !validUuid(idempotencyKey)) redirect("/clinic/inventory/place?error=required");
 
   const { error } = await supabase.rpc("place_implant_from_inventory", {
     p_batch_id: batchId,
     p_case_id: caseId,
     p_tooth_site: toothSite,
-    p_placement_date: text(formData, "placement_date") || new Date().toISOString().slice(0, 10),
+    p_placement_date: text(formData, "placement_date") || todayInIndia(),
     p_notes: text(formData, "notes") || null,
-    p_idempotency_key: null,
+    p_idempotency_key: idempotencyKey,
   });
 
   if (error) redirect(`/clinic/inventory/place?error=${encodeURIComponent(error.message.slice(0, 80))}`);
@@ -122,7 +139,8 @@ export async function adjustInventory(formData: FormData) {
   const deltaRaw = Number.parseInt(text(formData, "quantity_delta"), 10);
   const movementType = text(formData, "movement_type");
   const reason = text(formData, "reason");
-  if (!validUuid(batchId) || !Number.isInteger(deltaRaw) || deltaRaw === 0 || !movementType || !reason) {
+  const idempotencyKey = text(formData, "idempotency_key");
+  if (!validUuid(batchId) || !Number.isInteger(deltaRaw) || deltaRaw === 0 || !movementType || !reason || !validUuid(idempotencyKey)) {
     redirect("/clinic/inventory?error=adjustment");
   }
 
@@ -131,7 +149,7 @@ export async function adjustInventory(formData: FormData) {
     p_quantity_delta: deltaRaw,
     p_movement_type: movementType,
     p_reason: reason,
-    p_idempotency_key: null,
+    p_idempotency_key: idempotencyKey,
   });
 
   if (error) redirect(`/clinic/inventory?error=${encodeURIComponent(error.message.slice(0, 80))}`);
