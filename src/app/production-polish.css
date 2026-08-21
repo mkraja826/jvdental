@@ -35,9 +35,7 @@ textarea { -webkit-tap-highlight-color: transparent; }
 
 button,
 .button,
-[role="button"] {
-  touch-action: manipulation;
-}
+[role="button"] { touch-action: manipulation; }
 
 button:not(:disabled),
 [role="button"]:not([aria-disabled="true"]) { cursor: pointer; }
@@ -60,6 +58,8 @@ button:disabled,
     color var(--jv-motion) var(--jv-ease),
     opacity var(--jv-motion-fast) ease;
 }
+
+.login-submit { width: 100%; }
 
 .button:not(:disabled):not([aria-disabled="true"]):active,
 .booking-type button:not(:disabled):active,
@@ -92,12 +92,8 @@ button:disabled,
   animation: jv-button-spin .72s linear infinite;
 }
 
-@keyframes jv-button-spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes jv-button-spin { to { transform: rotate(360deg); } }
 
-/* Desktop portal access reads as one quiet segmented control instead of two
-   loose utility links. Position and approved header hierarchy stay unchanged. */
 @media (min-width: 1181px) {
   .header-logins {
     gap: 0;
@@ -119,9 +115,7 @@ button:disabled,
   }
 
   .header-logins .text-link:hover,
-  .header-logins .text-link:focus-visible {
-    background: rgba(255, 255, 255, .09);
-  }
+  .header-logins .text-link:focus-visible { background: rgba(255, 255, 255, .09); }
 
   .clinic-login-link {
     padding-left: 10px;
@@ -129,13 +123,10 @@ button:disabled,
   }
 }
 
-/* Clear current/selected states across navigation and segmented controls. */
 .site-nav a[data-active="true"],
 .site-nav a[aria-current="page"],
 .clinic-nav a[data-active="true"],
-.patient-nav a[data-active="true"] {
-  font-weight: 700;
-}
+.patient-nav a[data-active="true"] { font-weight: 700; }
 
 .booking-type button {
   transition:
@@ -149,8 +140,6 @@ button:disabled,
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
 }
 
-/* Forms: consistent hit area, readable mobile zoom behaviour and predictable
-   focus/error/disabled states across public, patient and clinic areas. */
 .field input,
 .field select,
 .field textarea,
@@ -174,21 +163,15 @@ button:disabled,
 .portal-shell input:not([type="checkbox"]):not([type="radio"]),
 .portal-shell select,
 .login-form input:not([type="checkbox"]):not([type="radio"]),
-.login-form select {
-  min-height: 46px;
-}
+.login-form select { min-height: 46px; }
 
 .field textarea,
 .portal-shell textarea,
-.login-form textarea {
-  resize: vertical;
-}
+.login-form textarea { resize: vertical; }
 
 .field:focus-within > span,
 .field:focus-within > label,
-.booking-form .field:focus-within span {
-  color: var(--mineral);
-}
+.booking-form .field:focus-within span { color: var(--mineral); }
 
 :where(
   .field input,
@@ -226,9 +209,7 @@ button:disabled,
 .status-row,
 .booking-form,
 .login-form,
-.doctor-work-card {
-  overflow-wrap: anywhere;
-}
+.doctor-work-card { overflow-wrap: anywhere; }
 
 .booking-message {
   margin-top: 14px;
@@ -248,13 +229,11 @@ button:disabled,
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Keyboard visibility across custom controls. */
 :where(a, button, input, select, textarea, summary):focus-visible {
   outline: 3px solid rgba(61, 113, 101, .38);
   outline-offset: 3px;
 }
 
-/* Common navigation/action affordances. */
 .text-link,
 .site-nav a,
 .clinic-nav a,
@@ -297,24 +276,16 @@ button:disabled,
   }
 
   .button--ghost:not(:disabled):hover,
-  .button--light:not(:disabled):hover {
-    box-shadow: 0 8px 20px rgba(16, 45, 77, .08);
-  }
+  .button--light:not(:disabled):hover { box-shadow: 0 8px 20px rgba(16, 45, 77, .08); }
 
-  .booking-type button:not(.is-active):not(:disabled):hover {
-    background: rgba(16, 45, 77, .055);
-  }
+  .booking-type button:not(.is-active):not(:disabled):hover { background: rgba(16, 45, 77, .055); }
 
   .site-nav a:hover,
   .clinic-nav a:hover,
   .patient-nav a:hover,
-  .mobile-menu-portals a:hover {
-    opacity: .78;
-  }
+  .mobile-menu-portals a:hover { opacity: .78; }
 
-  .portal-inline-action:not(:disabled):hover {
-    opacity: .72;
-  }
+  .portal-inline-action:not(:disabled):hover { opacity: .72; }
 }
 
 @media (max-width: 820px) {
@@ -333,9 +304,7 @@ button:disabled,
   .portal-card__header { row-gap: 8px; }
 
   .hero__actions,
-  .final-cta .hero__actions {
-    align-items: stretch;
-  }
+  .final-cta .hero__actions { align-items: stretch; }
 }
 
 @media (max-width: 560px) {
@@ -376,7 +345,5 @@ button:disabled,
 
   .button[aria-busy="true"]::after,
   .booking-submit[aria-busy="true"]::after,
-  .portal-inline-action[aria-busy="true"]::after {
-    animation: none;
-  }
+  .portal-inline-action[aria-busy="true"]::after { animation: none; }
 }
