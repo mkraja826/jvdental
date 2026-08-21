@@ -9,9 +9,11 @@ import "../clinic-interactions.css";
 export default async function ClinicLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const { staff, supabase } = await requireStaff();
   const canManage = staff.role === "owner" || staff.role === "admin";
-  const { data: summaryData } = await supabase.rpc("clinic_dashboard_summary");
-  const summary = (summaryData ?? {}) as Record<string, number | string | null>;
-  const unreadNotifications = Number(summary.unread_notifications ?? 0);
+  const { count: unreadNotifications } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("recipient_type", "staff")
+    .is("read_at", null);
 
   return (
     <div className="clinic-workspace-shell">
@@ -29,7 +31,7 @@ export default async function ClinicLayout({ children }: Readonly<{ children: Re
           canManageIntegrations={canManage}
           canManageAssistant={canManage}
           canManageWebsite={canManage}
-          unreadNotifications={unreadNotifications}
+          unreadNotifications={unreadNotifications ?? 0}
         />
       </aside>
       <div className="clinic-workspace-content">{children}</div>
