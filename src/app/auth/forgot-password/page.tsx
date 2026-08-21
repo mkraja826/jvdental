@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PendingSubmit from "@/components/pending-submit";
 import { requestPasswordReset } from "@/app/auth/actions";
 
 type Props = {
@@ -45,7 +46,7 @@ export default async function ForgotPasswordPage({ searchParams }: Props) {
               <label htmlFor="email">Email address</label>
               <input id="email" name="email" type="email" inputMode="email" autoComplete="email" required />
             </div>
-            <button className="button" type="submit" style={{ width: "100%" }}>Send reset link →</button>
+            <PendingSubmit className="button login-submit" label="Send reset link →" pendingLabel="Sending reset link…" />
           </form>
 
           <p className="form-note"><Link className="text-link" href={returnHref}>← Back to sign in</Link></p>
