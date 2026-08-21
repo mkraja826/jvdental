@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
@@ -7,8 +6,8 @@ import {
   addDoctorQualification,
   deleteDoctorDetail,
   updateDoctorProfile,
-  uploadDoctorProfileImage,
 } from "@/app/clinic/doctors/actions";
+import DoctorPortraitUploader from "@/components/doctor-portrait-uploader";
 import { requireStaff } from "@/lib/auth/guards";
 
 type PageProps = {
@@ -52,7 +51,6 @@ export default async function DoctorProfileEditor({ params, searchParams }: Page
         <p className="portal-subtitle">Only publish details the doctor or clinic has verified. Experience, credentials and technology claims appear publicly exactly as stored here.</p>
 
         {query.saved ? <p className="form-note">Doctor profile saved.</p> : null}
-        {query.image ? <p className="form-note">Profile photograph updated.</p> : null}
         {query.error ? <p className="form-note">The requested change could not be saved. Review the entered details.</p> : null}
 
         <div className="portal-grid">
@@ -114,24 +112,12 @@ export default async function DoctorProfileEditor({ params, searchParams }: Page
             <article className="portal-card">
               <div className="portal-card__header"><h2>Portrait</h2><span className="status-pill">Public media</span></div>
               <div className="portal-card__body">
-                <div className="doctor-admin-portrait">
-                  {imageUrl ? (
-                    <Image
-                      src={imageUrl}
-                      alt={`${profile.full_name} profile`}
-                      width={720}
-                      height={900}
-                      sizes="240px"
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                  ) : <span>{profile.full_name.split(/\s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J"}</span>}
-                </div>
-                <form action={uploadDoctorProfileImage} style={{ display: "grid", gap: 14, marginTop: 18 }}>
-                  <input type="hidden" name="id" value={profile.id} />
-                  <label>Professional portrait<input name="profile_image" type="file" accept="image/jpeg,image/png,image/webp" required /></label>
-                  <p className="form-note">JPG, PNG or WebP, maximum 8 MB. Use a high-resolution, professionally lit clinical portrait.</p>
-                  <button className="button button--ghost" type="submit">Upload portrait</button>
-                </form>
+                <DoctorPortraitUploader
+                  doctorId={profile.id}
+                  doctorName={profile.full_name}
+                  currentPath={profile.profile_image_path}
+                  currentUrl={imageUrl}
+                />
               </div>
             </article>
 
