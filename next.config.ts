@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const isDevelopment = process.env.NODE_ENV === "development";
+const buildCommitSha = process.env.WORKERS_CI_COMMIT_SHA ?? process.env.GITHUB_SHA ?? "unknown";
+const buildBranch = process.env.WORKERS_CI_BRANCH ?? process.env.GITHUB_REF_NAME ?? "unknown";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -38,6 +40,10 @@ const privateHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  env: {
+    JV_BUILD_COMMIT_SHA: buildCommitSha,
+    JV_BUILD_BRANCH: buildBranch,
+  },
   experimental: {
     serverActions: {
       // Doctor portraits are validated at 8 MB in the server action. Keep a
