@@ -38,6 +38,7 @@ export default async function PlaceImplantPage({ searchParams }: PageProps) {
       label: [batch.brand, batch.name, dimensions ? `${dimensions} mm` : null, batch.system, `Lot ${batch.lot_number}`, batch.expiry_date ? `Exp ${batch.expiry_date}` : "No expiry", `Qty ${batch.quantity_on_hand}`].filter(Boolean).join(" · "),
       scanCode: batch.scan_code ?? null,
       gtin: batch.gtin ?? null,
+      lotNumber: batch.lot_number,
       expiryDate: batch.expiry_date ?? null,
       quantity: batch.quantity_on_hand,
     };
@@ -69,7 +70,7 @@ export default async function PlaceImplantPage({ searchParams }: PageProps) {
           {typeof params.error === "string" ? <p className="form-note">Placement could not be recorded: {params.error}</p> : null}
 
           <article className="portal-card" style={{ marginTop: 28 }}>
-            <div className="portal-card__header"><h2>Record implant placement</h2><span className="status-pill">Atomic · Idempotent</span></div>
+            <div className="portal-card__header"><h2>Record implant placement</h2><span className="status-pill">GS1 · Atomic · Idempotent</span></div>
             <div className="portal-card__body">
               {!cases.length ? <p>No active patient cases are available.</p> : !batches.length ? <div><strong>No usable implant stock is available.</strong><p style={{ color: "var(--muted)" }}>Receive an active implant batch before recording placement.</p><Link className="button" href="/clinic/inventory/receive">Receive implant stock →</Link></div> : <ImplantPlacementForm cases={cases} batches={batches} idempotencyKey={crypto.randomUUID()} />}
             </div>
