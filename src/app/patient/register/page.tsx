@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PendingSubmit from "@/components/pending-submit";
 import { signUpPatientWithPassword } from "@/app/auth/actions";
 
 type RegisterPageProps = {
@@ -36,7 +37,7 @@ export default async function PatientRegisterPage({ searchParams }: RegisterPage
             <div className="field"><label htmlFor="email">Email address</label><input id="email" name="email" type="email" inputMode="email" autoComplete="email" required /></div>
             <div className="field"><label htmlFor="password">Password</label><input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required /></div>
             <div className="field"><label htmlFor="confirm-password">Confirm password</label><input id="confirm-password" name="confirm_password" type="password" autoComplete="new-password" minLength={8} required /></div>
-            <button className="button" type="submit" style={{ width: "100%" }}>Create patient account →</button>
+            <PendingSubmit className="button login-submit" label="Create patient account →" pendingLabel="Creating account…" />
           </form>
 
           <p className="form-note">Already registered? <Link className="text-link" href={`/patient/login?next=${encodeURIComponent(next)}`}>Sign in</Link></p>
