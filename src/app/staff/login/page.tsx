@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PendingSubmit from "@/components/pending-submit";
 import { signInStaffWithPassword } from "@/app/auth/actions";
 
 export default async function StaffLoginPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -60,7 +61,7 @@ export default async function StaffLoginPage({ searchParams }: { searchParams: P
               <input id="password" name="password" type="password" autoComplete="current-password" placeholder="Enter your password" required minLength={8} />
             </div>
 
-            <button className="button" type="submit" style={{ width: "100%" }}>Sign in to clinic portal <span aria-hidden="true">→</span></button>
+            <PendingSubmit className="button login-submit" label="Sign in to clinic portal →" pendingLabel="Signing in…" />
           </form>
 
           <p className="form-note"><Link className="text-link" href="/auth/forgot-password?audience=staff">Forgot password?</Link></p>
