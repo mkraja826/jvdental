@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 type NavLink = { label: string; href: string };
@@ -38,12 +39,18 @@ const navItems: readonly NavItem[] = [
 ];
 
 export function SiteHeader() {
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const closeMenus = () => {
     setMenuOpen(false);
     setOpenDropdown(null);
+  };
+
+  const isActive = (href: string) => {
+    const path = href.split("#")[0];
+    return pathname === path || (path !== "/" && pathname.startsWith(`${path}/`));
   };
 
   return (
@@ -78,29 +85,47 @@ export function SiteHeader() {
         </Link>
 
         <nav className="site-nav" id="mobile-primary-navigation" aria-label="Primary navigation">
-          {navItems.map((item) => item.children ? (
-            <div className="site-nav__dropdown" key={item.href} data-open={openDropdown === item.label}>
-              <div className="site-nav__dropdown-trigger">
-                <Link href={item.href} onClick={closeMenus}>{item.label}</Link>
-                <button
-                  type="button"
-                  className="site-nav__dropdown-toggle"
-                  aria-label={`Toggle ${item.label} menu`}
-                  aria-expanded={openDropdown === item.label}
-                  onClick={() => setOpenDropdown((current) => current === item.label ? null : item.label)}
-                >
-                  <span aria-hidden="true">⌄</span>
-                </button>
+          {navItems.map((item) => {
+            const active = isActive(item.href);
+            return item.children ? (
+              <div className="site-nav__dropdown" key={item.href} data-open={openDropdown === item.label}>
+                <div className="site-nav__dropdown-trigger">
+                  <Link
+                    href={item.href}
+                    onClick={closeMenus}
+                    aria-current={active ? "page" : undefined}
+                    data-active={active ? "true" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                  <button
+                    type="button"
+                    className="site-nav__dropdown-toggle"
+                    aria-label={`Toggle ${item.label} menu`}
+                    aria-expanded={openDropdown === item.label}
+                    onClick={() => setOpenDropdown((current) => current === item.label ? null : item.label)}
+                  >
+                    <span aria-hidden="true">⌄</span>
+                  </button>
+                </div>
+                <div className="site-nav__dropdown-menu" aria-label={`${item.label} links`}>
+                  {item.children.map((child) => (
+                    <Link href={child.href} key={child.href} onClick={closeMenus}>{child.label}</Link>
+                  ))}
+                </div>
               </div>
-              <div className="site-nav__dropdown-menu" aria-label={`${item.label} links`}>
-                {item.children.map((child) => (
-                  <Link href={child.href} key={child.href} onClick={closeMenus}>{child.label}</Link>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <Link href={item.href} key={item.href} onClick={closeMenus}>{item.label}</Link>
-          ))}
+            ) : (
+              <Link
+                href={item.href}
+                key={item.href}
+                onClick={closeMenus}
+                aria-current={active ? "page" : undefined}
+                data-active={active ? "true" : undefined}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
           <div className="mobile-menu-portals" aria-label="Portal access">
             <Link href="/patient/login" onClick={closeMenus}>Patient login</Link>
             <Link href="/staff/login" onClick={closeMenus}>Clinic login</Link>
@@ -112,7 +137,12 @@ export function SiteHeader() {
             <Link className="text-link" href="/patient/login">Patient login</Link>
             <Link className="text-link clinic-login-link" href="/staff/login">Clinic login</Link>
           </div>
-          <Link className="button header-assessment" href="/book" onClick={closeMenus}>
+          <Link
+            className="button header-assessment"
+            href="/book"
+            onClick={closeMenus}
+            aria-current={pathname === "/book" ? "page" : undefined}
+          >
             Book Consultation <span aria-hidden="true">→</span>
           </Link>
         </div>
