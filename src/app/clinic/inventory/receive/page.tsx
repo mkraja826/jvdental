@@ -2,11 +2,14 @@ import Link from "next/link";
 import InventoryReceiveForm from "@/components/inventory-receive-form";
 import { requireStaff } from "@/lib/auth/guards";
 
+const RECEIVERS = new Set(["owner", "admin", "implantologist", "receptionist", "dental_assistant"]);
+
 type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 export default async function ReceiveInventoryPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { supabase, staff } = await requireStaff();
+  const canReceive = RECEIVERS.has(staff.role);
   const [{ data: items }, { data: vendors }, { data: knownBatches }] = await Promise.all([
     supabase.from("inventory_items").select("id,sku,name,brand,system,diameter_mm,length_mm,gtin,category").eq("is_active", true).order("category").order("brand").order("name"),
     supabase.from("vendors").select("id,name").eq("is_active", true).order("name"),
@@ -49,7 +52,7 @@ export default async function ReceiveInventoryPage({ searchParams }: PageProps) 
         <section className="portal-main">
           <p className="portal-overline">Goods receiving</p>
           <h1 className="portal-title">Scan first. Lot and expiry follow.</h1>
-          <p className="portal-subtitle">GS1 DataMatrix labels can identify a catalogued product by GTIN and populate lot and expiry automatically. Repeated package scans can also reuse a previously known batch code.</p>
+          <p className="portal-subtitle">GS1 DataMatrix labels can identify a catalogued product by GTIN and populate lot and expiry automatically. Serialized unit codes are handled without splitting one lot into false batches.</p>
 
           {params.received === "1" ? <p className="form-note">Stock received and movement recorded.</p> : null}
           {typeof params.error === "string" ? <p className="form-note">Receiving failed: {params.error}</p> : null}
@@ -57,7 +60,9 @@ export default async function ReceiveInventoryPage({ searchParams }: PageProps) 
           <article className="portal-card" style={{ marginTop: 28 }}>
             <div className="portal-card__header"><h2>Receive inventory</h2><span className="status-pill">Scan-first · Audited</span></div>
             <div className="portal-card__body">
-              {itemOptions.length ? (
+              {!canReceive ? (
+                <p className="form-note">Your role can review inventory but cannot receive stock. An owner, admin, implantologist, receptionist or dental assistant must record incoming stock.</p>
+              ) : itemOptions.length ? (
                 <InventoryReceiveForm
                   items={itemOptions}
                   vendors={(vendors ?? []).map((vendor) => ({ id: vendor.id, name: vendor.name }))}
