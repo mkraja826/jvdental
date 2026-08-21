@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 
 declare global {
   interface Window {
@@ -26,11 +26,17 @@ function loadRazorpay() {
   });
 }
 
+function indiaToday() {
+  const india = new Date(Date.now() + 5.5 * 60 * 60 * 1000);
+  return `${india.getUTCFullYear()}-${String(india.getUTCMonth() + 1).padStart(2, "0")}-${String(india.getUTCDate()).padStart(2, "0")}`;
+}
+
 export default function AppointmentBookingForm() {
   const [bookingKind, setBookingKind] = useState("clinic_consultation");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const minimumDate = useMemo(indiaToday, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,7 +44,8 @@ export default function AppointmentBookingForm() {
     setMessage(null);
     setSuccess(false);
 
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const payload = {
       bookingKind,
       fullName: form.get("fullName"),
@@ -50,6 +57,8 @@ export default function AppointmentBookingForm() {
       dentalConcern: form.get("dentalConcern"),
     };
 
+    let bookingSaved = false;
+
     try {
       const bookingResponse = await fetch("/api/booking/request", {
         method: "POST",
@@ -58,6 +67,7 @@ export default function AppointmentBookingForm() {
       });
       const booking = await bookingResponse.json();
       if (!bookingResponse.ok) throw new Error(booking.error || "Booking could not be submitted.");
+      bookingSaved = true;
 
       const orderResponse = await fetch("/api/payments/razorpay/order", {
         method: "POST",
@@ -69,16 +79,27 @@ export default function AppointmentBookingForm() {
         }),
       });
       const order = await orderResponse.json();
-      if (!orderResponse.ok) throw new Error(order.error || "Payment could not be started.");
+      if (!orderResponse.ok) {
+        setSuccess(true);
+        setMessage("Your appointment request is saved. Secure payment could not be started right now; the clinic team can continue the booking with you without submitting another request.");
+        formElement.reset();
+        return;
+      }
 
       if (!order.paymentRequired) {
         setSuccess(true);
         setMessage("Your booking request has been received. The clinic team will contact you to confirm the appointment time.");
+        formElement.reset();
         return;
       }
 
       const loaded = await loadRazorpay();
-      if (!loaded || !window.Razorpay) throw new Error("Secure payment checkout could not be loaded.");
+      if (!loaded || !window.Razorpay) {
+        setSuccess(true);
+        setMessage("Your appointment request is saved. Secure payment checkout could not be loaded; the clinic team can continue the booking with you without submitting another request.");
+        formElement.reset();
+        return;
+      }
 
       const checkout = new window.Razorpay({
         key: order.keyId,
@@ -97,23 +118,31 @@ export default function AppointmentBookingForm() {
           });
           const verification = await verifyResponse.json();
           if (!verifyResponse.ok) {
-            setSuccess(false);
-            setMessage(verification.error || "Payment was received but verification needs clinic review.");
+            setSuccess(true);
+            setMessage(verification.error || "Your appointment request is saved and payment was received, but verification needs clinic review. Please do not submit another booking.");
             return;
           }
           setSuccess(true);
           setMessage("Payment received. Your consultation request is recorded and the clinic team will confirm the exact appointment time.");
+          formElement.reset();
         },
         modal: {
           ondismiss: () => {
             setSuccess(true);
-            setMessage("Your appointment request is saved. Payment was not completed; you can contact the clinic to continue the booking.");
+            setMessage("Your appointment request is saved. Payment was not completed; you can contact the clinic to continue the booking without submitting another request.");
+            formElement.reset();
           },
         },
       });
       checkout.open();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Something went wrong. Please try again.");
+      if (bookingSaved) {
+        setSuccess(true);
+        setMessage("Your appointment request is saved. A payment step could not be completed; please do not submit another booking. The clinic team can continue it with you.");
+        formElement.reset();
+      } else {
+        setMessage(error instanceof Error ? error.message : "Something went wrong. Please try again.");
+      }
     } finally {
       setBusy(false);
     }
@@ -127,19 +156,19 @@ export default function AppointmentBookingForm() {
       </div>
 
       <div className="booking-grid">
-        <label className="field"><span>Full name *</span><input name="fullName" required autoComplete="name" /></label>
-        <label className="field"><span>Phone / WhatsApp *</span><input name="phone" required inputMode="tel" autoComplete="tel" /></label>
-        <label className="field"><span>Email</span><input name="email" type="email" autoComplete="email" /></label>
-        <label className="field"><span>City</span><input name="city" autoComplete="address-level2" /></label>
-        <label className="field"><span>Preferred date *</span><input name="preferredDate" type="date" required /></label>
+        <label className="field"><span>Full name *</span><input name="fullName" required autoComplete="name" maxLength={120} /></label>
+        <label className="field"><span>Phone / WhatsApp *</span><input name="phone" required inputMode="tel" autoComplete="tel" maxLength={30} /></label>
+        <label className="field"><span>Email</span><input name="email" type="email" autoComplete="email" maxLength={180} /></label>
+        <label className="field"><span>City</span><input name="city" autoComplete="address-level2" maxLength={100} /></label>
+        <label className="field"><span>Preferred date *</span><input name="preferredDate" type="date" min={minimumDate} required /></label>
         <label className="field"><span>Preferred time *</span><select name="preferredTimeWindow" defaultValue="morning" required><option value="morning">Morning</option><option value="afternoon">Afternoon</option><option value="evening">Evening</option></select></label>
       </div>
 
-      <label className="field"><span>What would you like the dentist to look at?</span><textarea name="dentalConcern" rows={5} placeholder="For example: missing tooth, implant consultation, pain, full-mouth treatment, second opinion..." /></label>
+      <label className="field"><span>What would you like the dentist to look at?</span><textarea name="dentalConcern" rows={5} maxLength={1500} placeholder="For example: missing tooth, implant consultation, pain, full-mouth treatment, second opinion..." /></label>
 
       <p className="booking-note">Submitting this form requests a preferred date/time. The clinic confirms the final appointment after reviewing availability. Online information does not replace a dental examination.</p>
       <button className="button booking-submit" disabled={busy} type="submit">{busy ? "Submitting…" : bookingKind === "video_consultation" ? "Book consultation →" : "Book appointment →"}</button>
-      {message ? <p className={success ? "booking-message booking-message--success" : "booking-message"} role="status">{message}</p> : null}
+      {message ? <p className={success ? "booking-message booking-message--success" : "booking-message"} role="status" aria-live="polite">{message}</p> : null}
     </form>
   );
 }
