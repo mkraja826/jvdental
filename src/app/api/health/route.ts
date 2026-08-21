@@ -2,13 +2,21 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
+function buildIdentity() {
+  return {
+    commit: process.env.JV_BUILD_COMMIT_SHA ?? "unknown",
+    branch: process.env.JV_BUILD_BRANCH ?? "unknown",
+  };
+}
+
 export async function GET() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const build = buildIdentity();
 
   if (!supabaseUrl || !publishableKey) {
     return NextResponse.json(
-      { status: "unavailable", service: "jv-dental" },
+      { status: "unavailable", service: "jv-dental", build },
       { status: 503, headers: { "Cache-Control": "no-store" } },
     );
   }
@@ -27,18 +35,18 @@ export async function GET() {
 
     if (!response.ok) {
       return NextResponse.json(
-        { status: "degraded", service: "jv-dental", database: "unavailable" },
+        { status: "degraded", service: "jv-dental", database: "unavailable", build },
         { status: 503, headers: { "Cache-Control": "no-store" } },
       );
     }
 
     return NextResponse.json(
-      { status: "ok", service: "jv-dental", database: "ok" },
+      { status: "ok", service: "jv-dental", database: "ok", build },
       { status: 200, headers: { "Cache-Control": "no-store" } },
     );
   } catch {
     return NextResponse.json(
-      { status: "degraded", service: "jv-dental", database: "unavailable" },
+      { status: "degraded", service: "jv-dental", database: "unavailable", build },
       { status: 503, headers: { "Cache-Control": "no-store" } },
     );
   }
