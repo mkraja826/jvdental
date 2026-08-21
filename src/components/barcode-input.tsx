@@ -103,9 +103,6 @@ export default function BarcodeInput({ name, label, placeholder, required, onDet
               commitDetected(event.currentTarget.value);
             }
           }}
-          onBlur={(event) => {
-            if (event.currentTarget.value.trim()) commitDetected(event.currentTarget.value);
-          }}
           placeholder={placeholder}
           required={required}
           autoComplete="off"
