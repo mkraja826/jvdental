@@ -2,11 +2,14 @@ import Link from "next/link";
 import ImplantPlacementForm from "@/components/implant-placement-form";
 import { requireStaff } from "@/lib/auth/guards";
 
+const CLINICIANS = new Set(["owner", "admin", "implantologist", "doctor"]);
+
 type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 export default async function PlaceImplantPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { supabase, staff } = await requireStaff();
+  const canPlace = CLINICIANS.has(staff.role);
 
   const [casesResult, batchesResult] = await Promise.all([
     supabase
@@ -64,7 +67,7 @@ export default async function PlaceImplantPage({ searchParams }: PageProps) {
         <section className="portal-main">
           <p className="portal-overline">Surgical traceability</p>
           <h1 className="portal-title">One scan. One patient. One permanent implant record.</h1>
-          <p className="portal-subtitle">Available implant batches are ordered by first expiry first out. Expired and zero-stock batches never appear as placement options, and the database re-checks both conditions at submission.</p>
+          <p className="portal-subtitle">Available implant batches are ordered by first expiry first out. GS1 scans match GTIN and lot; expired and zero-stock batches never appear, and the database re-checks all conditions at submission.</p>
 
           {params.placed === "1" ? <p className="form-note">Implant placement recorded, stock deducted and patient passport updated.</p> : null}
           {typeof params.error === "string" ? <p className="form-note">Placement could not be recorded: {params.error}</p> : null}
@@ -72,7 +75,9 @@ export default async function PlaceImplantPage({ searchParams }: PageProps) {
           <article className="portal-card" style={{ marginTop: 28 }}>
             <div className="portal-card__header"><h2>Record implant placement</h2><span className="status-pill">GS1 · Atomic · Idempotent</span></div>
             <div className="portal-card__body">
-              {!cases.length ? <p>No active patient cases are available.</p> : !batches.length ? <div><strong>No usable implant stock is available.</strong><p style={{ color: "var(--muted)" }}>Receive an active implant batch before recording placement.</p><Link className="button" href="/clinic/inventory/receive">Receive implant stock →</Link></div> : <ImplantPlacementForm cases={cases} batches={batches} idempotencyKey={crypto.randomUUID()} />}
+              {!canPlace ? (
+                <p className="form-note">Implant placement is a clinical traceability action. Only an owner, admin, implantologist or doctor can record it.</p>
+              ) : !cases.length ? <p>No active patient cases are available.</p> : !batches.length ? <div><strong>No usable implant stock is available.</strong><p style={{ color: "var(--muted)" }}>Receive an active implant batch before recording placement.</p><Link className="button" href="/clinic/inventory/receive">Receive implant stock →</Link></div> : <ImplantPlacementForm cases={cases} batches={batches} idempotencyKey={crypto.randomUUID()} />}
             </div>
           </article>
         </section>
