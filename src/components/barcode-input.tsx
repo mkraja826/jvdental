@@ -96,15 +96,15 @@ export default function BarcodeInput({ name, label, placeholder, required, onDet
           id={`${name}-barcode`}
           name={name}
           value={value}
-          onChange={(event) => {
-            setValue(event.target.value);
-            onDetected?.(event.target.value);
-          }}
+          onChange={(event) => setValue(event.target.value)}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               event.preventDefault();
               commitDetected(event.currentTarget.value);
             }
+          }}
+          onBlur={(event) => {
+            if (event.currentTarget.value.trim()) commitDetected(event.currentTarget.value);
           }}
           placeholder={placeholder}
           required={required}
