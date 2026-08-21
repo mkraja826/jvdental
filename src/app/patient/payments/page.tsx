@@ -59,6 +59,7 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
     list.push(refund);
     refundsByPayment.set(refund.payment_id, list);
   }
+  const now = new Date().getTime();
 
   return (
     <main className="portal-shell">
@@ -86,7 +87,7 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
                   {requests.map((request) => {
                     const balance = balanceMap.get(request.id);
                     const remaining = Number(balance?.remaining_minor ?? request.amount_minor);
-                    const expiredByTime = Boolean(request.expires_at && new Date(request.expires_at).getTime() <= Date.now());
+                    const expiredByTime = Boolean(request.expires_at && new Date(request.expires_at).getTime() <= now);
                     const effectiveStatus = expiredByTime && ["sent", "partially_paid"].includes(request.status) ? "expired" : request.status;
                     const payable = ["sent", "partially_paid"].includes(request.status) && !expiredByTime && remaining > 0;
                     return (
