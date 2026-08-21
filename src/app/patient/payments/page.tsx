@@ -86,13 +86,15 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
                   {requests.map((request) => {
                     const balance = balanceMap.get(request.id);
                     const remaining = Number(balance?.remaining_minor ?? request.amount_minor);
-                    const payable = ["sent", "partially_paid"].includes(request.status) && remaining > 0;
+                    const expiredByTime = Boolean(request.expires_at && new Date(request.expires_at).getTime() <= Date.now());
+                    const effectiveStatus = expiredByTime && ["sent", "partially_paid"].includes(request.status) ? "expired" : request.status;
+                    const payable = ["sent", "partially_paid"].includes(request.status) && !expiredByTime && remaining > 0;
                     return (
                       <article className="portal-card" key={request.id} style={{ boxShadow: "none" }}>
                         <div className="portal-card__body" style={{ display: "grid", gap: 14 }}>
                           <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
                             <div><strong>PAY-{request.request_number} · {request.title}</strong><p className="form-note" style={{ marginTop: 5 }}>{request.request_type.replaceAll("_", " ")}</p></div>
-                            <span className="status-pill">{request.status.replaceAll("_", " ")}</span>
+                            <span className="status-pill">{effectiveStatus.replaceAll("_", " ")}</span>
                           </div>
                           {request.description ? <p style={{ margin: 0 }}>{request.description}</p> : null}
                           <div className="status-list">
@@ -102,6 +104,7 @@ export default async function PatientPaymentsPage({ searchParams }: { searchPara
                             <div className="status-row"><strong>Remaining</strong><span>—</span><span>{formatMinor(remaining, request.currency)}</span></div>
                           </div>
                           {request.due_at ? <p className="form-note">Due {new Date(request.due_at).toLocaleDateString("en-IN", { dateStyle: "medium" })}</p> : null}
+                          {request.expires_at ? <p className="form-note">{expiredByTime ? "Expired" : "Available until"} {new Date(request.expires_at).toLocaleDateString("en-IN", { dateStyle: "medium" })}</p> : null}
                           {payable && request.provider_preference === "stripe" ? <StripeCheckoutButton paymentRequestId={request.id} /> : null}
                         </div>
                       </article>
