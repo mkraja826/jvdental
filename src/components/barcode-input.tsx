@@ -30,6 +30,14 @@ export default function BarcodeInput({ name, label, placeholder, required, onDet
     setScanning(false);
   }
 
+  function commitDetected(nextValue: string) {
+    const next = nextValue.trim();
+    if (!next) return;
+    setValue(next);
+    onDetected?.(next);
+    setMessage(`Captured: ${next}`);
+  }
+
   useEffect(() => () => {
     if (frameRef.current != null) cancelAnimationFrame(frameRef.current);
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -64,10 +72,7 @@ export default function BarcodeInput({ name, label, placeholder, required, onDet
           const results = await detector.detect(video);
           const detected = results.find((result) => result.rawValue?.trim());
           if (detected?.rawValue) {
-            const next = detected.rawValue.trim();
-            setValue(next);
-            onDetected?.(next);
-            setMessage(`Captured: ${next}`);
+            commitDetected(detected.rawValue);
             stopScanner();
             return;
           }
@@ -94,6 +99,12 @@ export default function BarcodeInput({ name, label, placeholder, required, onDet
           onChange={(event) => {
             setValue(event.target.value);
             onDetected?.(event.target.value);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              commitDetected(event.currentTarget.value);
+            }
           }}
           placeholder={placeholder}
           required={required}
