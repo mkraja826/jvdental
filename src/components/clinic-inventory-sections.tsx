@@ -2,8 +2,11 @@ import PendingSubmit from "@/components/pending-submit";
 import { requireStaff } from "@/lib/auth/guards";
 import { adjustInventory } from "@/app/clinic/inventory/actions";
 
+const ITEM_EDITORS = new Set(["owner", "admin", "implantologist", "dental_assistant"]);
+
 export default async function ClinicInventorySections() {
-  const { supabase } = await requireStaff();
+  const { supabase, staff } = await requireStaff();
+  const canAdjust = ITEM_EDITORS.has(staff.role);
 
   const [batchesResult, movementsResult] = await Promise.all([
     supabase
@@ -71,10 +74,11 @@ export default async function ClinicInventorySections() {
         </div>
       </article>
 
-      {rows.length ? <article className="portal-card" style={{ marginTop: 26 }}>
+      {rows.length && canAdjust ? <article className="portal-card" style={{ marginTop: 26 }}>
         <div className="portal-card__header"><h2>Audited adjustment</h2><span className="status-pill">Reason required</span></div>
         <div className="portal-card__body">
           <form action={adjustInventory} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 16 }}>
+            <input type="hidden" name="idempotency_key" value={crypto.randomUUID()} />
             <div className="field"><label htmlFor="batch_id">Batch</label><select id="batch_id" name="batch_id" required>{rows.map((batch) => {
               const item = Array.isArray(batch.inventory_items) ? batch.inventory_items[0] : batch.inventory_items;
               return <option value={batch.id} key={batch.id}>{item?.name ?? item?.sku} · Lot {batch.lot_number} · Qty {batch.quantity_on_hand}</option>;
