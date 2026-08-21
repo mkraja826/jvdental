@@ -16,6 +16,8 @@ const DEFAULT_ORIGINS = new Set([
   "http://127.0.0.1:3000",
 ]);
 
+const OFF_TOPIC_ANSWER = "I can help with JV Dental and dental-related questions.";
+
 function allowedOrigins() {
   const configured = (Deno.env.get("ASSISTANT_ALLOWED_ORIGINS") ?? "")
     .split(",")
@@ -42,6 +44,20 @@ function json(origin: string | null, body: unknown, status = 200) {
 
 function normalize(input: string) {
   return input.toLowerCase().replace(/[^a-z0-9\s-]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+export function isDentalDomain(message: string) {
+  const normalized = normalize(message);
+
+  const jvDentalContext = /(jv dental|jvdental|dionavi|implant assessment|patient portal|dental clinic|dentist|implantologist|periodontist|endodontist|orthodontist)/i;
+  if (jvDentalContext.test(normalized)) return true;
+
+  const dentalTerms = /(tooth|teeth|gum|gums|oral|mouth|jaw|dental|dentistry|implant|implants|denture|dentures|crown|crowns|bridge|bridges|veneer|veneers|whitening|brace|braces|aligner|aligners|orthodont|endodont|periodont|root canal|filling|fillings|cavity|cavities|caries|extraction|wisdom tooth|wisdom teeth|molar|premolar|incisor|canine tooth|enamel|dentin|pulp|plaque|tartar|calculus|scaling|floss|toothbrush|toothpaste|toothache|sensitive tooth|sensitive teeth|sensitivity|abscess|bleeding gums|bad breath|halitosis|bite|occlusion|tmj|temporomandibular|smile design|full mouth|missing tooth|missing teeth|fixed teeth|guided surgery|bone graft|sinus lift|opg|cbct|x-ray.*tooth|x-ray.*teeth|x-ray.*dental|facial swelling.*tooth|face swelling.*tooth|swollen gum|swollen gums)/i;
+  if (dentalTerms.test(normalized)) return true;
+
+  const clinicIntent = /(book|appointment|consultation|location|timing|hours|price|cost|quote|estimate)/i.test(normalized);
+  const clinicObject = /(clinic|treatment|doctor|service|procedure)/i.test(normalized);
+  return clinicIntent && clinicObject;
 }
 
 async function sha256Hex(value: string) {
@@ -228,6 +244,28 @@ Deno.serve(async (req: Request) => {
     supabase.from("assistant_messages").select("id", { count: "exact", head: true }).eq("session_id", session.id).eq("role", "user").gte("created_at", hourAgo),
   ]);
   if ((minuteCount ?? 0) >= 8 || (hourCount ?? 0) >= 60) return json(origin, { error: "rate_limited" }, 429);
+
+  if (!isDentalDomain(message)) {
+    await supabase.from("assistant_messages").insert([
+      { session_id: session.id, role: "user", body: message, intent: "off_topic", safety_classification: "off_topic" },
+      { session_id: session.id, role: "assistant", body: OFF_TOPIC_ANSWER, intent: "off_topic", safety_classification: "off_topic" },
+    ]);
+    await supabase.from("assistant_sessions").update({
+      last_activity_at: new Date().toISOString(),
+      message_count: (session.message_count ?? 0) + 2,
+    }).eq("id", session.id);
+
+    return json(origin, {
+      visitorToken,
+      messageId: null,
+      answer: OFF_TOPIC_ANSWER,
+      classification: "off_topic",
+      highIntent: false,
+      action: null,
+      providerActive: false,
+      quickReplies: ["Dental implants", "DIOnavi guided implants", "International patients", "Treatment costs"],
+    });
+  }
 
   const classification = classify(message);
   const highIntent = session.high_intent || isHighIntent(message);
