@@ -56,9 +56,6 @@ Deno.serve(async (req: Request) => {
   const remainingMinor = Number(balance?.remaining_minor ?? request.amount_minor);
   if (!Number.isSafeInteger(remainingMinor) || remainingMinor <= 0) return json({ error: "nothing_due" }, 409);
 
-  // Only one open checkout may exist for a payment request/provider at a time.
-  // Reusing the same redirect prevents repeated taps from creating multiple
-  // independently payable Stripe sessions for the same outstanding balance.
   const { data: activeAttempt } = await admin
     .from("payment_attempts")
     .select("id,status,amount_minor,currency,provider_session_id,checkout_url,created_at")
@@ -76,12 +73,19 @@ Deno.serve(async (req: Request) => {
     }
 
     if (activeAttempt.status === "redirected" && activeAttempt.provider_session_id && !sameBalance) {
+      let expiredAtProvider = false;
       try {
-        await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(activeAttempt.provider_session_id)}/expire`, {
+        const expireResponse = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(activeAttempt.provider_session_id)}/expire`, {
           method: "POST",
           headers: { Authorization: `Bearer ${stripeKey}` },
         });
-      } catch { /* local expiry still prevents reusing the stale checkout */ }
+        expiredAtProvider = expireResponse.ok;
+      } catch {
+        expiredAtProvider = false;
+      }
+      if (!expiredAtProvider) {
+        return json({ error: "stale_checkout_could_not_expire" }, 409);
+      }
       await admin.from("payment_attempts").update({ status: "expired" }).eq("id", activeAttempt.id).eq("status", "redirected");
     } else if (activeAttempt.status === "created") {
       const ageMs = Date.now() - new Date(activeAttempt.created_at).getTime();
