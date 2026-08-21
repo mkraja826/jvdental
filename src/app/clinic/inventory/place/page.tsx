@@ -69,9 +69,9 @@ export default async function PlaceImplantPage({ searchParams }: PageProps) {
           {typeof params.error === "string" ? <p className="form-note">Placement could not be recorded: {params.error}</p> : null}
 
           <article className="portal-card" style={{ marginTop: 28 }}>
-            <div className="portal-card__header"><h2>Record implant placement</h2><span className="status-pill">Atomic</span></div>
+            <div className="portal-card__header"><h2>Record implant placement</h2><span className="status-pill">Atomic · Idempotent</span></div>
             <div className="portal-card__body">
-              {!cases.length ? <p>No active patient cases are available.</p> : !batches.length ? <div><strong>No usable implant stock is available.</strong><p style={{ color: "var(--muted)" }}>Receive an active implant batch before recording placement.</p><Link className="button" href="/clinic/inventory/receive">Receive implant stock →</Link></div> : <ImplantPlacementForm cases={cases} batches={batches} />}
+              {!cases.length ? <p>No active patient cases are available.</p> : !batches.length ? <div><strong>No usable implant stock is available.</strong><p style={{ color: "var(--muted)" }}>Receive an active implant batch before recording placement.</p><Link className="button" href="/clinic/inventory/receive">Receive implant stock →</Link></div> : <ImplantPlacementForm cases={cases} batches={batches} idempotencyKey={crypto.randomUUID()} />}
             </div>
           </article>
         </section>
