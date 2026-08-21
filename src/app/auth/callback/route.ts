@@ -6,6 +6,9 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get("code");
   const nextParam = requestUrl.searchParams.get("next");
   const safeNext = nextParam?.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/patient";
+  const isStaffFlow = safeNext === "/clinic"
+    || safeNext.startsWith("/clinic/")
+    || (safeNext.startsWith("/auth/update-password") && safeNext.includes("audience=staff"));
 
   if (code) {
     const supabase = await createClient();
@@ -16,5 +19,6 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(new URL("/patient/login?error=callback", requestUrl.origin));
+  const loginPath = isStaffFlow ? "/staff/login?error=callback" : "/patient/login?error=callback";
+  return NextResponse.redirect(new URL(loginPath, requestUrl.origin));
 }
