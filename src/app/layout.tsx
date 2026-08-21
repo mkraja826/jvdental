@@ -1,10 +1,14 @@
+import type { CSSProperties } from "react";
 import type { Metadata, Viewport } from "next";
 import PublicDentalAssistant from "@/components/public-dental-assistant";
 import { SiteStructuredData } from "@/components/site-structured-data";
+import { DEFAULT_WEBSITE_THEME, getWebsiteTheme, websiteThemeVariables } from "@/content/website-themes";
+import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 import "./assistant.css";
 import "./accessibility.css";
 import "./brand.css";
+import "./website-themes.css";
 import "./header-responsive.css";
 import "./clinic-visuals.css";
 import "./mobile-first.css";
@@ -70,13 +74,29 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+async function resolveWebsiteTheme() {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("website_theme_settings")
+      .select("theme_key")
+      .eq("id", true)
+      .maybeSingle();
+    return getWebsiteTheme(data?.theme_key ?? DEFAULT_WEBSITE_THEME);
+  } catch {
+    return getWebsiteTheme(DEFAULT_WEBSITE_THEME);
+  }
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const theme = await resolveWebsiteTheme();
+
   return (
-    <html lang="en">
+    <html lang="en" data-website-theme={theme.key} style={websiteThemeVariables(theme) as CSSProperties}>
       <body>
         <SiteStructuredData />
         {children}
