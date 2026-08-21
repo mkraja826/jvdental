@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { requireStaff } from "@/lib/auth/guards";
 
 const SCHEDULER_ROLES = new Set(["owner", "admin", "implantologist", "doctor", "coordinator"]);
+const EARLY_CASE_STATUSES = new Set(["new", "records_requested", "records_received", "doctor_review", "more_information_required"]);
 
 function text(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -61,7 +62,7 @@ export async function scheduleVideoConsultation(formData: FormData) {
 
   const { data: caseRecord } = await supabase
     .from("patient_cases")
-    .select("id,patient_id,assigned_clinician")
+    .select("id,patient_id,assigned_clinician,status")
     .eq("id", caseId)
     .maybeSingle();
   if (!caseRecord) redirect("/clinic/commercial?error=case");
@@ -92,7 +93,14 @@ export async function scheduleVideoConsultation(formData: FormData) {
     .single();
   if (error || !appointment) redirect(`/clinic/commercial/${caseId}?error=consultation`);
 
-  await supabase.from("patient_cases").update({ status: "consultation_scheduled" }).eq("id", caseId);
+  if (EARLY_CASE_STATUSES.has(caseRecord.status)) {
+    await supabase
+      .from("patient_cases")
+      .update({ status: "consultation_scheduled" })
+      .eq("id", caseId)
+      .eq("status", caseRecord.status);
+  }
+
   await syncGoogleCalendar(supabase, appointment.id, "create");
   refreshCase(caseId);
   redirect(`/clinic/commercial/${caseId}?scheduled=1`);
@@ -111,10 +119,10 @@ export async function rescheduleConsultation(formData: FormData) {
 
   const { data: appointment, error } = await supabase
     .from("appointments")
-    .update({ starts_at: startsAt.toISOString(), ends_at: endsAt.toISOString(), status: "scheduled" })
+    .update({ starts_at: startsAt.toISOString(), ends_at: endsAt.toISOString() })
     .eq("id", appointmentId)
     .eq("case_id", caseId)
-    .neq("status", "cancelled")
+    .eq("status", "scheduled")
     .select("id,external_event_id")
     .maybeSingle();
   if (error || !appointment) redirect(`/clinic/commercial/${caseId}?error=appointment`);
@@ -122,6 +130,48 @@ export async function rescheduleConsultation(formData: FormData) {
   await syncGoogleCalendar(supabase, appointment.id, appointment.external_event_id ? "update" : "create");
   refreshCase(caseId);
   redirect(`/clinic/commercial/${caseId}?rescheduled=1`);
+}
+
+export async function completeConsultation(formData: FormData) {
+  const { supabase } = await requireConsultationScheduler();
+  const appointmentId = text(formData, "appointment_id");
+  const caseId = text(formData, "case_id");
+  if (!appointmentId || !caseId) redirect("/clinic/commercial?error=appointment");
+
+  const { data: appointment, error } = await supabase
+    .from("appointments")
+    .update({ status: "completed" })
+    .eq("id", appointmentId)
+    .eq("case_id", caseId)
+    .eq("status", "scheduled")
+    .lte("starts_at", new Date().toISOString())
+    .select("id")
+    .maybeSingle();
+  if (error || !appointment) redirect(`/clinic/commercial/${caseId}?error=appointment_disposition`);
+
+  refreshCase(caseId);
+  redirect(`/clinic/commercial/${caseId}?completed=1`);
+}
+
+export async function markConsultationNoShow(formData: FormData) {
+  const { supabase } = await requireConsultationScheduler();
+  const appointmentId = text(formData, "appointment_id");
+  const caseId = text(formData, "case_id");
+  if (!appointmentId || !caseId) redirect("/clinic/commercial?error=appointment");
+
+  const { data: appointment, error } = await supabase
+    .from("appointments")
+    .update({ status: "no_show" })
+    .eq("id", appointmentId)
+    .eq("case_id", caseId)
+    .eq("status", "scheduled")
+    .lte("starts_at", new Date().toISOString())
+    .select("id")
+    .maybeSingle();
+  if (error || !appointment) redirect(`/clinic/commercial/${caseId}?error=appointment_disposition`);
+
+  refreshCase(caseId);
+  redirect(`/clinic/commercial/${caseId}?no_show=1`);
 }
 
 export async function cancelConsultation(formData: FormData) {
@@ -163,7 +213,7 @@ export async function retryCalendarSync(formData: FormData) {
     await syncGoogleCalendar(supabase, appointment.id, "cancel");
   } else if (appointment.external_event_id) {
     await syncGoogleCalendar(supabase, appointment.id, "refresh");
-  } else {
+  } else if (appointment.status === "scheduled") {
     await syncGoogleCalendar(supabase, appointment.id, "create");
   }
 
