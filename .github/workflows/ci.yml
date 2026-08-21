@@ -94,6 +94,17 @@ jobs:
             fi
           done
 
+          for REDIRECT_SPEC in \
+            '/services|/dental-treatments' \
+            '/services/legacy-pediatric|/dental-treatments' \
+            '/contact-us|/book'; do
+            SOURCE=${REDIRECT_SPEC%%|*}
+            DESTINATION=${REDIRECT_SPEC#*|}
+            REDIRECT_HEADERS=$(curl -sSI "http://127.0.0.1:3000${SOURCE}")
+            echo "$REDIRECT_HEADERS" | grep -Eq '^HTTP/[^ ]+ 30(7|8)'
+            echo "$REDIRECT_HEADERS" | grep -qi "^location: ${DESTINATION}\r\?$"
+          done
+
           for PRIVATE_ROUTE in \
             '/patient/login' \
             '/staff/login' \
