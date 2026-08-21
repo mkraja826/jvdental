@@ -9,6 +9,9 @@ function isSet(value: string | undefined) {
 }
 
 export default function DeploymentReadiness() {
+  const buildCommit = process.env.WORKERS_CI_COMMIT_SHA?.trim() || null;
+  const buildBranch = process.env.WORKERS_CI_BRANCH?.trim() || null;
+
   const core: ReadinessItem[] = [
     {
       label: "Public site URL",
@@ -56,6 +59,7 @@ export default function DeploymentReadiness() {
   ];
 
   const coreReady = core.every((item) => item.configured);
+  const buildLabel = buildCommit ? `${buildBranch ?? "branch unknown"} · ${buildCommit.slice(0, 12)}` : "Build identity unavailable";
 
   return (
     <article className="portal-card" style={{ marginTop: 24 }}>
@@ -68,6 +72,11 @@ export default function DeploymentReadiness() {
           Presence checks only. Secret values are never rendered, logged or sent to the browser as data.
         </p>
         <div className="status-list" style={{ marginTop: 16 }}>
+          <div className="status-row">
+            <strong>Deployed build</strong>
+            <span>{buildCommit ? "Identified" : "Unknown"}</span>
+            <span>{buildLabel}</span>
+          </div>
           {[...core, ...optional].map((item) => (
             <div className="status-row" key={item.label}>
               <strong>{item.label}</strong>
