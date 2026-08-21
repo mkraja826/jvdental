@@ -59,7 +59,11 @@ Deno.serve(async (req: Request) => {
 
   const stripeResponse = await fetch("https://api.stripe.com/v1/refunds", {
     method: "POST",
-    headers: { Authorization: `Bearer ${stripeKey}`, "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      Authorization: `Bearer ${stripeKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Idempotency-Key": `jv-refund-${payment.id}-${alreadyRefunded}-${requested}`,
+    },
     body: params,
   });
   const refund = await stripeResponse.json();
