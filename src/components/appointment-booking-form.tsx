@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 
 declare global {
   interface Window {
@@ -27,7 +27,8 @@ function loadRazorpay() {
 }
 
 function indiaToday() {
-  const india = new Date(Date.now() + 5.5 * 60 * 60 * 1000);
+  const now = new Date();
+  const india = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
   return `${india.getUTCFullYear()}-${String(india.getUTCMonth() + 1).padStart(2, "0")}-${String(india.getUTCDate()).padStart(2, "0")}`;
 }
 
@@ -36,7 +37,7 @@ export default function AppointmentBookingForm() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const minimumDate = useMemo(indiaToday, []);
+  const [minimumDate] = useState(indiaToday);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
