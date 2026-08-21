@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { createTreatmentPlan } from "@/app/clinic/commercial/actions";
 import {
   cancelConsultation,
+  completeConsultation,
+  markConsultationNoShow,
   rescheduleConsultation,
   retryCalendarSync,
   scheduleVideoConsultation,
@@ -44,6 +46,7 @@ export default async function CommercialCasePage({ params, searchParams }: { par
   ]);
 
   const patient = Array.isArray(caseRecord.patient_profiles) ? caseRecord.patient_profiles[0] : caseRecord.patient_profiles;
+  const now = Date.now();
 
   return (
     <main className="portal-shell">
@@ -71,9 +74,12 @@ export default async function CommercialCasePage({ params, searchParams }: { par
 
           {query.error === "consultation_time" ? <p style={{ color: "var(--danger)" }}>Choose a future consultation time.</p> : null}
           {query.error === "consultation" ? <p style={{ color: "var(--danger)" }}>The consultation could not be scheduled.</p> : null}
+          {query.error === "appointment_disposition" ? <p style={{ color: "var(--danger)" }}>Only a consultation whose scheduled time has passed can be marked completed or no-show.</p> : null}
           {query.scheduled ? <p className="form-note">Consultation scheduled. Google Calendar sync was attempted automatically.</p> : null}
           {query.rescheduled ? <p className="form-note">Consultation rescheduled. The existing Calendar event was updated when available.</p> : null}
           {query.cancelled ? <p className="form-note">Consultation cancelled.</p> : null}
+          {query.completed ? <p className="form-note">Consultation marked completed. The clinical workflow can continue from the current case stage.</p> : null}
+          {query.no_show ? <p className="form-note">Consultation marked no-show. Schedule a new consultation if the patient needs another time.</p> : null}
           {query.calendar_sync ? <p className="form-note">Calendar sync retried.</p> : null}
 
           <div className="portal-grid" style={{ marginTop: 28 }}>
@@ -129,6 +135,7 @@ export default async function CommercialCasePage({ params, searchParams }: { par
                 {!appointments?.length ? <p>No consultation scheduled yet.</p> : (
                   <div style={{ display: "grid", gap: 16 }}>
                     {appointments.map((appointment) => {
+                      const isOverdue = appointment.status === "scheduled" && new Date(appointment.starts_at).getTime() <= now;
                       const syncLabel = appointment.external_sync_status === "synced"
                         ? appointment.conference_provider === "google_meet" ? "Google Meet ready" : "Calendar synced"
                         : appointment.external_sync_status === "failed" ? "Calendar sync failed"
@@ -143,14 +150,16 @@ export default async function CommercialCasePage({ params, searchParams }: { par
                                 <p className="form-note" style={{ margin: "6px 0 0" }}>{appointment.appointment_type.replaceAll("_", " ")} · {appointment.timezone}</p>
                               </div>
                               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                                <span className="status-pill">{appointment.status}</span>
+                                <span className="status-pill">{isOverdue ? "needs outcome" : appointment.status}</span>
                                 <span className="status-pill">{syncLabel}</span>
                               </div>
                             </div>
 
+                            {isOverdue ? <p className="form-note" style={{ color: "var(--danger)", margin: 0 }}>This consultation time has passed. Record whether it was completed or a no-show, or reschedule it to a new future time.</p> : null}
+
                             {appointment.meeting_url ? (
                               <div><a className="button button--ghost" href={appointment.meeting_url} target="_blank" rel="noreferrer">Open meeting →</a></div>
-                            ) : appointment.status === "scheduled" ? <p className="form-note">No meeting URL is available yet. Retry Calendar sync after Google Calendar is connected.</p> : null}
+                            ) : appointment.status === "scheduled" && !isOverdue ? <p className="form-note">No meeting URL is available yet. Retry Calendar sync after Google Calendar is connected.</p> : null}
 
                             {appointment.external_event_html_url ? (
                               <a className="text-link" href={appointment.external_event_html_url} target="_blank" rel="noreferrer">Open Google Calendar event ↗</a>
@@ -165,12 +174,28 @@ export default async function CommercialCasePage({ params, searchParams }: { par
                                   <label style={{ flex: "1 1 230px" }}>Reschedule<input name="starts_at" type="datetime-local" required /></label>
                                   <button className="button button--ghost" type="submit">Update time</button>
                                 </form>
+                                {isOverdue ? (
+                                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                                    <form action={completeConsultation}>
+                                      <input type="hidden" name="appointment_id" value={appointment.id} />
+                                      <input type="hidden" name="case_id" value={caseRecord.id} />
+                                      <button className="button" type="submit">Mark completed</button>
+                                    </form>
+                                    <form action={markConsultationNoShow}>
+                                      <input type="hidden" name="appointment_id" value={appointment.id} />
+                                      <input type="hidden" name="case_id" value={caseRecord.id} />
+                                      <button className="button button--ghost" type="submit">Mark no-show</button>
+                                    </form>
+                                  </div>
+                                ) : null}
                                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                                  <form action={retryCalendarSync}>
-                                    <input type="hidden" name="appointment_id" value={appointment.id} />
-                                    <input type="hidden" name="case_id" value={caseRecord.id} />
-                                    <button className="text-link" type="submit" style={{ background: "none", border: 0, cursor: "pointer" }}>Retry Calendar / Meet sync</button>
-                                  </form>
+                                  {!isOverdue ? (
+                                    <form action={retryCalendarSync}>
+                                      <input type="hidden" name="appointment_id" value={appointment.id} />
+                                      <input type="hidden" name="case_id" value={caseRecord.id} />
+                                      <button className="text-link" type="submit" style={{ background: "none", border: 0, cursor: "pointer" }}>Retry Calendar / Meet sync</button>
+                                    </form>
+                                  ) : null}
                                   <form action={cancelConsultation}>
                                     <input type="hidden" name="appointment_id" value={appointment.id} />
                                     <input type="hidden" name="case_id" value={caseRecord.id} />
