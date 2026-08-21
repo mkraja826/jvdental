@@ -25,10 +25,7 @@ button:disabled,
   opacity: .58;
 }
 
-.button {
-  min-height: 44px;
-  text-wrap: balance;
-}
+.button { min-height: 44px; }
 
 /* Desktop portal access reads as one quiet segmented control instead of two
    loose utility links. Position and approved header hierarchy stay unchanged. */
