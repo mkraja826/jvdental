@@ -38,6 +38,14 @@ const privateHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  experimental: {
+    serverActions: {
+      // Doctor portraits are validated at 8 MB in the server action. Keep a
+      // small allowance for multipart/form-data overhead so valid images are
+      // not rejected before the upload handler runs.
+      bodySizeLimit: "10mb",
+    },
+  },
   images: {
     remotePatterns: [
       {
