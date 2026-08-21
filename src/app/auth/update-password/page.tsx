@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PendingSubmit from "@/components/pending-submit";
 import { updatePassword } from "@/app/auth/actions";
 
 type Props = {
@@ -46,7 +47,7 @@ export default async function UpdatePasswordPage({ searchParams }: Props) {
             <input type="hidden" name="audience" value={audience} />
             <div className="field"><label htmlFor="password">New password</label><input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required /></div>
             <div className="field"><label htmlFor="confirm_password">Confirm new password</label><input id="confirm_password" name="confirm_password" type="password" autoComplete="new-password" minLength={8} required /></div>
-            <button className="button" type="submit" style={{ width: "100%" }}>Update password →</button>
+            <PendingSubmit className="button login-submit" label="Update password →" pendingLabel="Updating password…" />
           </form>
 
           <p className="form-note"><Link className="text-link" href={isStaff ? "/staff/login" : "/patient/login"}>← Back to sign in</Link></p>
