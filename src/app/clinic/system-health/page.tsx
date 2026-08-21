@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import DeploymentReadiness from "@/components/deployment-readiness";
 import { requireStaff } from "@/lib/auth/guards";
@@ -23,6 +24,9 @@ export default async function SystemHealthPage() {
   const { supabase, staff } = await requireStaff();
   if (!["owner", "admin"].includes(staff.role)) redirect("/clinic");
 
+  const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const nowIso = new Date().toISOString();
+
   const [
     errorsResult,
     registrationsResult,
@@ -34,6 +38,13 @@ export default async function SystemHealthPage() {
     paymentsResult,
     documentsResult,
     messagesResult,
+    calendarResult,
+    publishingResult,
+    treatmentPaymentRequestsResult,
+    treatmentPaymentsResult,
+    bookingPaymentsResult,
+    failedEmailsResult,
+    overdueConsultationsResult,
   ] = await Promise.all([
     supabase
       .from("portal_error_events")
@@ -49,6 +60,13 @@ export default async function SystemHealthPage() {
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "payment_confirmed"),
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "patient_document_uploaded"),
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "patient_message_sent"),
+    supabase.from("calendar_integrations").select("id", { count: "exact", head: true }).eq("status", "connected"),
+    supabase.from("publishing_integrations").select("id", { count: "exact", head: true }).eq("status", "connected"),
+    supabase.from("payment_requests").select("id", { count: "exact", head: true }),
+    supabase.from("payments").select("id", { count: "exact", head: true }).eq("status", "succeeded"),
+    supabase.from("booking_payments").select("id", { count: "exact", head: true }).eq("status", "succeeded"),
+    supabase.from("email_deliveries").select("id", { count: "exact", head: true }).eq("status", "failed").gte("created_at", dayAgo),
+    supabase.from("appointments").select("id", { count: "exact", head: true }).eq("status", "scheduled").lte("starts_at", nowIso),
   ]);
 
   const recent = (errorsResult.data ?? []) as ErrorEvent[];
@@ -65,6 +83,13 @@ export default async function SystemHealthPage() {
   const confirmedPayments = paymentsResult.count ?? 0;
   const patientDocuments = documentsResult.count ?? 0;
   const patientMessages = messagesResult.count ?? 0;
+  const connectedCalendars = calendarResult.count ?? 0;
+  const connectedPublishers = publishingResult.count ?? 0;
+  const treatmentPaymentRequests = treatmentPaymentRequestsResult.count ?? 0;
+  const succeededTreatmentPayments = treatmentPaymentsResult.count ?? 0;
+  const succeededBookingPayments = bookingPaymentsResult.count ?? 0;
+  const failedEmails24h = failedEmailsResult.count ?? 0;
+  const overdueConsultations = overdueConsultationsResult.count ?? 0;
 
   return (
     <main className="portal-shell">
@@ -77,6 +102,25 @@ export default async function SystemHealthPage() {
       </header>
 
       <section className="portal-main">
+        <article className="portal-card">
+          <div className="portal-card__header"><h2>Launch gates</h2><span className="status-pill">Live checks</span></div>
+          <div className="portal-card__body">
+            <div className="status-list">
+              <div className="status-row"><strong>Google Calendar / Meet</strong><span>{connectedCalendars ? "Connected" : "Not connected"}</span><span>{connectedCalendars ? "Operational account present" : "Connect from Integrations"}</span></div>
+              <div className="status-row"><strong>Blogger publishing</strong><span>{connectedPublishers ? "Connected" : "Not connected"}</span><span>{connectedPublishers ? "Publishing account present" : "Connect from Integrations"}</span></div>
+              <div className="status-row"><strong>Treatment payment acceptance</strong><span>{succeededTreatmentPayments}</span><span>{treatmentPaymentRequests ? `${treatmentPaymentRequests} request(s) created` : "No real treatment payment request tested yet"}</span></div>
+              <div className="status-row"><strong>Booking payment acceptance</strong><span>{succeededBookingPayments}</span><span>{succeededBookingPayments ? "Successful booking payment recorded" : "No successful booking payment recorded yet"}</span></div>
+              <div className="status-row"><strong>Email delivery failures · 24h</strong><span>{failedEmails24h}</span><span>{failedEmails24h ? "Review notification delivery" : "No failed deliveries in the last 24 hours"}</span></div>
+              <div className="status-row"><strong>Consultations needing outcome</strong><span>{overdueConsultations}</span><span>{overdueConsultations ? "Resolve completed / no-show status" : "No overdue scheduled consultations"}</span></div>
+            </div>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 18 }}>
+              <Link className="button button--ghost" href="/clinic/integrations">Open integrations →</Link>
+              <Link className="button button--ghost" href="/clinic/commercial">Open consultations →</Link>
+              <Link className="button button--ghost" href="/clinic/finance">Open finance →</Link>
+            </div>
+          </div>
+        </article>
+
         <div className="portal-grid">
           <article className="portal-card">
             <div className="portal-card__header"><h2>Patient registrations</h2><span className="status-pill">{registrations}</span></div>
@@ -104,7 +148,7 @@ export default async function SystemHealthPage() {
           </article>
           <article className="portal-card">
             <div className="portal-card__header"><h2>Confirmed payments</h2><span className="status-pill">{confirmedPayments}</span></div>
-            <div className="portal-card__body"><p>Successful booking payments confirmed by the server reconciliation layer.</p></div>
+            <div className="portal-card__body"><p>Successful payment events recorded by the server reconciliation layer.</p></div>
           </article>
           <article className="portal-card">
             <div className="portal-card__header"><h2>Patient uploads</h2><span className="status-pill">{patientDocuments}</span></div>
