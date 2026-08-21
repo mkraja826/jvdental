@@ -46,7 +46,7 @@ export default async function CommercialCasePage({ params, searchParams }: { par
   ]);
 
   const patient = Array.isArray(caseRecord.patient_profiles) ? caseRecord.patient_profiles[0] : caseRecord.patient_profiles;
-  const now = Date.now();
+  const now = new Date().getTime();
 
   return (
     <main className="portal-shell">
