@@ -22,9 +22,10 @@ type BatchOption = {
 type ImplantPlacementFormProps = {
   cases: CaseOption[];
   batches: BatchOption[];
+  idempotencyKey: string;
 };
 
-export default function ImplantPlacementForm({ cases, batches }: ImplantPlacementFormProps) {
+export default function ImplantPlacementForm({ cases, batches, idempotencyKey }: ImplantPlacementFormProps) {
   const [batchId, setBatchId] = useState(batches[0]?.id ?? "");
   const [scanNote, setScanNote] = useState<string | null>(null);
   const selected = useMemo(() => batches.find((batch) => batch.id === batchId) ?? null, [batches, batchId]);
@@ -43,6 +44,8 @@ export default function ImplantPlacementForm({ cases, batches }: ImplantPlacemen
 
   return (
     <form action={placeImplant} className="form-grid">
+      <input type="hidden" name="idempotency_key" value={idempotencyKey} />
+
       <div className="field field--wide">
         <label htmlFor="case_id">Patient case *</label>
         <select id="case_id" name="case_id" defaultValue="" required>
@@ -68,7 +71,7 @@ export default function ImplantPlacementForm({ cases, batches }: ImplantPlacemen
       <div className="field"><label htmlFor="placement_date">Placement date</label><input id="placement_date" name="placement_date" type="date" /></div>
       <div className="field field--wide"><label htmlFor="notes">Clinical traceability note</label><textarea id="notes" name="notes" placeholder="Optional note. Do not use this field for the full operative note." /></div>
       <div className="field field--wide">
-        <p className="form-note">Confirm the physical package, lot and site before submission. This action deducts one implant and creates the patient’s permanent implant record.</p>
+        <p className="form-note">Confirm the physical package, lot and site before submission. This action deducts one implant and creates the patient’s permanent implant record. Repeated submits of the same form are deduplicated.</p>
         <PendingSubmit label="Confirm implant placement" pendingLabel="Recording placement…" />
       </div>
     </form>
