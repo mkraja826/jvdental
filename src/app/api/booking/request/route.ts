@@ -15,6 +15,16 @@ function createPaymentAccessToken() {
   return `${crypto.randomUUID()}${crypto.randomUUID()}`.replaceAll("-", "");
 }
 
+function isBookableDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const selected = new Date(`${value}T00:00:00+05:30`);
+  if (Number.isNaN(selected.getTime())) return false;
+
+  const nowInIndia = new Date(Date.now() + 5.5 * 60 * 60 * 1000);
+  const todayInIndia = `${nowInIndia.getUTCFullYear()}-${String(nowInIndia.getUTCMonth() + 1).padStart(2, "0")}-${String(nowInIndia.getUTCDate()).padStart(2, "0")}`;
+  return value >= todayInIndia;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -27,8 +37,8 @@ export async function POST(request: Request) {
     const preferredTimeWindow = String(body.preferredTimeWindow ?? "");
     const dentalConcern = String(body.dentalConcern ?? "").trim() || null;
 
-    if (!allowedKinds.has(bookingKind) || !allowedWindows.has(preferredTimeWindow) || !fullName || !phone || !/^\d{4}-\d{2}-\d{2}$/.test(preferredDate)) {
-      return NextResponse.json({ error: "Please complete the required booking details." }, { status: 400 });
+    if (!allowedKinds.has(bookingKind) || !allowedWindows.has(preferredTimeWindow) || !fullName || !phone || !isBookableDate(preferredDate)) {
+      return NextResponse.json({ error: "Please complete the required booking details and choose today or a future date." }, { status: 400 });
     }
 
     if (fullName.length > 120 || phone.length > 30 || (email && email.length > 180) || (city && city.length > 100) || (dentalConcern && dentalConcern.length > 1500)) {
