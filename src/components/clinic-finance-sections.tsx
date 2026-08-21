@@ -1,3 +1,4 @@
+import PendingSubmit from "@/components/pending-submit";
 import StripeRefundForm from "@/components/stripe-refund-form";
 import { requireStaff } from "@/lib/auth/guards";
 import { cancelPaymentRequest, createPaymentRequest, sendPaymentRequest } from "@/app/clinic/finance/actions";
@@ -78,7 +79,7 @@ export default async function ClinicFinanceSections({
               <label>Patient-facing note<textarea name="description" rows={3} placeholder="Treatment deposit for the approved preliminary plan." /></label>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}><label>Due date<input name="due_date" type="date" /></label><label>Checkout expiry date<input name="expires_date" type="date" /></label></div>
               <p className="form-note">For a linked treatment plan, the payment-request currency must match the plan currency. Requests are created as drafts and are not visible as payable until staff explicitly sends them.</p>
-              <button className="button" type="submit">Create draft request</button>
+              <PendingSubmit label="Create draft request" pendingLabel="Creating draft…" />
             </form>
           </div>
         </article>
@@ -94,7 +95,7 @@ export default async function ClinicFinanceSections({
             return <article className="portal-card" key={request.id} style={{ boxShadow: "none" }}><div className="portal-card__body" style={{ display: "grid", gap: 12 }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}><div><strong>PAY-{request.request_number} · {patient?.full_name ?? "Patient"}</strong><p className="form-note" style={{ marginTop: 5 }}>JV-{caseRecord?.case_number ?? "—"} · {request.request_type.replaceAll("_", " ")}</p></div><span className="status-pill">{request.status.replaceAll("_", " ")}</span></div>
               <div className="status-list"><div className="status-row"><strong>Requested</strong><span>{request.title}</span><span>{formatMinor(request.amount_minor, request.currency)}</span></div><div className="status-row"><strong>Net received</strong><span>after refunds</span><span>{formatMinor(Number(balance?.gross_paid_minor ?? 0) - Number(balance?.refunded_minor ?? 0), request.currency)}</span></div><div className="status-row"><strong>Remaining</strong><span>—</span><span>{formatMinor(balance?.remaining_minor ?? request.amount_minor, request.currency)}</span></div></div>
-              {canManage ? <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>{request.status === "draft" ? <form action={sendPaymentRequest}><input type="hidden" name="payment_request_id" value={request.id} /><button className="button button--ghost" type="submit">Send to patient</button></form> : null}{["draft", "sent"].includes(request.status) ? <form action={cancelPaymentRequest}><input type="hidden" name="payment_request_id" value={request.id} /><button className="text-link" type="submit" style={{ background: "none", border: 0, cursor: "pointer" }}>Cancel request</button></form> : null}</div> : null}
+              {canManage ? <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>{request.status === "draft" ? <form action={sendPaymentRequest}><input type="hidden" name="payment_request_id" value={request.id} /><PendingSubmit className="button button--ghost" label="Send to patient" pendingLabel="Sending…" /></form> : null}{["draft", "sent"].includes(request.status) ? <form action={cancelPaymentRequest}><input type="hidden" name="payment_request_id" value={request.id} /><PendingSubmit className="text-link portal-inline-action" label="Cancel request" pendingLabel="Cancelling…" /></form> : null}</div> : null}
             </div></article>;
           })}</div>}
         </div>
