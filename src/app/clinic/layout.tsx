@@ -7,8 +7,11 @@ import "../clinic-form-polish.css";
 import "../clinic-interactions.css";
 
 export default async function ClinicLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const { staff } = await requireStaff();
+  const { staff, supabase } = await requireStaff();
   const canManage = staff.role === "owner" || staff.role === "admin";
+  const { data: summaryData } = await supabase.rpc("clinic_dashboard_summary");
+  const summary = (summaryData ?? {}) as Record<string, number | string | null>;
+  const unreadNotifications = Number(summary.unread_notifications ?? 0);
 
   return (
     <div className="clinic-workspace-shell">
@@ -26,6 +29,7 @@ export default async function ClinicLayout({ children }: Readonly<{ children: Re
           canManageIntegrations={canManage}
           canManageAssistant={canManage}
           canManageWebsite={canManage}
+          unreadNotifications={unreadNotifications}
         />
       </aside>
       <div className="clinic-workspace-content">{children}</div>
