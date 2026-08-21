@@ -44,14 +44,6 @@ const nextConfig: NextConfig = {
     JV_BUILD_COMMIT_SHA: buildCommitSha,
     JV_BUILD_BRANCH: buildBranch,
   },
-  experimental: {
-    serverActions: {
-      // Doctor portraits are validated at 8 MB in the server action. Keep a
-      // small allowance for multipart/form-data overhead so valid images are
-      // not rejected before the upload handler runs.
-      bodySizeLimit: "10mb",
-    },
-  },
   images: {
     remotePatterns: [
       {
