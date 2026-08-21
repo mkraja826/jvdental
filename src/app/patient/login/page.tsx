@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PendingSubmit from "@/components/pending-submit";
 import { requestMagicLink, signInPatientWithPassword } from "@/app/auth/actions";
 
 type LoginPageProps = {
@@ -39,7 +40,7 @@ export default async function PatientLoginPage({ searchParams }: LoginPageProps)
             <input type="hidden" name="next" value={next} />
             <div className="field"><label htmlFor="email">Email address</label><input id="email" name="email" type="email" inputMode="email" autoComplete="email" required /></div>
             <div className="field"><label htmlFor="password">Password</label><input id="password" name="password" type="password" autoComplete="current-password" required /></div>
-            <button className="button" type="submit" style={{ width: "100%" }}>Sign in →</button>
+            <PendingSubmit className="button login-submit" label="Sign in →" pendingLabel="Signing in…" />
           </form>
 
           <p className="form-note"><Link className="text-link" href={`/patient/register?next=${encodeURIComponent(next)}`}>Create a patient account →</Link></p>
@@ -50,7 +51,7 @@ export default async function PatientLoginPage({ searchParams }: LoginPageProps)
             <form action={requestMagicLink} style={{ display: "grid", gap: 12 }}>
               <input type="hidden" name="next" value={next} />
               <div className="field"><label htmlFor="magic-email">Email address</label><input id="magic-email" name="email" type="email" inputMode="email" autoComplete="email" required /></div>
-              <button className="button button--ghost" type="submit" style={{ width: "100%" }}>Email me a secure link</button>
+              <PendingSubmit className="button button--ghost login-submit" label="Email me a secure link" pendingLabel="Sending secure link…" />
             </form>
           </div>
 
