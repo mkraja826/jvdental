@@ -29,6 +29,7 @@ export default async function SystemHealthPage() {
 
   const [
     errorsResult,
+    errors24hResult,
     registrationsResult,
     intakesResult,
     bookingsResult,
@@ -45,12 +46,15 @@ export default async function SystemHealthPage() {
     bookingPaymentsResult,
     failedEmailsResult,
     overdueConsultationsResult,
+    doctorPortraitResult,
+    homepageHeroResult,
   ] = await Promise.all([
     supabase
       .from("portal_error_events")
       .select("id,surface,route,error_name,error_digest,created_at")
       .order("created_at", { ascending: false })
       .limit(50),
+    supabase.from("portal_error_events").select("id", { count: "exact", head: true }).gte("created_at", dayAgo),
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "patient_registered"),
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "patient_intake_completed"),
     supabase.from("product_events").select("id", { count: "exact", head: true }).eq("event_name", "booking_requested"),
@@ -67,6 +71,8 @@ export default async function SystemHealthPage() {
     supabase.from("booking_payments").select("id", { count: "exact", head: true }).eq("status", "succeeded"),
     supabase.from("email_deliveries").select("id", { count: "exact", head: true }).eq("status", "failed").gte("created_at", dayAgo),
     supabase.from("appointments").select("id", { count: "exact", head: true }).eq("status", "scheduled").lte("starts_at", nowIso),
+    supabase.from("doctor_profiles").select("id", { count: "exact", head: true }).eq("slug", "dr-jaya-prakash").eq("status", "published").not("profile_image_path", "is", null),
+    supabase.from("website_media").select("id", { count: "exact", head: true }).eq("slot_key", "home-hero").not("storage_path", "is", null),
   ]);
 
   const recent = (errorsResult.data ?? []) as ErrorEvent[];
@@ -83,6 +89,7 @@ export default async function SystemHealthPage() {
   const confirmedPayments = paymentsResult.count ?? 0;
   const patientDocuments = documentsResult.count ?? 0;
   const patientMessages = messagesResult.count ?? 0;
+  const portalErrors24h = errors24hResult.count ?? 0;
   const connectedCalendars = calendarResult.count ?? 0;
   const connectedPublishers = publishingResult.count ?? 0;
   const treatmentPaymentRequests = treatmentPaymentRequestsResult.count ?? 0;
@@ -90,6 +97,21 @@ export default async function SystemHealthPage() {
   const succeededBookingPayments = bookingPaymentsResult.count ?? 0;
   const failedEmails24h = failedEmailsResult.count ?? 0;
   const overdueConsultations = overdueConsultationsResult.count ?? 0;
+  const doctorPortraitReady = (doctorPortraitResult.count ?? 0) > 0;
+  const homepageHeroReady = (homepageHeroResult.count ?? 0) > 0;
+
+  const measurableLaunchChecks = [
+    homepageHeroReady,
+    doctorPortraitReady,
+    portalErrors24h === 0,
+    failedEmails24h === 0,
+    connectedCalendars > 0,
+    connectedPublishers > 0,
+    succeededBookingPayments > 0,
+    succeededTreatmentPayments > 0,
+    overdueConsultations === 0,
+  ];
+  const measurableLaunchReady = measurableLaunchChecks.filter(Boolean).length;
 
   return (
     <main className="portal-shell">
@@ -103,20 +125,26 @@ export default async function SystemHealthPage() {
 
       <section className="portal-main">
         <article className="portal-card">
-          <div className="portal-card__header"><h2>Launch gates</h2><span className="status-pill">Live checks</span></div>
+          <div className="portal-card__header"><h2>Measurable launch gates</h2><span className="status-pill">{measurableLaunchReady}/{measurableLaunchChecks.length} ready</span></div>
           <div className="portal-card__body">
-            <div className="status-list">
+            <p className="form-note" style={{ marginTop: 0 }}>These are live checks the application can verify itself. Backup/restore, branch protection, leaked-password protection, browser/device acceptance and final doctor approval remain external release checks.</p>
+            <div className="status-list" style={{ marginTop: 16 }}>
+              <div className="status-row"><strong>Homepage hero media</strong><span>{homepageHeroReady ? "Ready" : "Missing"}</span><span>{homepageHeroReady ? "Published media is configured" : "Upload from Website photos"}</span></div>
+              <div className="status-row"><strong>Dr. Jaya Prakash portrait</strong><span>{doctorPortraitReady ? "Ready" : "Missing"}</span><span>{doctorPortraitReady ? "Published portrait is configured" : "Upload and publish the doctor portrait"}</span></div>
+              <div className="status-row"><strong>Portal errors · 24h</strong><span>{portalErrors24h}</span><span>{portalErrors24h ? "Review recent portal errors before launch" : "No authenticated portal errors recorded"}</span></div>
+              <div className="status-row"><strong>Email delivery failures · 24h</strong><span>{failedEmails24h}</span><span>{failedEmails24h ? "Review notification delivery" : "No failed deliveries in the last 24 hours"}</span></div>
               <div className="status-row"><strong>Google Calendar / Meet</strong><span>{connectedCalendars ? "Connected" : "Not connected"}</span><span>{connectedCalendars ? "Operational account present" : "Connect from Integrations"}</span></div>
               <div className="status-row"><strong>Blogger publishing</strong><span>{connectedPublishers ? "Connected" : "Not connected"}</span><span>{connectedPublishers ? "Publishing account present" : "Connect from Integrations"}</span></div>
-              <div className="status-row"><strong>Treatment payment acceptance</strong><span>{succeededTreatmentPayments}</span><span>{treatmentPaymentRequests ? `${treatmentPaymentRequests} request(s) created` : "No real treatment payment request tested yet"}</span></div>
               <div className="status-row"><strong>Booking payment acceptance</strong><span>{succeededBookingPayments}</span><span>{succeededBookingPayments ? "Successful booking payment recorded" : "No successful booking payment recorded yet"}</span></div>
-              <div className="status-row"><strong>Email delivery failures · 24h</strong><span>{failedEmails24h}</span><span>{failedEmails24h ? "Review notification delivery" : "No failed deliveries in the last 24 hours"}</span></div>
+              <div className="status-row"><strong>Treatment payment acceptance</strong><span>{succeededTreatmentPayments}</span><span>{treatmentPaymentRequests ? `${treatmentPaymentRequests} request(s) created` : "No real treatment payment request tested yet"}</span></div>
               <div className="status-row"><strong>Consultations needing outcome</strong><span>{overdueConsultations}</span><span>{overdueConsultations ? "Resolve completed / no-show status" : "No overdue scheduled consultations"}</span></div>
             </div>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 18 }}>
-              <Link className="button button--ghost" href="/clinic/integrations">Open integrations →</Link>
-              <Link className="button button--ghost" href="/clinic/commercial">Open consultations →</Link>
-              <Link className="button button--ghost" href="/clinic/finance">Open finance →</Link>
+              <Link className="button button--ghost" href="/clinic/website">Website photos →</Link>
+              <Link className="button button--ghost" href="/clinic/doctors">Doctor portfolios →</Link>
+              <Link className="button button--ghost" href="/clinic/integrations">Integrations →</Link>
+              <Link className="button button--ghost" href="/clinic/commercial">Consultations →</Link>
+              <Link className="button button--ghost" href="/clinic/finance">Finance →</Link>
             </div>
           </div>
         </article>
