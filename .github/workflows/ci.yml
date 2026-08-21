@@ -45,7 +45,7 @@ jobs:
       - name: Production build
         run: npm run build
 
-      - name: Production security smoke tests
+      - name: Production security and route smoke tests
         run: |
           npm run start > /tmp/jv-next.log 2>&1 &
           SERVER_PID=$!
@@ -78,6 +78,28 @@ jobs:
           echo "$ROBOTS" | grep -q 'Disallow: /auth'
           echo "$ROBOTS" | grep -q 'Sitemap: http://localhost:3000/sitemap.xml'
 
-          PRIVATE_HEADERS=$(curl -fsSI http://127.0.0.1:3000/patient/login)
-          echo "$PRIVATE_HEADERS" | grep -qi '^cache-control: private, no-store, max-age=0'
-          echo "$PRIVATE_HEADERS" | grep -qi '^x-robots-tag: noindex, nofollow, noarchive, nosnippet'
+          for ROUTE in \
+            '/patient/login' \
+            '/staff/login' \
+            '/auth/forgot-password?audience=patient' \
+            '/auth/forgot-password?audience=staff' \
+            '/auth/update-password?audience=patient' \
+            '/auth/update-password?audience=staff' \
+            '/book'; do
+            STATUS=$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:3000${ROUTE}")
+            if [ "$STATUS" != "200" ]; then
+              echo "Route smoke test failed: ${ROUTE} returned ${STATUS}"
+              cat /tmp/jv-next.log
+              exit 1
+            fi
+          done
+
+          for PRIVATE_ROUTE in \
+            '/patient/login' \
+            '/staff/login' \
+            '/auth/forgot-password?audience=staff' \
+            '/auth/update-password?audience=staff'; do
+            PRIVATE_HEADERS=$(curl -fsSI "http://127.0.0.1:3000${PRIVATE_ROUTE}")
+            echo "$PRIVATE_HEADERS" | grep -qi '^cache-control: private, no-store, max-age=0'
+            echo "$PRIVATE_HEADERS" | grep -qi '^x-robots-tag: noindex, nofollow, noarchive, nosnippet'
+          done
