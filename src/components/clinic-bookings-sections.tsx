@@ -1,3 +1,4 @@
+import PendingSubmit from "@/components/pending-submit";
 import { requireStaff } from "@/lib/auth/guards";
 import {
   cancelBookingRequest,
@@ -120,17 +121,26 @@ export default async function ClinicBookingsSections() {
                       <textarea name="staff_notes" rows={3} defaultValue={request.staff_notes ?? ""} />
                     </label>
                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap", gridColumn: "1 / -1" }}>
-                      <button className="button" type="submit">{request.status === "confirmed" ? "Save changes" : "Confirm appointment"}</button>
+                      <PendingSubmit
+                        label={request.status === "confirmed" ? "Save changes" : "Confirm appointment"}
+                        pendingLabel={request.status === "confirmed" ? "Saving…" : "Confirming…"}
+                      />
                     </div>
                   </form>
                 ) : null}
 
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 14 }}>
                   {request.status === "confirmed" ? (
-                    <form action={completeBookingRequest}><input type="hidden" name="request_id" value={request.id} /><button className="button button--ghost" type="submit">Mark completed</button></form>
+                    <form action={completeBookingRequest}>
+                      <input type="hidden" name="request_id" value={request.id} />
+                      <PendingSubmit className="button button--ghost" label="Mark completed" pendingLabel="Completing…" />
+                    </form>
                   ) : null}
                   {!isClosed ? (
-                    <form action={cancelBookingRequest}><input type="hidden" name="request_id" value={request.id} /><button className="button button--ghost" type="submit">Cancel booking</button></form>
+                    <form action={cancelBookingRequest}>
+                      <input type="hidden" name="request_id" value={request.id} />
+                      <PendingSubmit className="button button--ghost" label="Cancel booking" pendingLabel="Cancelling…" />
+                    </form>
                   ) : null}
                 </div>
               </div>
