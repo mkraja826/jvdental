@@ -3,8 +3,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
 export const metadata = {
-  title: "Book a Dental Appointment | JV Dental",
-  description: "Request an in-clinic dental appointment or video consultation with JV Dental in Hyderabad.",
+  title: "Book a Dental Appointment or Video Consultation | JV Dental Hyderabad",
+  description: "Book an in-clinic dental appointment in Hyderabad or request a video consultation from anywhere in India or overseas with JV Dental.",
 };
 
 export default function BookAppointmentPage() {
@@ -13,25 +13,25 @@ export default function BookAppointmentPage() {
       <SiteHeader />
       <section className="booking-hero">
         <div>
-          <p className="eyebrow">Appointments · Hyderabad</p>
+          <p className="eyebrow">Appointments · India & international</p>
           <h1>Book a dental appointment or consultation.</h1>
-          <p>Local patients can request an in-clinic visit. Patients who want to discuss implant treatment, records or travel planning can request a video consultation.</p>
+          <p>JV Dental welcomes patients from Hyderabad, across India and overseas. Visit our Hyderabad clinic in person, or request a video consultation to discuss implants, dental concerns, records, treatment planning or a second opinion before you travel.</p>
         </div>
         <div className="booking-hero__facts">
-          <span><strong>Clinic appointment</strong><small>Visit JV Dental in Hyderabad</small></span>
-          <span><strong>Video consultation</strong><small>Discuss your case remotely</small></span>
-          <span><strong>Secure payment</strong><small>Available when consultation payment is configured</small></span>
+          <span><strong>Hyderabad & local patients</strong><small>Book an in-clinic dental appointment</small></span>
+          <span><strong>Patients across India</strong><small>Visit Hyderabad or begin with a video consultation</small></span>
+          <span><strong>International patients</strong><small>Discuss your case remotely before planning travel</small></span>
         </div>
       </section>
 
       <section className="booking-layout">
         <div className="booking-intro">
           <p className="section-kicker">Choose your consultation</p>
-          <h2>Tell us when you would like to visit.</h2>
-          <p>Your preferred date and time are a request, not an automatic confirmation. The clinic team will confirm availability and the final appointment time.</p>
+          <h2>Choose the consultation that suits you.</h2>
+          <p>Whether you live nearby, are travelling to Hyderabad from another Indian city, or are contacting us from overseas, you can request a preferred date and time here. The clinic team will review availability and confirm the final appointment.</p>
           <div className="booking-steps">
-            <span><b>01</b> Choose clinic or video consultation</span>
-            <span><b>02</b> Share your preferred date and concern</span>
+            <span><b>01</b> Choose clinic appointment or video consultation</span>
+            <span><b>02</b> Share your preferred date and dental concern</span>
             <span><b>03</b> Complete secure payment when applicable</span>
             <span><b>04</b> Receive appointment confirmation from the clinic</span>
           </div>
