@@ -126,11 +126,11 @@ export default async function InternationalPage() {
         <p className="section-kicker">Practical support in Hyderabad</p>
         <h2 className="section-title">Travel support organised around your clinical schedule.</h2>
         <p className="section-intro">Once provisional clinic dates are agreed, JV Dental can help coordinate practical parts of the Hyderabad stay so the treatment plan remains the centre of the journey.</p>
-        <div className="portal-grid international-grid international-support-grid">
-          {support.map(([title, body]) => (
-            <article className="portal-card international-support-card" key={title}>
-              <div className="portal-card__header"><h3>{title}</h3></div>
-              <div className="portal-card__body"><p>{body}</p></div>
+        <div className="principle-list international-trust-list international-support-list">
+          {support.map(([title, body], index) => (
+            <article className="principle" key={title}>
+              <span className="principle__number">{String(index + 1).padStart(2, "0")}</span>
+              <div><h3>{title}</h3><p>{body}</p></div>
             </article>
           ))}
         </div>
