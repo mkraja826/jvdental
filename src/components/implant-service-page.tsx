@@ -13,9 +13,21 @@ type ImplantServicePageProps = {
   suitability: string;
   steps: ServiceStep[];
   considerations: string[];
+  services?: ServiceStep[];
+  showBookingActions?: boolean;
 };
 
-export async function ImplantServicePage({ eyebrow, title, accent, description, suitability, steps, considerations }: ImplantServicePageProps) {
+export async function ImplantServicePage({
+  eyebrow,
+  title,
+  accent,
+  description,
+  suitability,
+  steps,
+  considerations,
+  services,
+  showBookingActions = true,
+}: ImplantServicePageProps) {
   const managedHero = await getWebsiteMedia("implant-hero", "Dental implant planning at JV Dental Hyderabad");
   const heroStyle = managedHero.url
     ? { backgroundImage: `linear-gradient(180deg, rgba(20,35,32,.06), rgba(20,35,32,.5)), url(${managedHero.url})`, backgroundSize: "cover", backgroundPosition: "center" }
@@ -32,7 +44,7 @@ export async function ImplantServicePage({ eyebrow, title, accent, description, 
             <h1 className="display-title">{title}<br /><em>{accent}</em></h1>
             <p className="hero__description">{description}</p>
             <div className="hero__actions">
-              <Link className="button" href="/book">Book implant assessment <span aria-hidden="true">→</span></Link>
+              {showBookingActions ? <Link className="button" href="/book">Book implant assessment <span aria-hidden="true">→</span></Link> : null}
               <Link className="button button--ghost" href="/cases">Explore dental cases</Link>
             </div>
           </div>
@@ -47,6 +59,21 @@ export async function ImplantServicePage({ eyebrow, title, accent, description, 
           </div>
         </div>
       </section>
+
+      {services?.length ? (
+        <section className="section">
+          <p className="section-kicker">Dental implant services</p>
+          <h2 className="section-title">Implant treatment options available after assessment.</h2>
+          <div className="portal-grid international-grid">
+            {services.map((service) => (
+              <article className="portal-card" key={service.title}>
+                <div className="portal-card__header"><h3>{service.title}</h3></div>
+                <div className="portal-card__body"><p>{service.body}</p></div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="section treatment-process">
         <p className="section-kicker">Your treatment pathway</p>
@@ -80,13 +107,13 @@ export async function ImplantServicePage({ eyebrow, title, accent, description, 
       </section>
 
       <section className="section section--tight treatment-next-step">
-        <p className="section-kicker">Talk to the dental team</p>
-        <h2 className="section-title">Understand your options before committing to implant treatment.</h2>
-        <p className="section-intro">Explore treatment information, documented cases and the dental team without creating an account. Book an assessment when you are ready to discuss your case, and use the secure patient portal when you need to send clinical records.</p>
+        <p className="section-kicker">Explore implant care</p>
+        <h2 className="section-title">Understand the available implant pathways and documented cases.</h2>
+        <p className="section-intro">Explore treatment information, documented cases and the dental team without creating an account. Clinical recommendations are made only after assessment and appropriate records.</p>
         <div className="hero__actions">
           <Link className="button button--ghost" href="/guided-implants">Guided implant dentistry</Link>
           <Link className="button button--ghost" href="/doctors">Meet the dentists</Link>
-          <Link className="button" href="/book">Book assessment</Link>
+          {showBookingActions ? <Link className="button" href="/book">Book assessment</Link> : null}
         </div>
       </section>
 
