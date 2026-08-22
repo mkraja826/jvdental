@@ -17,19 +17,24 @@ export default function DentalImplantsPage() {
     showBookingActions={false}
     services={[
       { title: "Conventional implant surgery", body: "Conventional implant placement is selected for suitable cases after clinical examination, imaging and restorative planning." },
-      { title: "Guided implant surgery · DIOnavi", body: "For suitable cases, DIOnavi guided surgery connects digital planning with a patient-specific surgical guide." },
-      { title: "Digital planning & guide fabrication", body: "Digital records and 3D planning are used to plan implant position and fabricate a surgical guide when guided treatment is indicated." },
+      { title: "Guided implant surgery · DIOnavi", body: "For suitable cases, JV Dental uses the DIOnavi digital workflow to connect 3D diagnostic records, virtual implant planning and a patient-specific surgical guide. The guide is used to transfer the approved digital plan to the clinical procedure; final decisions remain case-specific." },
+      { title: "Digital planning & guide fabrication", body: "The DIOnavi workflow described by DIO combines CT information with intra-oral scan data, considers the planned crown and occlusion, and then proceeds through implant planning and surgical-guide design. JV Dental applies these digital planning principles where guided treatment is clinically appropriate." },
       { title: "Full-mouth rehabilitation (FMR)", body: "Full-mouth implant rehabilitation may include All-on-4, All-on-6 or implant overdenture concepts depending on anatomy, bite, restorative requirements and case selection." },
       { title: "Bone grafting in compromised cases", body: "Bone grafting may be considered when available bone is inadequate for the planned implant position and the procedure is clinically appropriate." },
       { title: "Implant prosthesis · Malo bridge", body: "Implant-supported crowns, bridges and full-arch prosthetic solutions, including Malo bridge concepts where clinically appropriate, are planned around function, appearance, cleansability and long-term maintenance." },
     ]}
+    technologyReference={{
+      label: "View the official DIOnavi workflow",
+      href: "https://order.dionavi.com/dionavi-2.do",
+      body: "DIO's official DIOnavi material describes a digital sequence that merges CT and intra-oral scan information, sets up the intended crown, evaluates prosthetic and anatomical factors, plans implant position and designs a surgical guide to transfer the plan. JV Dental uses DIOnavi as a planning and guided-surgery technology for selected cases; clinical suitability is determined by the treating implantologist.",
+    }}
     steps={[
       { title: "Assessment", body: "The implantologist reviews the missing-tooth area, adjacent teeth, bite, periodontal condition, medical history and treatment goals." },
-      { title: "Imaging & records", body: "Appropriate radiographic and digital records help evaluate bone volume, anatomical structures and the restorative space available." },
-      { title: "Restorative position", body: "The intended final tooth position guides implant planning so placement is considered together with function, appearance and maintainability." },
-      { title: "Implant placement", body: "The surgical protocol is selected for the individual site and may include conventional or guided approaches when clinically appropriate." },
+      { title: "Imaging & digital records", body: "Appropriate radiographic and digital records help evaluate bone volume, anatomical structures and restorative space. For DIOnavi cases, CT and intra-oral scan information form part of the digital planning workflow." },
+      { title: "Restorative position", body: "The intended final tooth position guides implant planning so placement is considered together with crown position, occlusion, function, appearance and maintainability." },
+      { title: "Implant planning & placement", body: "The surgical protocol is selected for the individual site. In suitable DIOnavi cases, the planned implant position and direction are transferred using a patient-specific surgical guide." },
       { title: "Healing & restoration", body: "Healing, temporary restoration where appropriate, and the final prosthetic stage are planned according to the individual case." },
     ]}
-    considerations={["Bone and soft-tissue condition", "Position of nearby teeth and anatomy", "Bite and restorative space", "Medical and periodontal factors", "Long-term hygiene and maintenance"]}
+    considerations={["Bone and soft-tissue condition", "Position of nearby teeth, nerves and other anatomy", "Crown position, bite and restorative space", "Medical and periodontal factors", "Long-term hygiene and maintenance"]}
   />;
 }
