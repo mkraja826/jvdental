@@ -1,0 +1,171 @@
+/* Mobile header + hero recovery layer.
+   This is intentionally loaded last so legacy responsive rules cannot hide the
+   menu trigger or leave a blank hero when a browser cannot play the MP4. */
+
+.home-page .home-hero-video {
+  background-image:
+    linear-gradient(180deg, rgba(7,25,43,.08), rgba(7,25,43,.32)),
+    url("https://www.dioimplant.co.in/img/Banner.webp") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.home-page .home-hero-video__media {
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.home-page .home-hero-video.is-video-playing .home-hero-video__media {
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  body .site-header .site-header__inner {
+    width: 100% !important;
+    min-height: 76px !important;
+    padding: 8px 12px !important;
+    display: grid !important;
+    grid-template-columns: 46px minmax(0,1fr) 118px !important;
+    grid-template-rows: 58px auto !important;
+    align-items: center !important;
+    gap: 0 8px !important;
+  }
+
+  body .site-header .mobile-menu-toggle {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 5 !important;
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    justify-self: start !important;
+    align-self: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    margin: 0 !important;
+  }
+
+  body .site-header .clinic-wordmark {
+    position: static !important;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    justify-self: center !important;
+    align-self: center !important;
+    transform: none !important;
+    width: 122px !important;
+    max-width: 36vw !important;
+    margin: 0 !important;
+  }
+
+  body .site-header .header-actions {
+    display: block !important;
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    justify-self: end !important;
+    align-self: center !important;
+    width: 118px !important;
+    margin: 0 !important;
+  }
+
+  body .site-header .header-assessment {
+    display: flex !important;
+    width: 118px !important;
+    max-width: 118px !important;
+    min-height: 44px !important;
+    height: 44px !important;
+    padding: 0 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: .64rem !important;
+    line-height: 1.12 !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  body .site-header .site-nav {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+  }
+
+  .home-page .hero {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    border: 0 !important;
+    overflow: visible !important;
+  }
+
+  .home-page .hero__copy {
+    order: 1 !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 0 !important;
+    padding: 30px 20px 26px !important;
+    border: 0 !important;
+  }
+
+  .home-page .hero__visual.home-hero-video {
+    order: 2 !important;
+    width: calc(100% - 24px) !important;
+    min-height: 238px !important;
+    height: clamp(238px, 58vw, 360px) !important;
+    margin: 0 12px 18px !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+  }
+
+  .home-page .home-hero-video .hero__visual-label,
+  .home-page .home-hero-video .hero__visual-copy {
+    display: none !important;
+  }
+
+  .home-page .home-hero-video__media {
+    object-position: center !important;
+  }
+}
+
+@media (max-width: 430px) {
+  body .site-header .site-header__inner {
+    min-height: 72px !important;
+    grid-template-columns: 42px minmax(0,1fr) 108px !important;
+    grid-template-rows: 54px auto !important;
+    padding-inline: 10px !important;
+    gap: 0 6px !important;
+  }
+
+  body .site-header .mobile-menu-toggle {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  body .site-header .clinic-wordmark {
+    width: 112px !important;
+    max-width: 35vw !important;
+  }
+
+  body .site-header .header-actions,
+  body .site-header .header-assessment {
+    width: 108px !important;
+    max-width: 108px !important;
+  }
+
+  body .site-header .header-assessment {
+    min-height: 42px !important;
+    height: 42px !important;
+    padding-inline: 6px !important;
+    font-size: .6rem !important;
+  }
+
+  .home-page .hero__copy {
+    padding: 26px 18px 24px !important;
+  }
+
+  .home-page .hero__visual.home-hero-video {
+    min-height: 220px !important;
+    height: 64vw !important;
+    max-height: 270px !important;
+  }
+}
