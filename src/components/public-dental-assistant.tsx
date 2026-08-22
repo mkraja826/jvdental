@@ -56,10 +56,7 @@ export default function PublicDentalAssistant() {
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
     const headings = Array.from(document.querySelectorAll(".home-page .display-title, .home-page .section-title"));
-    if (!headings.length) {
-      setHeadingVisible(false);
-      return;
-    }
+    if (!headings.length) return;
 
     const visible = new Set<Element>();
     const observer = new IntersectionObserver((entries) => {
@@ -129,7 +126,7 @@ export default function PublicDentalAssistant() {
   }
 
   return (
-    <div className={`public-assistant${open ? " public-assistant--open" : ""}${footerVisible ? " public-assistant--near-footer" : ""}${headingVisible ? " public-assistant--near-heading" : ""}`}>
+    <div className={`public-assistant${open ? " public-assistant--open" : ""}${footerVisible ? " public-assistant--near-footer" : ""}${pathname === "/" && headingVisible ? " public-assistant--near-heading" : ""}`}>
       {open ? (
         <section className="public-assistant__panel" aria-label="JV Dental digital assistant" aria-busy={busy}>
           <header className="public-assistant__header">
