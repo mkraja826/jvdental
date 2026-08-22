@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { HERO_VIDEO_SRC } from "@/lib/hero-video-source";
 
 export function HeroVideoAutoplay() {
   useEffect(() => {
@@ -14,6 +15,13 @@ export function HeroVideoAutoplay() {
     video.setAttribute("muted", "");
     video.setAttribute("playsinline", "");
     video.setAttribute("webkit-playsinline", "");
+
+    // Use a short, motion-rich clip from the supplied implant video so the
+    // hero visibly animates instead of looking like a frozen poster frame.
+    if (video.src !== HERO_VIDEO_SRC) {
+      video.src = HERO_VIDEO_SRC;
+      video.load();
+    }
 
     const play = () => {
       const attempt = video.play();
@@ -31,10 +39,9 @@ export function HeroVideoAutoplay() {
     } else {
       video.addEventListener("loadeddata", play, { once: true });
       video.addEventListener("canplay", play, { once: true });
-      video.load();
     }
 
-    const timer = window.setTimeout(play, 150);
+    const timer = window.setTimeout(play, 120);
     document.addEventListener("visibilitychange", resumeWhenVisible);
     window.addEventListener("pageshow", play);
     window.addEventListener("touchstart", resumeOnFirstInteraction, { once: true, passive: true });
