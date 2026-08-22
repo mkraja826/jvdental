@@ -1,0 +1,1 @@
+Validation marker for JV Dental RC12. This file exists only to trigger pull-request CI for the exact RC12 application tree and must not be merged.
