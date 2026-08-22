@@ -25,6 +25,7 @@ export default function PublicDentalAssistant() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [footerVisible, setFooterVisible] = useState(false);
+  const [headingVisible, setHeadingVisible] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [action, setAction] = useState<{ label: string; href: string } | null>(null);
@@ -49,6 +50,27 @@ export default function PublicDentalAssistant() {
       { rootMargin: "0px 0px 72px 0px", threshold: 0 },
     );
     observer.observe(footer);
+    return () => observer.disconnect();
+  }, [pathname]);
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const headings = Array.from(document.querySelectorAll(".home-page .display-title, .home-page .section-title"));
+    if (!headings.length) {
+      setHeadingVisible(false);
+      return;
+    }
+
+    const visible = new Set<Element>();
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) visible.add(entry.target);
+        else visible.delete(entry.target);
+      }
+      setHeadingVisible(visible.size > 0);
+    }, { threshold: 0.08, rootMargin: "0px 0px -8% 0px" });
+
+    headings.forEach((heading) => observer.observe(heading));
     return () => observer.disconnect();
   }, [pathname]);
 
@@ -107,7 +129,7 @@ export default function PublicDentalAssistant() {
   }
 
   return (
-    <div className={`public-assistant${open ? " public-assistant--open" : ""}${footerVisible ? " public-assistant--near-footer" : ""}`}>
+    <div className={`public-assistant${open ? " public-assistant--open" : ""}${footerVisible ? " public-assistant--near-footer" : ""}${headingVisible ? " public-assistant--near-heading" : ""}`}>
       {open ? (
         <section className="public-assistant__panel" aria-label="JV Dental digital assistant" aria-busy={busy}>
           <header className="public-assistant__header">
