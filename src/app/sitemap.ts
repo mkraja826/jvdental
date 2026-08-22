@@ -18,6 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "cosmetic-dentistry",
     "oral-surgery",
     "teeth-whitening",
+    "aligners-braces",
     "clear-aligners",
     "braces",
     "gum-care",
