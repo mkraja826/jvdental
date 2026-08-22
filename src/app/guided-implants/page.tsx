@@ -19,6 +19,29 @@ const workflow = [
   ["06", "Guided placement & restoration", "The guide supports execution of the approved plan in suitable cases. The provisional and final restorative sequence is then selected according to the individual clinical situation."],
 ] as const;
 
+const workflowMedia = [
+  {
+    src: "https://www.dioimplant.co.in/img/cbct.webp",
+    alt: "CBCT stage in the DIOnavi digital implant workflow from DIO Implant India",
+    label: "01 · CBCT diagnosis",
+  },
+  {
+    src: "https://www.dioimplant.co.in/img/planning.png",
+    alt: "DIOnavi 3D implant planning and virtual simulation from DIO Implant India",
+    label: "02 · 3D simulation & implant planning",
+  },
+  {
+    src: "https://www.dioimplant.co.in/img/digitalguide.png",
+    alt: "DIOnavi custom digital surgical guide from DIO Implant India",
+    label: "03 · Patient-specific surgical guide",
+  },
+  {
+    src: "https://www.dioimplant.co.in/img/restore.webp",
+    alt: "Final implant-supported restoration in the DIO digital workflow",
+    label: "04 · Restoration",
+  },
+] as const;
+
 const dionaviDesign = [
   ["Accurate guidance", "DIO describes a long drill-tube design and double-contact drilling intended to reduce tolerance-related error during guided preparation."],
   ["Metal-sleeve guidance", "The catalogue describes a metal sleeve incorporated into the guide to help maintain the planned drilling path."],
@@ -68,8 +91,8 @@ export default async function GuidedImplantsPage() {
           </div>
           <p className="hero__note">DIOnavi is a planning and guided-surgery technology. It does not replace clinical judgement, and guided surgery is not automatically suitable for every patient.</p>
         </div>
-        <div className="hero__visual guided-implants-visual">
-          <span className="hero__visual-label">DIOnavi · 3D records · digital planning · surgical guide · guided drilling</span>
+        <div className="hero__visual guided-implants-visual" style={{ backgroundImage: "linear-gradient(180deg, rgba(5,25,46,.05), rgba(5,25,46,.46)), url(https://www.dioimplant.co.in/img/Banner.webp)", backgroundSize: "cover", backgroundPosition: "center" }}>
+          <span className="hero__visual-label">Official DIOnavi visual · DIO Implant India</span>
           <div className="hero__visual-copy"><p>Technology</p><strong>{technology?.name ?? "DIOnavi guided implant surgery"}</strong></div>
         </div>
       </section>
@@ -78,6 +101,9 @@ export default async function GuidedImplantsPage() {
         <p className="section-kicker">The DIOnavi workflow</p>
         <h2 className="section-title">Digital planning that continues into surgery.</h2>
         <p className="section-intro">This patient-friendly summary is based on DIO’s DIOnavi materials supplied to JV Dental. The actual sequence, drill protocol, implant system and restorative timing are decided by the treating implantologist for each patient.</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", margin: "30px 0 38px" }}>
+          {workflowMedia.map((item) => <figure key={item.src} style={{ margin: 0, overflow: "hidden", borderRadius: "18px", background: "#f5f7f8", border: "1px solid rgba(9,25,31,.12)" }}><img src={item.src} alt={item.alt} loading="lazy" decoding="async" style={{ width: "100%", height: "auto", display: "block", background: "#fff" }} /><figcaption style={{ padding: "12px 14px 14px", fontSize: ".86rem", color: "#29424a" }}>{item.label} · DIO Implant India</figcaption></figure>)}
+        </div>
         <div className="principle-list guided-workflow">
           {workflow.map(([number, title, body]) => <div className="principle" key={number}><span className="principle__number">{number}</span><div><h3>{title}</h3><p>{body}</p></div></div>)}
         </div>
@@ -88,6 +114,7 @@ export default async function GuidedImplantsPage() {
           <p className="section-kicker">How DIO describes the guided system</p>
           <h2 className="section-title">Accuracy, guidance and cooling built into the DIOnavi protocol.</h2>
           <p className="section-intro">DIO’s India product catalogue presents DIOnavi as an accurate and safe digital implant system and details design features intended to support guided drilling. These are system characteristics, not a guarantee of an individual treatment result.</p>
+          <figure style={{ margin: "28px 0 36px", overflow: "hidden", borderRadius: "20px", background: "#fff", border: "1px solid rgba(255,255,255,.16)" }}><img src="https://www.dioimplant.co.in/img/guide.webp" alt="DIOnavi guided surgery system and surgical guide from DIO Implant India" loading="lazy" decoding="async" style={{ display: "block", width: "100%", height: "auto" }} /><figcaption style={{ padding: "12px 14px 14px", color: "#213a43", fontSize: ".86rem" }}>DIOnavi guided surgery system · DIO Implant India</figcaption></figure>
           <div className="principle-list">
             {dionaviDesign.map(([title, body], index) => <article className="principle" key={title}><span className="principle__number">0{index + 1}</span><div><h3>{title}</h3><p>{body}</p></div></article>)}
           </div>
@@ -101,6 +128,7 @@ export default async function GuidedImplantsPage() {
         <p className="section-kicker">DIOnavi Full Arch</p>
         <h2 className="section-title">A guided digital workflow for selected full-arch implant cases.</h2>
         <p className="section-intro">For suitable edentulous or full-arch cases, DIO describes a dedicated DIOnavi Full Arch workflow that combines pre-planning, guided placement, provisional restoration and a digital path toward the final screw-retained prosthesis.</p>
+        <figure style={{ margin: "28px 0 36px", overflow: "hidden", borderRadius: "20px", background: "#f5f7f8", border: "1px solid rgba(9,25,31,.12)" }}><img src="https://www.dioimplant.co.in/img/navi.webp" alt="DIOnavi digital implant planning interface from DIO Implant India" loading="lazy" decoding="async" style={{ display: "block", width: "100%", height: "auto" }} /><figcaption style={{ padding: "12px 14px 14px", color: "#29424a", fontSize: ".86rem" }}>DIOnavi digital planning platform · DIO Implant India</figcaption></figure>
         <div className="principle-list">
           {fullArch.map(([title, body], index) => <article className="principle" key={title}><span className="principle__number">0{index + 1}</span><div><h3>{title}</h3><p>{body}</p></div></article>)}
         </div>
