@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { getWebsiteMedia } from "@/lib/content/website-media";
 
 type ServiceStep = { title: string; body: string };
+type TechnologyReference = { label: string; href: string; body: string };
 
 type ImplantServicePageProps = {
   eyebrow: string;
@@ -14,6 +15,7 @@ type ImplantServicePageProps = {
   steps: ServiceStep[];
   considerations: string[];
   services?: ServiceStep[];
+  technologyReference?: TechnologyReference;
   showBookingActions?: boolean;
 };
 
@@ -26,6 +28,7 @@ export async function ImplantServicePage({
   steps,
   considerations,
   services,
+  technologyReference,
   showBookingActions = true,
 }: ImplantServicePageProps) {
   const managedHero = await getWebsiteMedia("implant-hero", "Dental implant planning at JV Dental Hyderabad");
@@ -71,6 +74,17 @@ export async function ImplantServicePage({
                 <div className="portal-card__body"><p>{service.body}</p></div>
               </article>
             ))}
+          </div>
+        </section>
+      ) : null}
+
+      {technologyReference ? (
+        <section className="section section--tight">
+          <p className="section-kicker">Technology reference</p>
+          <h2 className="section-title">DIOnavi digital workflow.</h2>
+          <p className="section-intro">{technologyReference.body}</p>
+          <div className="hero__actions">
+            <a className="button button--ghost" href={technologyReference.href} target="_blank" rel="noreferrer">{technologyReference.label} <span aria-hidden="true">↗</span></a>
           </div>
         </section>
       ) : null}
