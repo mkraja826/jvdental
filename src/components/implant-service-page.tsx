@@ -5,6 +5,7 @@ import { getWebsiteMedia } from "@/lib/content/website-media";
 
 type ServiceStep = { title: string; body: string };
 type TechnologyReference = { label: string; href: string; body: string };
+type TechnologyImage = { src: string; alt: string; caption?: string };
 
 type ImplantServicePageProps = {
   eyebrow: string;
@@ -16,6 +17,7 @@ type ImplantServicePageProps = {
   considerations: string[];
   services?: ServiceStep[];
   technologyReference?: TechnologyReference;
+  technologyImage?: TechnologyImage;
   showBookingActions?: boolean;
 };
 
@@ -29,6 +31,7 @@ export async function ImplantServicePage({
   considerations,
   services,
   technologyReference,
+  technologyImage,
   showBookingActions = true,
 }: ImplantServicePageProps) {
   const managedHero = await getWebsiteMedia("implant-hero", "Dental implant planning at JV Dental Hyderabad");
@@ -83,6 +86,7 @@ export async function ImplantServicePage({
           <p className="section-kicker">Technology reference</p>
           <h2 className="section-title">DIOnavi digital workflow.</h2>
           <p className="section-intro">{technologyReference.body}</p>
+          {technologyImage ? <figure style={{ margin: "28px 0 30px", overflow: "hidden", borderRadius: "20px", background: "#f5f7f8", border: "1px solid rgba(9,25,31,.12)" }}><img src={technologyImage.src} alt={technologyImage.alt} loading="lazy" decoding="async" style={{ display: "block", width: "100%", height: "auto", background: "#fff" }} /><figcaption style={{ padding: "12px 14px 14px", color: "#29424a", fontSize: ".86rem" }}>{technologyImage.caption ?? "DIOnavi technology"}</figcaption></figure> : null}
           <div className="hero__actions">
             <a className="button button--ghost" href={technologyReference.href} target="_blank" rel="noreferrer">{technologyReference.label} <span aria-hidden="true">↗</span></a>
           </div>
