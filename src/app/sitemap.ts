@@ -16,6 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "root-canal-treatment",
     "crowns-bridges",
     "cosmetic-dentistry",
+    "oral-surgery",
     "teeth-whitening",
     "clear-aligners",
     "braces",
