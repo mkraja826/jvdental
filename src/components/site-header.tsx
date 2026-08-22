@@ -17,7 +17,7 @@ const treatmentItems = [
   { label: "Oral surgery", href: "/dental-treatments/oral-surgery" },
   { label: "Gum treatment", href: "/dental-treatments/gum-care" },
   { label: "Preventive and general dentistry", href: "/dental-treatments/general-dentistry" },
-  { label: "Aligners and braces", href: "/dental-treatments/clear-aligners" },
+  { label: "Aligners and braces", href: "/dental-treatments/aligners-braces" },
 ] as const;
 
 const navItems: readonly NavItem[] = [
