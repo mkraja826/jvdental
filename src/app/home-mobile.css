@@ -101,7 +101,7 @@
   .home-page .clinic-evidence {
     padding-top: 2px;
     padding-bottom: 28px;
-    gap: 7px;
+    gap: 10px;
   }
 
   .home-page .clinic-evidence__item {
@@ -196,12 +196,74 @@
   }
 }
 
-@media (max-width: 420px) {
-  .home-page .data-strip,
-  .home-page .clinic-evidence {
+@media (max-width: 480px) {
+  /* Keep the four short focus metrics compact, but give visual evidence cards
+     enough horizontal space to read naturally on a phone. */
+  .home-page .data-strip {
     grid-template-columns: 1fr 1fr;
   }
 
+  .home-page .clinic-evidence {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+    padding-inline: 18px;
+    padding-bottom: 34px;
+  }
+
+  .home-page .clinic-evidence__item {
+    display: grid;
+    grid-template-columns: minmax(118px, 42%) minmax(0, 1fr);
+    min-height: 148px;
+    overflow: hidden;
+  }
+
+  .home-page .clinic-evidence__visual {
+    min-height: 148px;
+    height: 100%;
+  }
+
+  .home-page .clinic-evidence__copy {
+    min-width: 0;
+    padding: 17px 16px;
+    align-content: center;
+  }
+
+  .home-page .clinic-evidence__copy small {
+    font-size: .62rem;
+    line-height: 1.35;
+    letter-spacing: .14em;
+  }
+
+  .home-page .clinic-evidence__copy strong {
+    margin-top: 9px;
+    font-size: 1rem;
+    line-height: 1.22;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .home-page .clinic-evidence__copy b {
+    right: 14px;
+    bottom: 13px;
+  }
+
+  .home-page #approach {
+    padding-top: 42px;
+  }
+
+  .home-page .section-title {
+    font-size: clamp(2rem, 9.2vw, 2.35rem);
+    line-height: 1.02;
+    letter-spacing: -.035em;
+  }
+
+  .home-page .section-intro {
+    font-size: .94rem;
+    line-height: 1.58;
+  }
+}
+
+@media (max-width: 420px) {
   .home-page .display-title {
     font-size: clamp(2.2rem, 10.6vw, 2.8rem);
   }
