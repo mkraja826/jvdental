@@ -133,7 +133,7 @@ export function SiteHeader() {
             onClick={closeMenus}
             aria-current={pathname === "/book" ? "page" : undefined}
           >
-            Book Consultation <span aria-hidden="true">→</span>
+            Book Appointment <span aria-hidden="true">→</span>
           </Link>
         </div>
       </div>
