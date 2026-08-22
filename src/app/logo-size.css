@@ -1,24 +1,24 @@
-/* Final header logo sizing: 25% larger than the previous approved sizes. */
+/* Final header logo sizing: 20% larger than the current header logo. */
 .clinic-wordmark {
-  width: 238px;
+  width: 286px;
 }
 
 @media (max-width: 1180px) and (min-width: 721px) {
   .clinic-wordmark {
-    width: 218px;
+    width: 262px;
   }
 }
 
 @media (max-width: 720px) {
   .clinic-wordmark {
-    width: 130px;
-    max-width: 37.5vw;
+    width: 156px;
+    max-width: 45vw;
   }
 }
 
 @media (max-width: 420px) {
   .clinic-wordmark {
-    width: 115px;
-    max-width: 35vw;
+    width: 138px;
+    max-width: 42vw;
   }
 }
