@@ -13,7 +13,7 @@ type AssistantResponse = {
   error?: string;
 };
 
-const DEFAULT_REPLIES = ["Dental implants", "DIOnavi guided implants", "International patients", "Treatment costs"];
+const DEFAULT_REPLIES = ["Dental implants", "Our doctors", "Clinic location", "Why choose JV Dental"];
 
 function withAssistantToken(href: string, visitorToken: string) {
   if (!href.startsWith("/patient/")) return href;
@@ -30,7 +30,7 @@ export default function PublicDentalAssistant() {
   const [action, setAction] = useState<{ label: string; href: string } | null>(null);
   const [quickReplies, setQuickReplies] = useState(DEFAULT_REPLIES);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: "assistant", body: "Hello. I can help with JV Dental, dental implants, DIOnavi guided implant treatment, international-patient planning and general dental questions." },
+    { role: "assistant", body: "Hello. I can help with JV Dental, our doctors and clinic location, dental implants, DIOnavi guided implant treatment, international-patient planning and general dental questions." },
   ]);
   const logRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +51,15 @@ export default function PublicDentalAssistant() {
     observer.observe(footer);
     return () => observer.disconnect();
   }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
 
   if (hidden) return null;
 
@@ -82,10 +91,10 @@ export default function PublicDentalAssistant() {
       if (payload.quickReplies?.length) setQuickReplies(payload.quickReplies.slice(0, 4));
     } catch {
       const visitorToken = window.localStorage.getItem("jv-assistant-visitor");
-      setMessages((current) => [...current, { role: "assistant", body: "The digital assistant is temporarily unavailable. You can still start an implant assessment or use the patient portal to contact the clinic team." }]);
+      setMessages((current) => [...current, { role: "assistant", body: "The digital assistant is temporarily unavailable. You can still book a consultation or use the patient portal to contact the clinic team." }]);
       setAction({
-        label: "Start implant assessment",
-        href: visitorToken ? withAssistantToken("/patient/login?next=/patient/intake", visitorToken) : "/patient/login?next=/patient/intake",
+        label: "Book consultation",
+        href: visitorToken ? withAssistantToken("/book", visitorToken) : "/book",
       });
     } finally {
       setBusy(false);
@@ -100,7 +109,7 @@ export default function PublicDentalAssistant() {
   return (
     <div className={`public-assistant${open ? " public-assistant--open" : ""}${footerVisible ? " public-assistant--near-footer" : ""}`}>
       {open ? (
-        <section className="public-assistant__panel" aria-label="JV Dental digital assistant">
+        <section className="public-assistant__panel" aria-label="JV Dental digital assistant" aria-busy={busy}>
           <header className="public-assistant__header">
             <div><span className="public-assistant__eyebrow">JV Dental</span><strong>Digital patient assistant</strong></div>
             <button type="button" className="public-assistant__close" onClick={() => setOpen(false)} aria-label="Close assistant">×</button>
@@ -121,10 +130,24 @@ export default function PublicDentalAssistant() {
             {quickReplies.map((reply) => <button type="button" key={reply} onClick={() => void ask(reply)} disabled={busy}>{reply}</button>)}
           </div>
 
-          <form className="public-assistant__form" onSubmit={submit}>
+          <form className="public-assistant__form" onSubmit={submit} aria-busy={busy}>
             <label className="sr-only" htmlFor="jv-assistant-input">Ask JV Dental</label>
-            <textarea id="jv-assistant-input" value={input} onChange={(event) => setInput(event.target.value)} placeholder="Ask about implants, guided surgery or planning treatment in Hyderabad…" maxLength={2000} rows={2} disabled={busy} />
-            <button type="submit" disabled={busy || !input.trim()} aria-label="Send question">Send</button>
+            <textarea
+              id="jv-assistant-input"
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+                  event.preventDefault();
+                  void ask(input);
+                }
+              }}
+              placeholder="Ask about tooth pain, our doctors, location, implants or treatment planning…"
+              maxLength={2000}
+              rows={2}
+              disabled={busy}
+            />
+            <button type="submit" disabled={busy || !input.trim()} aria-label="Send question">{busy ? "Wait…" : "Send"}</button>
           </form>
 
           <p className="public-assistant__disclaimer">General information only. The assistant does not diagnose, interpret your scans or prescribe medication. Personal recommendations require clinician review.</p>
