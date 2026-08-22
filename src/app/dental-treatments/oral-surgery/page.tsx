@@ -5,19 +5,25 @@ import { SiteHeader } from "@/components/site-header";
 
 export const metadata: Metadata = {
   title: "Oral Surgery in Hyderabad | JV Dental",
-  description: "Oral surgery assessment and treatment planning at JV Dental in Hyderabad, with diagnosis-led care, appropriate imaging and clear aftercare guidance.",
+  description: "Oral surgery at JV Dental in Hyderabad including extractions, impactions and fracture treatment where clinically indicated, with diagnosis-led planning and aftercare guidance.",
   alternates: { canonical: "/dental-treatments/oral-surgery" },
   openGraph: {
     title: "Oral Surgery in Hyderabad | JV Dental",
-    description: "Oral surgery assessment and treatment planning at JV Dental in Hyderabad, with diagnosis-led care and clear aftercare guidance.",
+    description: "Oral surgery at JV Dental in Hyderabad including extractions, impactions and fracture treatment where clinically indicated.",
     type: "website",
   },
 };
 
+const services = [
+  ["Extractions", "Dental extractions are planned only after assessment of the tooth, surrounding tissues, medical history and appropriate imaging where required."],
+  ["Impactions", "Assessment and surgical management of impacted teeth is planned according to tooth position, surrounding anatomy and individual clinical findings."],
+  ["Fracture treatment", "Fracture assessment and treatment planning is based on the site and extent of injury, symptoms, imaging findings and the structures involved."],
+] as const;
+
 const assessmentReasons = [
   "A tooth or area has persistent pain, swelling or recurrent infection",
   "Your dentist has advised that a surgical assessment may be required",
-  "A dental condition needs imaging and specialist treatment planning",
+  "An impacted tooth or fracture needs clinical and radiographic assessment",
   "You want a clear explanation of surgical and non-surgical options before treatment",
 ] as const;
 
@@ -46,7 +52,7 @@ export default function OralSurgeryPage() {
             <p className="eyebrow">Complete dental care · JV Dental Hyderabad</p>
             <h1 className="display-title">Oral Surgery</h1>
             <p className="hero__description">
-              Diagnosis-led oral surgical care with careful assessment, appropriate imaging, clear treatment planning and structured aftercare.
+              Oral surgical care including extractions, impactions and fracture treatment, planned after careful diagnosis, appropriate imaging and clinical assessment.
             </p>
             <div className="hero__actions">
               <Link className="button" href="/book">Book a consultation <span aria-hidden="true">→</span></Link>
@@ -72,6 +78,19 @@ export default function OralSurgeryPage() {
         <p className="section-intro">
           Oral surgery covers dental conditions that may require a surgical approach after careful diagnosis. Treatment planning depends on the condition being treated, surrounding teeth and tissues, medical history, imaging findings and the safest long-term option for the patient.
         </p>
+      </section>
+
+      <section className="section">
+        <p className="section-kicker">Oral surgery services</p>
+        <h2 className="section-title">Treatment options available after assessment.</h2>
+        <div className="portal-grid international-grid">
+          {services.map(([title, body]) => (
+            <article className="portal-card" key={title}>
+              <div className="portal-card__header"><h3>{title}</h3></div>
+              <div className="portal-card__body"><p>{body}</p></div>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="section">
