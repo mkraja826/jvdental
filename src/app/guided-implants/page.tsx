@@ -6,18 +6,18 @@ import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Guided Dental Implants & DIOnavi in Hyderabad",
-  description: "Learn about digitally guided dental implant planning with DIOnavi at JV Dental near Ameerpet, Hyderabad, for clinically suitable implant cases.",
+  description: "Learn about digitally guided dental implant planning with DIOnavi at JV Dental near Ameerpet, Hyderabad, using a workflow informed by DIO's official DIOnavi planning sequence.",
   alternates: { canonical: "/guided-implants" },
 };
 
 const workflow = [
-  ["01", "Clinical assessment", "The implantologist reviews the dental condition, medical history and treatment goals before deciding whether guided implant surgery is appropriate."],
-  ["02", "CBCT & digital records", "3D radiographic information and digital records are used to understand available bone, anatomy and restorative requirements."],
-  ["03", "Virtual implant planning", "Implant position is planned digitally with the final restorative objective in mind rather than treating placement as an isolated surgical step."],
-  ["04", "DIOnavi guided planning", "For suitable cases, the DIOnavi workflow supports the transition from virtual planning to a patient-specific guided surgical approach."],
-  ["05", "Guided implant placement", "The surgical guide helps transfer the approved digital plan into the clinical procedure. The exact surgical protocol remains case-specific."],
-  ["06", "Restoration & follow-up", "Temporary and final prosthetic stages, healing and review are planned according to the individual case."],
-];
+  ["01", "Clinical assessment", "The implantologist reviews the dental condition, medical history and restorative goals before deciding whether a guided implant approach is appropriate."],
+  ["02", "CT & intra-oral scan records", "DIO's official DIOnavi workflow combines CT data with intra-oral scan information so the anatomy and restorative records can be reviewed together."],
+  ["03", "Virtual crown setup", "The intended crown position is considered first so implant planning can be related to the final restoration, occlusion and available prosthetic space."],
+  ["04", "Implant planning", "The digital plan considers the intended crown, occlusion, available bone and nearby anatomical structures before the proposed implant position is approved."],
+  ["05", "Surgical-guide design", "A patient-specific guide is designed from the approved plan to help transfer the planned implant location and direction to the clinical procedure."],
+  ["06", "Guided placement & restoration", "The guide supports execution of the approved plan in suitable cases. Healing, provisional treatment where appropriate and the final restoration remain individual to the patient."],
+] as const;
 
 export default async function GuidedImplantsPage() {
   const supabase = await createClient();
@@ -45,27 +45,30 @@ export default async function GuidedImplantsPage() {
         <div className="hero__copy">
           <div>
             <p className="eyebrow">Digital guided implant surgery · DIOnavi</p>
-            <h1 className="display-title">Plan digitally.<br /><em>Place precisely.</em></h1>
-            <p className="hero__description">JV Dental uses DIOnavi guided implant technology for suitable implant cases as part of a diagnosis-led digital workflow. Technology supports the plan; clinical judgement determines the treatment.</p>
+            <h1 className="display-title">Plan digitally.<br /><em>Transfer the plan with a guide.</em></h1>
+            <p className="hero__description">JV Dental uses DIOnavi guided implant technology for selected implant cases. The workflow connects 3D diagnostic records, restorative planning, virtual implant positioning and patient-specific surgical-guide design.</p>
             <div className="hero__actions">
               <Link className="button" href="/book">Request guided implant assessment</Link>
               <Link className="button button--ghost" href="/cases">See clinical cases</Link>
             </div>
           </div>
-          <p className="hero__note">Guided surgery is not automatically suitable for every patient. Final treatment decisions require appropriate clinical and radiographic assessment by the treating implantologist.</p>
+          <p className="hero__note">DIOnavi is a planning and guided-surgery technology. It does not replace clinical judgement, and guided surgery is not automatically suitable for every patient.</p>
         </div>
         <div className="hero__visual guided-implants-visual">
-          <span className="hero__visual-label">Real JV Dental DIOnavi planning and surgical-guide imagery will appear here</span>
+          <span className="hero__visual-label">DIOnavi · CT + intra-oral scan · virtual planning · surgical guide</span>
           <div className="hero__visual-copy"><p>Technology</p><strong>{technology?.name ?? "DIOnavi guided implant surgery"}</strong></div>
         </div>
       </section>
 
       <section className="section guided-workflow-section">
-        <p className="section-kicker">The workflow</p>
+        <p className="section-kicker">The DIOnavi workflow</p>
         <h2 className="section-title">Digital planning that continues into surgery.</h2>
-        <p className="section-intro">The value of guided implantology is not the software alone. The records, restorative objective, surgical plan and execution need to remain connected.</p>
+        <p className="section-intro">The sequence below is based on DIO's official DIOnavi workflow and is presented in patient-friendly language. JV Dental adapts the clinical protocol to the individual case.</p>
         <div className="principle-list guided-workflow">
           {workflow.map(([number, title, body]) => <div className="principle" key={number}><span className="principle__number">{number}</span><div><h3>{title}</h3><p>{body}</p></div></div>)}
+        </div>
+        <div className="hero__actions">
+          <a className="button button--ghost" href="https://order.dionavi.com/dionavi-2.do" target="_blank" rel="noreferrer">Official DIOnavi workflow <span aria-hidden="true">↗</span></a>
         </div>
       </section>
 
