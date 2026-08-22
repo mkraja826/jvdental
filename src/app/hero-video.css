@@ -14,6 +14,7 @@
   object-fit: cover;
   object-position: center;
   pointer-events: none;
+  background: #091d31;
 }
 
 .home-page .home-hero-video::before {
@@ -80,8 +81,4 @@
   .home-page .home-hero-video .hero__visual-copy strong {
     font-size: clamp(1.25rem, 6.2vw, 1.65rem);
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .home-page .home-hero-video__media { display: none; }
 }
