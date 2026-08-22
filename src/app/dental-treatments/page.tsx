@@ -37,8 +37,8 @@ const groups = [
   {
     title: "Oral Surgery",
     body: "Clinical assessment and oral surgical care where indicated, with clear treatment planning, appropriate imaging and aftercare guidance.",
-    href: "/book",
-    cta: "Book an assessment →",
+    href: "/dental-treatments/oral-surgery",
+    cta: "Explore treatment →",
   },
   {
     title: "Gum Treatment",
@@ -65,7 +65,7 @@ const individual = [
   ["Root Canal Treatment", "/dental-treatments/root-canal-treatment"],
   ["Crowns and Bridges", "/dental-treatments/crowns-bridges"],
   ["Cosmetic Dentistry", "/dental-treatments/cosmetic-dentistry"],
-  ["Oral Surgery", "/book"],
+  ["Oral Surgery", "/dental-treatments/oral-surgery"],
   ["Gum Treatment", "/dental-treatments/gum-care"],
   ["Preventive and General Dentistry", "/dental-treatments/general-dentistry"],
   ["Aligners and Braces", "/dental-treatments/clear-aligners"],
