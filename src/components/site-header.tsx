@@ -70,7 +70,7 @@ export function SiteHeader() {
             width={480}
             height={242}
             priority
-            sizes="(max-width: 420px) 96px, (max-width: 820px) 104px, (max-width: 1180px) 174px, 198px"
+            sizes="(max-width: 420px) 115px, (max-width: 720px) 130px, (max-width: 1180px) 218px, 238px"
           />
         </Link>
 
