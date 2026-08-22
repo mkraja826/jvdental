@@ -10,28 +10,18 @@ type NavItem = NavLink & { children?: readonly NavLink[] };
 
 const treatmentItems = [
   { label: "All treatments", href: "/dental-treatments" },
-  { label: "Root canal treatment", href: "/dental-treatments#root-canal-treatment" },
-  { label: "Crowns & bridges", href: "/dental-treatments#crowns-bridges" },
-  { label: "Cosmetic dentistry", href: "/dental-treatments#cosmetic-dentistry" },
-  { label: "Veneers", href: "/dental-treatments#veneers" },
-  { label: "Teeth whitening", href: "/dental-treatments#teeth-whitening" },
-  { label: "Dentures", href: "/dental-treatments#dentures" },
-  { label: "Gum treatment", href: "/dental-treatments#gum-treatment" },
-  { label: "Oral surgery & extractions", href: "/dental-treatments#oral-surgery" },
-  { label: "Preventive & general dentistry", href: "/dental-treatments#preventive-dentistry" },
-] as const;
-
-const implantItems = [
   { label: "Dental implants", href: "/dental-implants" },
-  { label: "Guided implants", href: "/guided-implants" },
-  { label: "All-on-4 / All-on-6", href: "/all-on-4-all-on-6" },
-  { label: "Bone grafting for implants", href: "/bone-grafting-dental-implants" },
-  { label: "Book implant consultation", href: "/book" },
+  { label: "Root canal treatment", href: "/dental-treatments/root-canal-treatment" },
+  { label: "Crowns and bridges", href: "/dental-treatments/crowns-bridges" },
+  { label: "Cosmetic dentistry", href: "/dental-treatments/cosmetic-dentistry" },
+  { label: "Oral surgery", href: "/dental-treatments/oral-surgery" },
+  { label: "Gum treatment", href: "/dental-treatments/gum-care" },
+  { label: "Preventive and general dentistry", href: "/dental-treatments/general-dentistry" },
+  { label: "Aligners and braces", href: "/dental-treatments/clear-aligners" },
 ] as const;
 
 const navItems: readonly NavItem[] = [
   { label: "Treatments", href: "/dental-treatments", children: treatmentItems },
-  { label: "Dental Implants", href: "/dental-implants", children: implantItems },
   { label: "About Us", href: "/doctors" },
   { label: "Cases", href: "/cases" },
   { label: "International", href: "/international" },
