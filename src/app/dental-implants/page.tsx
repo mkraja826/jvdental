@@ -3,7 +3,7 @@ import { ImplantServicePage } from "@/components/implant-service-page";
 
 export const metadata: Metadata = {
   title: "Dental Implants in Hyderabad | Near Ameerpet",
-  description: "Dental implant treatment at JV Dental near Ameerpet and S R Nagar, Hyderabad, including conventional and DIOnavi guided surgery, digital planning, full-mouth rehabilitation, bone grafting and implant prosthesis.",
+  description: "Dental implant treatment at JV Dental near Ameerpet and S R Nagar, Hyderabad, including conventional and DIOnavi guided surgery, digital planning, full-mouth rehabilitation, bone grafting, Malo bridge concepts and implant prosthesis.",
   alternates: { canonical: "/dental-implants" },
 };
 
@@ -21,7 +21,7 @@ export default function DentalImplantsPage() {
       { title: "Digital planning & guide fabrication", body: "Digital records and 3D planning are used to plan implant position and fabricate a surgical guide when guided treatment is indicated." },
       { title: "Full-mouth rehabilitation (FMR)", body: "Full-mouth implant rehabilitation may include All-on-4, All-on-6 or implant overdenture concepts depending on anatomy, bite, restorative requirements and case selection." },
       { title: "Bone grafting in compromised cases", body: "Bone grafting may be considered when available bone is inadequate for the planned implant position and the procedure is clinically appropriate." },
-      { title: "Implant prosthesis", body: "Implant-supported crowns, bridges and full-arch prosthetic solutions are planned around function, appearance, cleansability and long-term maintenance." },
+      { title: "Implant prosthesis · Malo bridge", body: "Implant-supported crowns, bridges and full-arch prosthetic solutions, including Malo bridge concepts where clinically appropriate, are planned around function, appearance, cleansability and long-term maintenance." },
     ]}
     steps={[
       { title: "Assessment", body: "The implantologist reviews the missing-tooth area, adjacent teeth, bite, periodontal condition, medical history and treatment goals." },
