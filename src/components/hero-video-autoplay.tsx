@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { HERO_VIDEO_SRC_V2 } from "@/lib/hero-video-source-v2";
 
 export function HeroVideoAutoplay() {
   useEffect(() => {
@@ -15,6 +16,14 @@ export function HeroVideoAutoplay() {
     video.setAttribute("muted", "");
     video.setAttribute("playsinline", "");
     video.setAttribute("webkit-playsinline", "");
+
+    // Replace the tiny placeholder asset with a compact loop taken from the
+    // clinic-supplied implant video. Using an inline source avoids a second
+    // network request and improves autoplay reliability on mobile browsers.
+    if (video.src !== HERO_VIDEO_SRC_V2) {
+      video.src = HERO_VIDEO_SRC_V2;
+      video.load();
+    }
 
     const usable = () =>
       Number.isFinite(video.duration) &&
@@ -59,7 +68,6 @@ export function HeroVideoAutoplay() {
     window.addEventListener("pointerdown", play, { once: true, passive: true });
 
     if (video.readyState >= HTMLMediaElement.HAVE_METADATA) onMetadata();
-    else video.load();
 
     return () => {
       video.removeEventListener("loadedmetadata", onMetadata);
