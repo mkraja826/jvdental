@@ -12,50 +12,50 @@ export const metadata: Metadata = {
 const groups = [
   {
     title: "Dental Implants",
-    body: "Implant dentistry for single or multiple missing teeth, guided implant surgery and full-arch rehabilitation with detailed treatment planning.",
+    body: "Conventional and DIOnavi guided implant surgery, digital planning and guide fabrication, full-mouth rehabilitation, bone grafting and implant prosthesis.",
     href: "/dental-implants",
     cta: "Explore dental implants →",
   },
   {
     title: "Root Canal Treatment",
-    body: "Endodontic care focused on treating infection or inflammation inside a tooth and preserving the natural tooth where clinically appropriate.",
+    body: "Root canal care with post-and-core restoration and periapical surgery available where clinically indicated.",
     href: "/dental-treatments/root-canal-treatment",
     cta: "Explore treatment →",
   },
   {
     title: "Crowns and Bridges",
-    body: "Fixed restorations designed to strengthen compromised teeth or replace selected missing teeth with attention to function, bite and appearance.",
+    body: "Metal-free crowns including zirconia, LAVA and E.max options, together with DMLS crowns and bridge planning where suitable.",
     href: "/dental-treatments/crowns-bridges",
     cta: "Explore treatment →",
   },
   {
     title: "Cosmetic Dentistry",
-    body: "Smile-focused care including aesthetic restorations and professional whitening where clinically suitable and planned around oral health.",
+    body: "Veneers, professional teeth whitening and smile designing planned around oral health, tooth condition and individual smile goals.",
     href: "/dental-treatments/cosmetic-dentistry",
     cta: "Explore treatment →",
   },
   {
     title: "Oral Surgery",
-    body: "Clinical assessment and oral surgical care where indicated, with clear treatment planning, appropriate imaging and aftercare guidance.",
+    body: "Oral surgical assessment and care including extractions, impactions and fracture treatment where clinically indicated.",
     href: "/dental-treatments/oral-surgery",
     cta: "Explore treatment →",
   },
   {
     title: "Gum Treatment",
-    body: "Assessment and treatment for gum inflammation and periodontal concerns around natural teeth and dental implants.",
+    body: "Periodontal care including laser surgery, flap surgery and gum depigmentation where clinically appropriate.",
     href: "/dental-treatments/gum-care",
     cta: "Explore treatment →",
   },
   {
     title: "Preventive and General Dentistry",
-    body: "Routine dental examinations, preventive care, professional cleaning and restorative treatment to support long-term oral health.",
+    body: "Fillings, oral prophylaxis, pit and fissure sealants and fluoride applications to support long-term oral health.",
     href: "/dental-treatments/general-dentistry",
     cta: "Explore treatment →",
   },
   {
     title: "Aligners and Braces",
-    body: "Clear aligners and fixed braces for suitable tooth-alignment and bite concerns following clinical and orthodontic assessment.",
-    href: "/dental-treatments/clear-aligners",
+    body: "Metal braces, ceramic braces, Invisalign and Spark aligners following orthodontic assessment and treatment planning.",
+    href: "/dental-treatments/aligners-braces",
     cta: "Explore treatment →",
   },
 ] as const;
@@ -68,7 +68,7 @@ const individual = [
   ["Oral Surgery", "/dental-treatments/oral-surgery"],
   ["Gum Treatment", "/dental-treatments/gum-care"],
   ["Preventive and General Dentistry", "/dental-treatments/general-dentistry"],
-  ["Aligners and Braces", "/dental-treatments/clear-aligners"],
+  ["Aligners and Braces", "/dental-treatments/aligners-braces"],
 ] as const;
 
 export default function DentalTreatmentsPage() {
