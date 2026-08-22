@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import PublicDentalAssistant from "@/components/public-dental-assistant";
+import { HeroVideoAutoplay } from "@/components/hero-video-autoplay";
 import { SiteStructuredData } from "@/components/site-structured-data";
 import "./globals.css";
 import "./assistant.css";
@@ -84,6 +85,7 @@ export default function RootLayout({
       <body>
         <SiteStructuredData />
         {children}
+        <HeroVideoAutoplay />
         <PublicDentalAssistant />
       </body>
     </html>
