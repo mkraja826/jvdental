@@ -28,6 +28,11 @@ export default function DentalImplantsPage() {
       href: "https://order.dionavi.com/dionavi-2.do",
       body: "DIO's official DIOnavi material describes a digital sequence that merges CT and intra-oral scan information, sets up the intended crown, evaluates prosthetic and anatomical factors, plans implant position and designs a surgical guide to transfer the plan. JV Dental uses DIOnavi as a planning and guided-surgery technology for selected cases; clinical suitability is determined by the treating implantologist.",
     }}
+    technologyImage={{
+      src: "https://www.dioimplant.co.in/img/digitalguide.png",
+      alt: "DIOnavi patient-specific digital surgical guide from DIO Implant India",
+      caption: "DIOnavi patient-specific surgical guide · DIO Implant India",
+    }}
     steps={[
       { title: "Assessment", body: "The implantologist reviews the missing-tooth area, adjacent teeth, bite, periodontal condition, medical history and treatment goals." },
       { title: "Imaging & digital records", body: "Appropriate radiographic and digital records help evaluate bone volume, anatomical structures and restorative space. For DIOnavi cases, CT and intra-oral scan information form part of the digital planning workflow." },
