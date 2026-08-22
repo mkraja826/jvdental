@@ -33,7 +33,8 @@
   .public-assistant__launcher{align-self:flex-end;width:48px;min-width:48px;height:48px;min-height:48px;padding:0;border-radius:50%;justify-content:center;overflow:hidden}
   .public-assistant__launcher .public-assistant__label{display:none}
   .public-assistant__mark{width:28px;height:28px}
-  .public-assistant--near-footer:not(.public-assistant--open){opacity:0;transform:translateY(8px);pointer-events:none}
+  .public-assistant--near-footer:not(.public-assistant--open),
+  .public-assistant--near-heading:not(.public-assistant--open){opacity:0;transform:translateY(8px);pointer-events:none}
   .public-assistant__header{padding:16px 16px 14px}
   .public-assistant__header strong{font-size:1.12rem}
   .public-assistant__log{padding:16px;gap:12px}
