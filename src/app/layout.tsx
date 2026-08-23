@@ -27,6 +27,7 @@ import "./logo-size.css";
 import "./ui-polish-v2.css";
 import "./hero-video.css";
 import "./mobile-hero-recovery.css";
+import "./hero-stable.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com");
 
