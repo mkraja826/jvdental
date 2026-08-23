@@ -1,84 +1,43 @@
 "use client";
 
 import { useEffect } from "react";
-import { HERO_VIDEO_SRC_V2 } from "@/lib/hero-video-source-v2";
+
+const DIO_VIDEO_ID = "89s6z6wv2gc";
 
 export function HeroVideoAutoplay() {
   useEffect(() => {
-    const video = document.querySelector<HTMLVideoElement>(".home-hero-video__media");
-    const wrapper = video?.closest<HTMLElement>(".home-hero-video");
-    if (!video || !wrapper) return;
+    const wrapper = document.querySelector<HTMLElement>(".home-hero-video");
+    const localVideo = wrapper?.querySelector<HTMLVideoElement>(".home-hero-video__media");
+    if (!wrapper) return;
 
-    video.muted = true;
-    video.defaultMuted = true;
-    video.playsInline = true;
-    video.preload = "auto";
-    video.setAttribute("muted", "");
-    video.setAttribute("playsinline", "");
-    video.setAttribute("webkit-playsinline", "");
-
-    // Replace the tiny placeholder asset with a compact loop taken from the
-    // clinic-supplied implant video. Using an inline source avoids a second
-    // network request and improves autoplay reliability on mobile browsers.
-    if (video.src !== HERO_VIDEO_SRC_V2) {
-      video.src = HERO_VIDEO_SRC_V2;
-      video.load();
+    // Stop using the experimental short/local animation. The clinic-supplied
+    // footage corresponds to DIO's full official UV Implant video, so render
+    // that complete source without crop/zoom effects.
+    if (localVideo) {
+      localVideo.pause();
+      localVideo.removeAttribute("src");
+      localVideo.querySelectorAll("source").forEach((source) => source.removeAttribute("src"));
+      localVideo.load();
+      localVideo.hidden = true;
     }
 
-    const usable = () =>
-      Number.isFinite(video.duration) &&
-      video.duration >= 4 &&
-      video.videoWidth > 0 &&
-      video.videoHeight > 0;
+    wrapper.querySelector(".home-hero-video__iframe")?.remove();
 
-    const revealIfPlaying = () => {
-      if (usable() && !video.paused && !video.ended) {
-        wrapper.classList.add("is-video-playing");
-      }
-    };
+    const iframe = document.createElement("iframe");
+    iframe.className = "home-hero-video__iframe";
+    iframe.title = "DIO UV Implant technology";
+    iframe.src = `https://www.youtube-nocookie.com/embed/${DIO_VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${DIO_VIDEO_ID}&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3`;
+    iframe.allow = "autoplay; encrypted-media; picture-in-picture";
+    iframe.referrerPolicy = "strict-origin-when-cross-origin";
+    iframe.setAttribute("allowfullscreen", "");
+    iframe.setAttribute("loading", "eager");
 
-    const hideVideo = () => wrapper.classList.remove("is-video-playing");
-
-    const play = () => {
-      if (!usable()) return;
-      const attempt = video.play();
-      if (attempt) attempt.then(revealIfPlaying).catch(hideVideo);
-    };
-
-    const onMetadata = () => {
-      if (!usable()) {
-        hideVideo();
-        return;
-      }
-      play();
-    };
-
-    const resumeWhenVisible = () => {
-      if (!document.hidden) play();
-    };
-
-    video.addEventListener("loadedmetadata", onMetadata);
-    video.addEventListener("canplay", play);
-    video.addEventListener("playing", revealIfPlaying);
-    video.addEventListener("error", hideVideo);
-    video.addEventListener("stalled", hideVideo);
-    document.addEventListener("visibilitychange", resumeWhenVisible);
-    window.addEventListener("pageshow", play);
-    window.addEventListener("touchstart", play, { once: true, passive: true });
-    window.addEventListener("pointerdown", play, { once: true, passive: true });
-
-    if (video.readyState >= HTMLMediaElement.HAVE_METADATA) onMetadata();
+    wrapper.appendChild(iframe);
+    wrapper.classList.add("has-full-dio-video");
 
     return () => {
-      video.removeEventListener("loadedmetadata", onMetadata);
-      video.removeEventListener("canplay", play);
-      video.removeEventListener("playing", revealIfPlaying);
-      video.removeEventListener("error", hideVideo);
-      video.removeEventListener("stalled", hideVideo);
-      document.removeEventListener("visibilitychange", resumeWhenVisible);
-      window.removeEventListener("pageshow", play);
-      window.removeEventListener("touchstart", play);
-      window.removeEventListener("pointerdown", play);
+      iframe.remove();
+      wrapper.classList.remove("has-full-dio-video");
     };
   }, []);
 
