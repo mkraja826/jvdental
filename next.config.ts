@@ -16,7 +16,7 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
-  "frame-src https://api.razorpay.com https://*.razorpay.com",
+  "frame-src https://api.razorpay.com https://*.razorpay.com https://www.youtube-nocookie.com https://www.youtube.com",
   "frame-ancestors 'none'",
 ].join("; ");
 
