@@ -1,0 +1,106 @@
+/* Stable homepage hero: no zoom/slide animation and no cropped video frame. */
+.home-page .hero,
+.home-page .hero__copy,
+.home-page .hero__visual,
+.home-page .home-hero-video,
+.home-page .home-hero-video__media,
+.home-page .hero__visual-label,
+.home-page .hero__visual-copy {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.home-page .hero {
+  overflow: visible !important;
+}
+
+.home-page .hero__copy {
+  overflow: visible !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Keep the clinic-supplied square video in its original framing. */
+.home-page .home-hero-video {
+  position: relative !important;
+  overflow: hidden !important;
+  background-color: #071f35 !important;
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.home-page .home-hero-video__media {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  background: #071f35 !important;
+}
+
+/* Do not cover the supplied video with decorative text panels. */
+.home-page .home-hero-video .hero__visual-label,
+.home-page .home-hero-video .hero__visual-copy {
+  display: none !important;
+}
+
+@media (min-width: 901px) {
+  .home-page .hero {
+    align-items: center !important;
+  }
+
+  .home-page .home-hero-video {
+    width: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    align-self: center !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-page .hero {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .home-page .hero__copy {
+    order: 1 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .home-page .hero__visual.home-hero-video {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: none !important;
+    aspect-ratio: 1 / 1 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .home-page .home-hero-video__media {
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .home-page .hero__copy {
+    padding: 24px 18px 24px !important;
+  }
+
+  .home-page .hero__visual.home-hero-video {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    aspect-ratio: 1 / 1 !important;
+  }
+}
