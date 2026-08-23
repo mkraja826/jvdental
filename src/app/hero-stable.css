@@ -1,9 +1,11 @@
-/* Stable homepage hero: no zoom/slide animation and no cropped video frame. */
+/* Final homepage hero media rules.
+   Show the complete DIO video without zoom, crop, slide or decorative overlays. */
 .home-page .hero,
 .home-page .hero__copy,
 .home-page .hero__visual,
 .home-page .home-hero-video,
 .home-page .home-hero-video__media,
+.home-page .home-hero-video__iframe,
 .home-page .hero__visual-label,
 .home-page .hero__visual-copy {
   animation: none !important;
@@ -21,7 +23,6 @@
   visibility: visible !important;
 }
 
-/* Keep the clinic-supplied square video in its original framing. */
 .home-page .home-hero-video {
   position: relative !important;
   overflow: hidden !important;
@@ -31,19 +32,27 @@
   background-repeat: no-repeat !important;
 }
 
+/* The old local placeholder is intentionally hidden. */
 .home-page .home-hero-video__media {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
-  object-position: center center !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  background: #071f35 !important;
+  display: none !important;
 }
 
-/* Do not cover the supplied video with decorative text panels. */
+/* Full official DIO video. No object-fit/cover crop is applied. */
+.home-page .home-hero-video__iframe {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 3 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  background: #000 !important;
+}
+
+.home-page .home-hero-video::before,
+.home-page .home-hero-video::after,
 .home-page .home-hero-video .hero__visual-label,
 .home-page .home-hero-video .hero__visual-copy {
   display: none !important;
@@ -86,16 +95,11 @@
     margin: 0 !important;
     border-radius: 0 !important;
   }
-
-  .home-page .home-hero-video__media {
-    object-fit: contain !important;
-    object-position: center !important;
-  }
 }
 
 @media (max-width: 430px) {
   .home-page .hero__copy {
-    padding: 24px 18px 24px !important;
+    padding: 24px 18px !important;
   }
 
   .home-page .hero__visual.home-hero-video {
