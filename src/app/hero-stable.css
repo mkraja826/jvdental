@@ -1,11 +1,10 @@
 /* Final homepage hero media rules.
-   Show the complete DIO video without zoom, crop, slide or decorative overlays. */
+   Play the clinic-supplied original video as-is: no crop, zoom, slide or overlays. */
 .home-page .hero,
 .home-page .hero__copy,
 .home-page .hero__visual,
 .home-page .home-hero-video,
 .home-page .home-hero-video__media,
-.home-page .home-hero-video__iframe,
 .home-page .hero__visual-label,
 .home-page .hero__visual-copy {
   animation: none !important;
@@ -32,23 +31,25 @@
   background-repeat: no-repeat !important;
 }
 
-/* The old local placeholder is intentionally hidden. */
+/* The exact clinic-uploaded MP4 fills the square frame without cropping. */
 .home-page .home-hero-video__media {
-  display: none !important;
-}
-
-/* Full official DIO video. No object-fit/cover crop is applied. */
-.home-page .home-hero-video__iframe {
   position: absolute !important;
   inset: 0 !important;
-  z-index: 3 !important;
+  z-index: 1 !important;
   display: block !important;
   width: 100% !important;
   height: 100% !important;
-  border: 0 !important;
+  object-fit: contain !important;
+  object-position: center center !important;
   opacity: 1 !important;
   visibility: visible !important;
-  background: #000 !important;
+  background: #071f35 !important;
+  pointer-events: none !important;
+}
+
+/* Disable the previous external-video experiment if stale markup is cached. */
+.home-page .home-hero-video__iframe {
+  display: none !important;
 }
 
 .home-page .home-hero-video::before,
