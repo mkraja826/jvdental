@@ -5,16 +5,16 @@ import CaseMediaUploader from "@/app/clinic/cases/[id]/CaseMediaUploader";
 import { requireClinicalPublisher } from "@/lib/content/permissions";
 
 const stages = [
-  ["presentation", "Presentation"],
-  ["diagnosis", "Diagnosis"],
-  ["cbct", "CBCT"],
-  ["intraoral_scan", "Intraoral scan"],
-  ["digital_planning", "Digital planning"],
+  ["presentation", "Before treatment"],
+  ["diagnosis", "Examination / diagnosis"],
+  ["cbct", "X-ray / CBCT"],
+  ["intraoral_scan", "Scan"],
+  ["digital_planning", "Treatment planning"],
   ["dionavi_planning", "DIOnavi planning"],
   ["surgical_guide", "Surgical guide"],
   ["implant_placement", "Implant placement"],
-  ["temporary_prosthesis", "Temporary prosthesis"],
-  ["prosthetic_phase", "Prosthetic phase"],
+  ["temporary_prosthesis", "Temporary teeth"],
+  ["prosthetic_phase", "Final teeth preparation"],
   ["final_result", "Final result"],
   ["follow_up", "Follow-up"],
 ];
@@ -35,6 +35,10 @@ export default async function SignatureCaseEditor({ params, searchParams }: { pa
     supabase.from("signature_case_media").select("id,stage_id,media_type,storage_path,alt_text,caption").eq("signature_case_id", id).order("created_at", { ascending: true }),
   ]);
 
+  const photoCount = caseMedia?.length ?? 0;
+  const stageCount = caseStages?.length ?? 0;
+  const readyToReview = photoCount > 0;
+
   return (
     <main className="portal-shell">
       <header className="portal-header">
@@ -45,89 +49,83 @@ export default async function SignatureCaseEditor({ params, searchParams }: { pa
         <aside className="portal-sidebar">
           <nav aria-label="Case editor navigation">
             <Link href="/clinic/cases">All cases</Link>
-            <Link href={`/cases/${item.slug}`}>Public preview</Link>
-            <Link href="/guided-implants">DIOnavi page</Link>
+            <Link href={`/cases/${item.slug}`}>Preview case</Link>
           </nav>
         </aside>
         <section className="portal-main">
-          <p className="portal-overline">Signature case editor</p>
+          <p className="portal-overline">Case workspace</p>
           <h1 className="portal-title">{item.title}</h1>
-          <p className="portal-subtitle">{item.treatment_type} {item.dionavi_used ? "· DIOnavi guided" : item.guided_implant ? "· Guided implant workflow" : ""}</p>
-          {query.error === "consent_required" ? <p style={{ color: "var(--danger)" }}>Website publication is blocked until patient website consent is recorded.</p> : null}
+          <p className="portal-subtitle">{item.treatment_type}</p>
 
-          <div className="portal-grid">
-            <article className="portal-card">
-              <div className="portal-card__header"><h2>Publication</h2><span className="status-pill">{item.publication_status}</span></div>
-              <div className="portal-card__body">
-                <p>Website consent: <strong>{item.consent_for_website ? "Recorded" : "Not recorded"}</strong></p>
-                <form action={setCasePublication} style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                  <input type="hidden" name="case_id" value={item.id} />
-                  <select name="publication_status" defaultValue={item.publication_status}>
-                    <option value="draft">Draft</option>
-                    <option value="review">Review</option>
-                    <option value="published">Published</option>
-                    <option value="archived">Archived</option>
-                  </select>
-                  <button className="button button--ghost" type="submit">Update publication</button>
-                </form>
-              </div>
-            </article>
-
-            <article className="portal-card">
-              <div className="portal-card__header"><h2>Add clinical stage</h2><span className="status-pill">{caseStages?.length ?? 0} stages</span></div>
-              <div className="portal-card__body">
-                <form action={addCaseStage} style={{ display: "grid", gap: 16 }}>
-                  <input type="hidden" name="case_id" value={item.id} />
-                  <label>Stage
-                    <select name="stage_type" defaultValue={item.dionavi_used ? "dionavi_planning" : "diagnosis"}>
-                      {stages.map(([value, label]) => <option value={value} key={value}>{label}</option>)}
-                    </select>
-                  </label>
-                  <label>Stage title<input name="title" required placeholder="Virtual implant planning" /></label>
-                  <label>Clinical explanation<textarea name="body" rows={6} placeholder="Explain what was assessed, planned or performed at this stage." /></label>
-                  <button className="button" type="submit">Add stage</button>
-                </form>
-              </div>
-            </article>
-          </div>
-
-          <div className="portal-grid" style={{ marginTop: 24 }}>
-            <article className="portal-card">
-              <div className="portal-card__header"><h2>Upload public case media</h2><span className="status-pill">{caseMedia?.length ?? 0} files</span></div>
-              <div className="portal-card__body">
-                <CaseMediaUploader caseId={item.id} stages={(caseStages ?? []).map((stage) => ({ id: stage.id, title: stage.title, stage_type: stage.stage_type }))} />
-              </div>
-            </article>
-            <article className="portal-card">
-              <div className="portal-card__header"><h2>Media register</h2><span className="status-pill">De-identified</span></div>
-              <div className="portal-card__body">
-                <div className="status-list">
-                  {(caseMedia ?? []).map((asset) => (
-                    <div className="status-row" key={asset.id}>
-                      <strong>{asset.media_type.replaceAll("_", " ")}</strong>
-                      <span>{asset.caption ?? asset.alt_text ?? "No caption"}</span>
-                      <span className="status-pill">{asset.stage_id ? "Stage linked" : "General"}</span>
-                    </div>
-                  ))}
-                  {!caseMedia?.length ? <p>No public media uploaded yet.</p> : null}
-                </div>
-              </div>
-            </article>
-          </div>
-
-          <article className="portal-card" style={{ marginTop: 24 }}>
-            <div className="portal-card__header"><h2>Clinical story</h2><span className="status-pill">Ordered</span></div>
+          <article className="portal-card" style={{ marginTop: 22 }}>
+            <div className="portal-card__header"><h2>What to do</h2><span className="status-pill">{item.publication_status === "published" ? "Published" : "In progress"}</span></div>
             <div className="portal-card__body">
               <div className="status-list">
+                <div className="status-row"><strong>1. Add treatment photos</strong><span>{photoCount ? `${photoCount} added` : "Start here"}</span><span className="status-pill">{photoCount ? "Done" : "Next"}</span></div>
+                <div className="status-row"><strong>2. Describe important steps</strong><span>{stageCount ? `${stageCount} added` : "Optional"}</span><span className="status-pill">{stageCount ? "Done" : "Later"}</span></div>
+                <div className="status-row"><strong>3. Preview and publish</strong><span>{readyToReview ? "Ready to review" : "After photos"}</span><span className="status-pill">{item.publication_status}</span></div>
+              </div>
+            </div>
+          </article>
+
+          {query.error === "consent_required" ? <p style={{ color: "var(--danger)", marginTop: 18 }}>Patient website consent must be recorded before this case can be published.</p> : null}
+
+          <article className="portal-card" style={{ marginTop: 24 }}>
+            <div className="portal-card__header"><h2>1 · Add treatment photos</h2><span className="status-pill">{photoCount} photos</span></div>
+            <div className="portal-card__body">
+              <p style={{ color: "var(--muted)", marginTop: 0 }}>Choose the complete case photos together in treatment order. You can organise them into treatment steps afterward.</p>
+              <CaseMediaUploader caseId={item.id} stages={(caseStages ?? []).map((stage) => ({ id: stage.id, title: stage.title, stage_type: stage.stage_type }))} />
+            </div>
+          </article>
+
+          <article className="portal-card" style={{ marginTop: 24 }}>
+            <div className="portal-card__header"><h2>2 · Describe treatment steps</h2><span className="status-pill">{stageCount} steps</span></div>
+            <div className="portal-card__body">
+              <p style={{ color: "var(--muted)", marginTop: 0 }}>Add only the important steps a patient should understand. You do not need to describe every photo.</p>
+              <form action={addCaseStage} style={{ display: "grid", gap: 16 }}>
+                <input type="hidden" name="case_id" value={item.id} />
+                <label>What happened?
+                  <select name="stage_type" defaultValue={item.dionavi_used ? "dionavi_planning" : "presentation"}>
+                    {stages.map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+                  </select>
+                </label>
+                <label>Short heading<input name="title" required placeholder="Implant placement" /></label>
+                <label>Explain this step (optional)<textarea name="body" rows={4} placeholder="A short patient-friendly explanation." /></label>
+                <button className="button" type="submit">Add treatment step</button>
+              </form>
+
+              {stageCount ? <div className="status-list" style={{ marginTop: 20 }}>
                 {(caseStages ?? []).map((stage, index) => (
                   <div className="status-row" key={stage.id}>
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <div><strong>{stage.title}</strong><br /><small>{stage.stage_type.replaceAll("_", " ")}</small>{stage.body ? <p>{stage.body}</p> : null}</div>
-                    <span className="status-pill">{stage.stage_type === "dionavi_planning" ? "DIOnavi" : "Clinical"}</span>
+                    <span>{index + 1}</span>
+                    <div><strong>{stage.title}</strong>{stage.body ? <><br /><small>{stage.body}</small></> : null}</div>
+                    <span className="status-pill">Step {index + 1}</span>
                   </div>
                 ))}
-                {!caseStages?.length ? <p>Add the stages in the order the treatment occurred.</p> : null}
+              </div> : null}
+            </div>
+          </article>
+
+          <article className="portal-card" style={{ marginTop: 24, marginBottom: 32 }}>
+            <div className="portal-card__header"><h2>3 · Review & publish</h2><span className="status-pill">{item.publication_status}</span></div>
+            <div className="portal-card__body">
+              <p style={{ color: "var(--muted)", marginTop: 0 }}>Check the case exactly as a website visitor will see it. Publish only after the photos, treatment details and patient consent are confirmed.</p>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 18 }}>
+                <Link className="button button--ghost" href={`/cases/${item.slug}`}>Preview on website →</Link>
               </div>
+              <p>Patient website consent: <strong>{item.consent_for_website ? "Recorded ✓" : "Not recorded"}</strong></p>
+              <form action={setCasePublication} style={{ display: "grid", gap: 12 }}>
+                <input type="hidden" name="case_id" value={item.id} />
+                <label>Case status
+                  <select name="publication_status" defaultValue={item.publication_status}>
+                    <option value="draft">Keep private</option>
+                    <option value="review">Ready for doctor review</option>
+                    <option value="published">Publish on website</option>
+                    <option value="archived">Remove from website</option>
+                  </select>
+                </label>
+                <button className="button" type="submit">Save case status</button>
+              </form>
             </div>
           </article>
         </section>
