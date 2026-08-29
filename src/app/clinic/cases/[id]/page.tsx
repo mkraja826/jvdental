@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { addCaseStage, setCasePublication } from "@/app/clinic/cases/actions";
 import CaseMediaUploader from "@/app/clinic/cases/[id]/CaseMediaUploader";
+import DeleteDraftButton from "@/app/clinic/cases/[id]/DeleteDraftButton";
 import { requireClinicalPublisher } from "@/lib/content/permissions";
 
 const stages = [
@@ -69,6 +70,8 @@ export default async function SignatureCaseEditor({ params, searchParams }: { pa
           </article>
 
           {query.error === "consent_required" ? <p style={{ color: "var(--danger)", marginTop: 18 }}>Patient website consent must be recorded before this case can be published.</p> : null}
+          {query.error === "delete_storage_failed" || query.error === "delete_failed" ? <p style={{ color: "var(--danger)", marginTop: 18 }}>The draft could not be deleted completely. Please try again.</p> : null}
+          {query.error === "delete_not_allowed" ? <p style={{ color: "var(--danger)", marginTop: 18 }}>Only private drafts can be permanently deleted.</p> : null}
 
           <article className="portal-card" style={{ marginTop: 24 }}>
             <div className="portal-card__header"><h2>1 · Add treatment photos</h2><span className="status-pill">{photoCount} photos</span></div>
@@ -106,7 +109,7 @@ export default async function SignatureCaseEditor({ params, searchParams }: { pa
             </div>
           </article>
 
-          <article className="portal-card" style={{ marginTop: 24, marginBottom: 32 }}>
+          <article className="portal-card" style={{ marginTop: 24, marginBottom: item.publication_status === "draft" ? 16 : 32 }}>
             <div className="portal-card__header"><h2>3 · Review & publish</h2><span className="status-pill">{item.publication_status}</span></div>
             <div className="portal-card__body">
               <p style={{ color: "var(--muted)", marginTop: 0 }}>Check the case exactly as a website visitor will see it. Publish only after the photos, treatment details and patient consent are confirmed.</p>
@@ -128,6 +131,16 @@ export default async function SignatureCaseEditor({ params, searchParams }: { pa
               </form>
             </div>
           </article>
+
+          {item.publication_status === "draft" ? (
+            <article className="portal-card" style={{ marginBottom: 32, borderColor: "color-mix(in srgb, var(--danger) 28%, var(--clinic-border))" }}>
+              <div className="portal-card__header"><h2>Delete this draft</h2><span className="status-pill">Draft only</span></div>
+              <div className="portal-card__body">
+                <p style={{ color: "var(--muted)", marginTop: 0 }}>Use this only if the case was created by mistake or you want to start again.</p>
+                <DeleteDraftButton caseId={item.id} caseTitle={item.title} />
+              </div>
+            </article>
+          ) : null}
         </section>
       </div>
     </main>
