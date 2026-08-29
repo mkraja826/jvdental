@@ -113,3 +113,46 @@ export async function setCasePublication(formData: FormData) {
   revalidatePath(`/clinic/cases/${caseId}`);
   revalidatePath("/cases");
 }
+
+export async function deleteDraftCase(formData: FormData) {
+  const { supabase } = await requireClinicalPublisher();
+  const caseId = String(formData.get("case_id") ?? "");
+  if (!caseId) return;
+
+  const { data: item } = await supabase
+    .from("signature_cases")
+    .select("id,publication_status")
+    .eq("id", caseId)
+    .maybeSingle();
+
+  if (!item || item.publication_status !== "draft") {
+    redirect(`/clinic/cases/${caseId}?error=delete_not_allowed`);
+  }
+
+  const { data: media } = await supabase
+    .from("signature_case_media")
+    .select("storage_path")
+    .eq("signature_case_id", caseId);
+
+  const paths = (media ?? []).map((asset) => asset.storage_path).filter(Boolean);
+  if (paths.length) {
+    const { error: storageError } = await supabase.storage.from("public-content").remove(paths);
+    if (storageError) {
+      redirect(`/clinic/cases/${caseId}?error=delete_storage_failed`);
+    }
+  }
+
+  const { error } = await supabase
+    .from("signature_cases")
+    .delete()
+    .eq("id", caseId)
+    .eq("publication_status", "draft");
+
+  if (error) {
+    redirect(`/clinic/cases/${caseId}?error=delete_failed`);
+  }
+
+  revalidatePath("/clinic/cases");
+  revalidatePath("/cases");
+  redirect("/clinic/cases?deleted=1");
+}
