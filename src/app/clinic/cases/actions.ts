@@ -88,6 +88,19 @@ export async function addCaseStage(formData: FormData) {
   revalidatePath("/cases");
 }
 
+export async function setCaseConsent(formData: FormData) {
+  const { supabase } = await requireClinicalPublisher();
+  const caseId = String(formData.get("case_id") ?? "");
+  if (!caseId) return;
+
+  const consent = formData.get("consent_for_website") === "on";
+  await supabase.from("signature_cases").update({ consent_for_website: consent }).eq("id", caseId);
+
+  revalidatePath(`/clinic/cases/${caseId}`);
+  revalidatePath("/clinic/cases");
+  revalidatePath("/cases");
+}
+
 export async function setCasePublication(formData: FormData) {
   const { supabase } = await requireClinicalPublisher();
   const caseId = String(formData.get("case_id") ?? "");
