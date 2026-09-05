@@ -8,7 +8,7 @@ export default async function SignatureCasesPage({ searchParams }: { searchParam
   const params = await searchParams;
   const { data: cases } = await supabase
     .from("signature_cases")
-    .select("id,title,slug,treatment_type,publication_status,featured,guided_implant,dionavi_used,consent_for_website,updated_at")
+    .select("id,title,slug,treatment_type,publication_status,featured,guided_implant,dionavi_used,updated_at")
     .order("updated_at", { ascending: false })
     .limit(50);
 
@@ -29,12 +29,12 @@ export default async function SignatureCasesPage({ searchParams }: { searchParam
         <section className="portal-main">
           <p className="portal-overline">Clinical portfolio</p>
           <h1 className="portal-title">Patient case journeys.</h1>
-          <p className="portal-subtitle">Create the case first, then add and arrange the treatment photos, review the website presentation, and publish when ready.</p>
+          <p className="portal-subtitle">Create a case, add the treatment photos in order, explain each photo, review the story, and publish when ready.</p>
           {params.error ? <p style={{ color: "var(--danger)" }}>The case could not be created. Check the case title and treatment type.</p> : null}
 
           <div className="portal-grid">
             <article className="portal-card">
-              <div className="portal-card__header"><h2>Step 1 · Create a case</h2><span className="status-pill">Draft first</span></div>
+              <div className="portal-card__header"><h2>Create a case</h2><span className="status-pill">Starts as draft</span></div>
               <div className="portal-card__body">
                 <form action={createSignatureCase} style={{ display: "grid", gap: 18 }}>
                   <label>Case title<input name="title" required minLength={5} placeholder="Guided implant placement" /></label>
@@ -57,7 +57,7 @@ export default async function SignatureCasesPage({ searchParams }: { searchParam
                   </details>
 
                   <input type="hidden" name="publication_status" value="draft" />
-                  <p style={{ color: "var(--muted)", fontSize: ".82rem", lineHeight: 1.6, margin: 0 }}>The case starts privately as a draft. The website address and internal case reference are created automatically. Photos, consent, review and publishing are handled on the next screen.</p>
+                  <p style={{ color: "var(--muted)", fontSize: ".82rem", lineHeight: 1.6, margin: 0 }}>The case starts privately as a draft. The website address and internal reference are created automatically.</p>
                   <PendingSubmit label="Create case & add photos →" pendingLabel="Creating case…" />
                 </form>
               </div>
@@ -71,7 +71,7 @@ export default async function SignatureCasesPage({ searchParams }: { searchParam
                     <Link className="status-row" href={`/clinic/cases/${item.id}`} key={item.id} prefetch>
                       <div><strong>{item.title}</strong><br /><small>{item.treatment_type}</small></div>
                       <span>{item.dionavi_used ? "DIOnavi" : item.guided_implant ? "Guided" : "Case"}</span>
-                      <span className="status-pill">{item.consent_for_website ? item.publication_status : item.publication_status === "draft" ? "Draft" : "Consent pending"}</span>
+                      <span className="status-pill">{item.publication_status}</span>
                     </Link>
                   ))}
                   {!cases?.length ? <p>No cases yet. Create the first case above.</p> : null}
