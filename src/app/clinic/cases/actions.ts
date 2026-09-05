@@ -17,9 +17,7 @@ export async function createSignatureCase(formData: FormData) {
   const { supabase, user } = await requireClinicalPublisher();
   const title = String(formData.get("title") ?? "").trim();
   const treatmentType = String(formData.get("treatment_type") ?? "").trim();
-  const requestedStatus = String(formData.get("publication_status") ?? "draft");
-  const websiteConsent = formData.get("consent_for_website") === "on";
-  const publicationStatus = requestedStatus === "published" && !websiteConsent ? "review" : requestedStatus;
+  const publicationStatus = String(formData.get("publication_status") ?? "draft");
 
   if (title.length < 5 || treatmentType.length < 3) {
     redirect("/clinic/cases?error=invalid");
@@ -45,8 +43,8 @@ export async function createSignatureCase(formData: FormData) {
       publication_status: publicationStatus,
       patient_age_band: String(formData.get("patient_age_band") ?? "").trim() || null,
       patient_country: String(formData.get("patient_country") ?? "").trim() || null,
-      consent_for_website: websiteConsent,
-      consent_for_social: formData.get("consent_for_social") === "on",
+      consent_for_website: false,
+      consent_for_social: false,
       anonymised: true,
       published_at: publicationStatus === "published" ? new Date().toISOString() : null,
     })
@@ -88,19 +86,6 @@ export async function addCaseStage(formData: FormData) {
   revalidatePath("/cases");
 }
 
-export async function setCaseConsent(formData: FormData) {
-  const { supabase } = await requireClinicalPublisher();
-  const caseId = String(formData.get("case_id") ?? "");
-  if (!caseId) return;
-
-  const consent = formData.get("consent_for_website") === "on";
-  await supabase.from("signature_cases").update({ consent_for_website: consent }).eq("id", caseId);
-
-  revalidatePath(`/clinic/cases/${caseId}`);
-  revalidatePath("/clinic/cases");
-  revalidatePath("/cases");
-}
-
 export async function setCasePublication(formData: FormData) {
   const { supabase } = await requireClinicalPublisher();
   const caseId = String(formData.get("case_id") ?? "");
@@ -108,22 +93,19 @@ export async function setCasePublication(formData: FormData) {
 
   if (!caseId || !new Set(["draft", "review", "published", "archived"]).has(status)) return;
 
-  const { data: item } = await supabase
-    .from("signature_cases")
-    .select("consent_for_website")
-    .eq("id", caseId)
-    .single();
+  const updates: Record<string, string | boolean | null> = {
+    publication_status: status,
+    published_at: status === "published" ? new Date().toISOString() : null,
+  };
 
-  if (status === "published" && !item?.consent_for_website) {
-    redirect(`/clinic/cases/${caseId}?error=consent_required`);
-  }
+  // Consent is handled and retained on paper at the clinic. Publishing a case is the
+  // clinic's confirmation that the offline consent process has already been completed.
+  if (status === "published") updates.consent_for_website = true;
 
-  await supabase
-    .from("signature_cases")
-    .update({ publication_status: status, published_at: status === "published" ? new Date().toISOString() : null })
-    .eq("id", caseId);
+  await supabase.from("signature_cases").update(updates).eq("id", caseId);
 
   revalidatePath(`/clinic/cases/${caseId}`);
+  revalidatePath("/clinic/cases");
   revalidatePath("/cases");
 }
 
