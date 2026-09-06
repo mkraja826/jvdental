@@ -98,8 +98,6 @@ export async function setCasePublication(formData: FormData) {
     published_at: status === "published" ? new Date().toISOString() : null,
   };
 
-  // Consent is handled and retained on paper at the clinic. Publishing a case is the
-  // clinic's confirmation that the offline consent process has already been completed.
   if (status === "published") updates.consent_for_website = true;
 
   await supabase.from("signature_cases").update(updates).eq("id", caseId);
@@ -150,4 +148,82 @@ export async function deleteDraftCase(formData: FormData) {
   revalidatePath("/clinic/cases");
   revalidatePath("/cases");
   redirect("/clinic/cases?deleted=1");
+}
+
+const acceptanceSummaries = [
+  "Initial clinical view of the posterior treatment area before the procedure.",
+  "Pre-treatment occlusal view showing the treatment area and surrounding teeth.",
+  "Clinical view of the treatment site during the initial stage of the procedure.",
+  "Clinical view of the treatment site from an earlier surgical stage.",
+  "Surgical view of the implant treatment site with the underlying bone and surrounding tissues exposed.",
+  "Clinical view showing the implant component positioned at the treatment site.",
+  "Clinical view of the implant site during a subsequent treatment stage.",
+  "Post-procedure clinical view of the treated posterior area.",
+  "Clinical view of the treatment area during the healing phase.",
+  "Occlusal view showing the restored implant area and surrounding teeth.",
+  "Front view of the completed dental restoration and bite.",
+  "Side view of the completed restoration showing its relationship with the opposing teeth.",
+  "Opposite side view of the completed restoration and bite.",
+];
+
+const acceptancePng = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+  "base64",
+);
+
+export async function runCaseAcceptanceTest() {
+  const { supabase, user } = await requireClinicalPublisher();
+  const slug = `qa-case-workflow-${Date.now()}`;
+
+  const { data: created, error: caseError } = await supabase
+    .from("signature_cases")
+    .insert({
+      created_by: user.id,
+      title: "QA Posterior Extraction & Implant Placement",
+      slug,
+      treatment_type: "Dental Implant Treatment",
+      short_summary: "One-click acceptance test for the JV Dental case photo-story workflow.",
+      publication_status: "draft",
+      consent_for_website: false,
+      consent_for_social: false,
+      anonymised: true,
+      featured: false,
+    })
+    .select("id")
+    .single();
+
+  if (caseError || !created) redirect("/clinic/cases/acceptance-test?error=case");
+
+  const uploaded: string[] = [];
+  try {
+    for (let index = 0; index < acceptanceSummaries.length; index += 1) {
+      const path = `cases/${created.id}/${String(index + 1).padStart(2, "0")}-acceptance.png`;
+      const { error: uploadError } = await supabase.storage.from("public-content").upload(path, acceptancePng, {
+        contentType: "image/png",
+        upsert: false,
+      });
+      if (uploadError) throw uploadError;
+      uploaded.push(path);
+
+      const summary = acceptanceSummaries[index];
+      const { error: mediaError } = await supabase.from("signature_case_media").insert({
+        signature_case_id: created.id,
+        stage_id: null,
+        media_type: "photo",
+        storage_path: path,
+        alt_text: summary,
+        caption: summary,
+        sort_order: index,
+      });
+      if (mediaError) throw mediaError;
+    }
+  } catch {
+    if (uploaded.length) await supabase.storage.from("public-content").remove(uploaded);
+    await supabase.from("signature_cases").delete().eq("id", created.id);
+    redirect("/clinic/cases/acceptance-test?error=media");
+  }
+
+  revalidatePath("/clinic/cases");
+  revalidatePath(`/clinic/cases/${created.id}`);
+  redirect(`/clinic/cases/${created.id}?acceptance=passed`);
 }
