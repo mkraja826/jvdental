@@ -57,9 +57,12 @@ export default function WebsiteMediaUploader({ slotKey, label, description, widt
   async function cropToWebp(): Promise<Blob> {
     if (!sourceUrl) throw new Error("Choose a photo first.");
     const image = new Image();
-    image.decoding = "async";
     image.src = sourceUrl;
-    await image.decode();
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error("The selected image could not be decoded."));
+      if (image.complete && image.naturalWidth > 0) resolve();
+    });
 
     const targetAspect = width / height;
     const imageAspect = image.naturalWidth / image.naturalHeight;
