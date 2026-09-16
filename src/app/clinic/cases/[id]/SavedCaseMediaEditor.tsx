@@ -2,7 +2,7 @@
 
 import { ChangeEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { replaceCaseMedia } from "../actions";
 
 type MediaItem = {
   id: string;
@@ -13,7 +13,6 @@ type MediaItem = {
 
 const MAX_FILE_BYTES = 25 * 1024 * 1024;
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);
-function safeFileName(name: string) { return name.toLowerCase().replace(/[^a-z0-9.]+/g, "-").replace(/^-+|-+$/g, ""); }
 
 export default function SavedCaseMediaEditor({ items }: { items: MediaItem[] }) {
   const router = useRouter();
@@ -57,25 +56,20 @@ export default function SavedCaseMediaEditor({ items }: { items: MediaItem[] }) 
 
     setBusyId(item.id);
     setMessage(null);
-    const supabase = createClient();
-    const casePrefix = item.storage_path.split("/").slice(0, -1).join("/");
-    const newPath = `${casePrefix}/${crypto.randomUUID()}-${safeFileName(file.name)}`;
-
     try {
-      const { error: uploadError } = await supabase.storage.from("public-content").upload(newPath, file, { contentType: file.type, upsert: false });
-      if (uploadError) throw uploadError;
+      const formData = new FormData();
+      formData.set("case_id", item.storage_path.split("/")[1] ?? "");
+      formData.set("media_id", item.id);
+      formData.set("file", file);
 
-      const { error: updateError } = await supabase.from("signature_case_media").update({ storage_path: newPath, media_type: "photo" }).eq("id", item.id);
-      if (updateError) {
-        await supabase.storage.from("public-content").remove([newPath]);
-        throw updateError;
+      const result = await replaceCaseMedia(formData);
+      if (!result.ok || !result.storagePath) {
+        setMessage(result.error ?? "Could not replace this photo. The original photo was kept.");
+        return;
       }
 
-      const { error: removeError } = await supabase.storage.from("public-content").remove([item.storage_path]);
-      if (removeError) setMessage("Photo replaced, but the old storage file could not be cleaned up.");
-      else setMessage("Photo replaced ✓");
-
-      setPhotos((current) => current.map((photo) => photo.id === item.id ? { ...photo, storage_path: newPath } : photo));
+      setPhotos((current) => current.map((photo) => photo.id === item.id ? { ...photo, storage_path: result.storagePath! } : photo));
+      setMessage(result.oldFileCleanupFailed ? "Photo replaced, but the old storage file could not be cleaned up." : "Photo replaced ✓");
       router.refresh();
     } catch {
       setMessage("Could not replace this photo. The original photo was kept.");
