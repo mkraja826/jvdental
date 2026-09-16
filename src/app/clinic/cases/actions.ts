@@ -150,6 +150,55 @@ export async function deleteDraftCase(formData: FormData) {
   redirect("/clinic/cases?deleted=1");
 }
 
+const MAX_CASE_IMAGE_BYTES = 25 * 1024 * 1024;
+const ALLOWED_CASE_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+
+const MAX_CASE_IMAGE_BYTES = 25 * 1024 * 1024;
+const ALLOWED_CASE_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+
+export async function replaceCaseMedia(formData: FormData) {
+  const { supabase } = await requireClinicalPublisher();
+  const caseId = String(formData.get("case_id") ?? "");
+  const mediaId = String(formData.get("media_id") ?? "");
+  const file = formData.get("file");
+
+  if (!caseId || !mediaId || !(file instanceof File) || !ALLOWED_CASE_IMAGE_TYPES.has(file.type) || file.size > MAX_CASE_IMAGE_BYTES) {
+    return { ok: false, error: "Choose a JPG, PNG or WebP image below 25 MB." };
+  }
+
+  const { data: media, error: mediaError } = await supabase
+    .from("signature_case_media")
+    .select("id,storage_path")
+    .eq("id", mediaId)
+    .eq("signature_case_id", caseId)
+    .maybeSingle();
+
+  if (mediaError || !media) return { ok: false, error: "This case photo could not be found." };
+
+  const newPath = `cases/${caseId}/${crypto.randomUUID()}-${safeFileName(file.name)}`;
+  const { error: uploadError } = await supabase.storage.from("public-content").upload(newPath, file, {
+    contentType: file.type,
+    upsert: false,
+  });
+  if (uploadError) return { ok: false, error: "The replacement image could not be uploaded." };
+
+  const { error: updateError } = await supabase
+    .from("signature_case_media")
+    .update({ storage_path: newPath, media_type: "photo" })
+    .eq("id", mediaId)
+    .eq("signature_case_id", caseId);
+
+  if (updateError) {
+    await supabase.storage.from("public-content").remove([newPath]);
+    return { ok: false, error: "The replacement image could not be saved." };
+  }
+
+  const { error: removeError } = await supabase.storage.from("public-content").remove([media.storage_path]);
+  revalidatePath(`/clinic/cases/${caseId}`);
+  revalidatePath("/cases");
+  return { ok: true, storagePath: newPath, oldFileCleanupFailed: Boolean(removeError) };
+}
+
 const acceptanceSummaries = [
   "Initial clinical view of the posterior treatment area before the procedure.",
   "Pre-treatment occlusal view showing the treatment area and surrounding teeth.",
