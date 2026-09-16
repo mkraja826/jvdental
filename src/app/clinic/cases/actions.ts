@@ -174,9 +174,9 @@ export async function replaceCaseMedia(formData: FormData) {
 
   if (mediaError || !media) return { ok: false, error: "This case photo could not be found.", storagePath: null, oldFileCleanupFailed: false };
 
-  const newPath = `cases/${caseId}/${crypto.randomUUID()}-${safeFileName(file.name)}`;
+  const newPath = `cases/${caseId}/${crypto.randomUUID()}-${safeFileName(fileEntry.name)}`;
   const { error: uploadError } = await supabase.storage.from("public-content").upload(newPath, fileEntry, {
-    contentType: file.type,
+    contentType: fileEntry.type,
     upsert: false,
   });
   if (uploadError) return { ok: false, error: "The replacement image could not be uploaded.", storagePath: null, oldFileCleanupFailed: false };
