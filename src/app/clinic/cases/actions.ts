@@ -153,9 +153,6 @@ export async function deleteDraftCase(formData: FormData) {
 const MAX_CASE_IMAGE_BYTES = 25 * 1024 * 1024;
 const ALLOWED_CASE_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-const MAX_CASE_IMAGE_BYTES = 25 * 1024 * 1024;
-const ALLOWED_CASE_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-
 export async function replaceCaseMedia(formData: FormData) {
   const { supabase } = await requireClinicalPublisher();
   const caseId = String(formData.get("case_id") ?? "");
