@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import PendingSubmit from "@/components/pending-submit";
@@ -62,17 +63,30 @@ export default async function DoctorProfilesPage({ searchParams }: { searchParam
               <div className="portal-card__header"><h2>Clinical team</h2><span className="status-pill">{doctors?.length ?? 0}</span></div>
               <div className="portal-card__body">
                 <div className="status-list">
-                  {(doctors ?? []).map((doctor) => (
-                    <Link className="status-row" href={`/clinic/doctors/${doctor.id}`} key={doctor.id} prefetch>
-                      <div>
-                        <strong>{doctor.full_name}</strong>
-                        <br />
-                        <small>{doctor.professional_title ?? "Professional title pending"}</small>
-                      </div>
-                      <span>{doctor.overall_experience_years != null ? `${doctor.overall_experience_years} yrs overall` : "Experience pending"}</span>
-                      <span className="status-pill">{doctor.featured ? "Featured · " : ""}{doctor.status}</span>
-                    </Link>
-                  ))}
+                  {(doctors ?? []).map((doctor) => {
+                    const imageUrl = doctor.profile_image_path
+                      ? supabase.storage.from("public-content").getPublicUrl(doctor.profile_image_path).data.publicUrl
+                      : null;
+                    const initial = doctor.full_name.split(/s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J";
+
+                    return (
+                      <Link className="status-row" href={`/clinic/doctors/${doctor.id}`} key={doctor.id} prefetch>
+                        <span className="status-row__avatar" aria-hidden="true">
+                          {imageUrl ? (
+                            <Image src={imageUrl} alt="" width={88} height={110} sizes="48px" />
+                          ) : <span>{initial}</span>}
+                        </span>
+                        <span className="status-row__identity">
+                          <strong>{doctor.full_name}</strong>
+                          <small>{doctor.professional_title ?? "Professional title pending"}</small>
+                        </span>
+                        <span className="status-row__experience">
+                          {doctor.overall_experience_years != null ? `${doctor.overall_experience_years} yrs overall` : "Experience pending"}
+                        </span>
+                        <span className="status-pill">{doctor.featured ? "Featured · " : ""}{doctor.status}</span>
+                      </Link>
+                    );
+                  })}
                   {!doctors?.length ? <p>No doctor profiles have been created.</p> : null}
                 </div>
               </div>
