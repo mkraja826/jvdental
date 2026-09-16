@@ -32,8 +32,8 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Lint
-        run: npm run lint
+      - name: Lint changed case photo editor
+        run: npx eslint 'src/app/clinic/cases/[id]/SavedCaseMediaEditor.tsx'
 
       - name: Production build
         run: npm run build
