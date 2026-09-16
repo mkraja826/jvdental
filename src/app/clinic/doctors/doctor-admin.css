@@ -52,8 +52,124 @@
   resize: vertical;
 }
 
+.status-list {
+  display: grid;
+  gap: 6px;
+}
+
+.status-row {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 9px 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 160ms ease, background-color 160ms ease, transform 120ms ease;
+}
+
+.status-row:hover {
+  border-color: var(--clinic-border);
+  background: var(--clinic-surface-soft);
+}
+
+.status-row:active {
+  transform: scale(.995);
+}
+
+.status-row:focus-visible {
+  outline: 3px solid rgba(23, 63, 55, .22);
+  outline-offset: 2px;
+}
+
+.status-row__avatar {
+  width: 48px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 9px;
+  background: var(--clinic-accent-soft);
+  color: var(--clinic-accent);
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.status-row__avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.status-row__identity {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.status-row__identity strong,
+.status-row__identity small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-row__identity strong {
+  color: var(--clinic-text);
+  font-size: .86rem;
+}
+
+.status-row__identity small {
+  color: var(--clinic-muted);
+  font-size: .73rem;
+  line-height: 1.35;
+}
+
+.status-row__experience {
+  color: var(--clinic-muted);
+  font-size: .72rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .status-row {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+  }
+
+  .status-row > .status-pill {
+    grid-column: 2 / -1;
+    justify-self: start;
+  }
+}
+
 @media (max-width: 640px) {
   .form-grid-2 {
     grid-template-columns: 1fr;
+  }
+
+  .status-row {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 9px 10px;
+    min-height: 68px;
+    padding: 8px;
+  }
+
+  .status-row__avatar {
+    width: 42px;
+    height: 52px;
+  }
+
+  .status-row__experience {
+    grid-column: 2;
+    font-size: .7rem;
+  }
+
+  .status-row > .status-pill {
+    grid-column: 2;
   }
 }
