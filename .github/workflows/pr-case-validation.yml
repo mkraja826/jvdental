@@ -1,0 +1,75 @@
+name: Case Photo PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate-case-change:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: test-publishable-key
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          package-manager-cache: false
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
+
+      - name: Production route smoke tests
+        run: |
+          npm run start > /tmp/jv-next.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          fail() {
+            echo "::error::$1"
+            cat /tmp/jv-next.log || true
+            exit 1
+          }
+
+          READY=0
+          for attempt in $(seq 1 20); do
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              fail "Production server exited before becoming ready"
+            fi
+            STATUS=$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/robots.txt || true)
+            if [ "$STATUS" = "200" ]; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          [ "$READY" -eq 1 ] || fail "Production server did not become ready"
+
+          for ROUTE in '/cases' '/clinic/cases' '/staff/login' '/book'; do
+            STATUS=$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:3000${ROUTE}" || true)
+            case "$STATUS" in
+              200|307|308) echo "Route passed: ${ROUTE} (${STATUS})" ;;
+              *) fail "Route smoke test failed: ${ROUTE} returned ${STATUS}" ;;
+            esac
+          done
+
+          echo "Case photo PR validation passed"
