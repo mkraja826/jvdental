@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireClinicalPublisher } from "@/lib/content/permissions";
 
+function safeFileName(name: string) { return name.toLowerCase().replace(/[^a-z0-9.]+/g, "-").replace(/^-+|-+$/g, ""); }
+
 function slugify(value: string) {
   return value
     .toLowerCase()
