@@ -3,6 +3,7 @@
 import { ChangeEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { replaceCaseMedia } from "../actions";
+import { createClient } from "@/lib/supabase/client";
 
 type MediaItem = {
   id: string;
