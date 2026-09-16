@@ -160,7 +160,7 @@ export async function replaceCaseMedia(formData: FormData) {
   const file = formData.get("file");
 
   if (!caseId || !mediaId || !(file instanceof File) || !ALLOWED_CASE_IMAGE_TYPES.has(file.type) || file.size > MAX_CASE_IMAGE_BYTES) {
-    return { ok: false, error: "Choose a JPG, PNG or WebP image below 25 MB." };
+    return { ok: false, error: "Choose a JPG, PNG or WebP image below 25 MB.", storagePath: null, oldFileCleanupFailed: false };
   }
 
   const { data: media, error: mediaError } = await supabase
@@ -170,14 +170,14 @@ export async function replaceCaseMedia(formData: FormData) {
     .eq("signature_case_id", caseId)
     .maybeSingle();
 
-  if (mediaError || !media) return { ok: false, error: "This case photo could not be found." };
+  if (mediaError || !media) return { ok: false, error: "This case photo could not be found.", storagePath: null, oldFileCleanupFailed: false };
 
   const newPath = `cases/${caseId}/${crypto.randomUUID()}-${safeFileName(file.name)}`;
   const { error: uploadError } = await supabase.storage.from("public-content").upload(newPath, file, {
     contentType: file.type,
     upsert: false,
   });
-  if (uploadError) return { ok: false, error: "The replacement image could not be uploaded." };
+  if (uploadError) return { ok: false, error: "The replacement image could not be uploaded.", storagePath: null, oldFileCleanupFailed: false };
 
   const { error: updateError } = await supabase
     .from("signature_case_media")
@@ -187,7 +187,7 @@ export async function replaceCaseMedia(formData: FormData) {
 
   if (updateError) {
     await supabase.storage.from("public-content").remove([newPath]);
-    return { ok: false, error: "The replacement image could not be saved." };
+    return { ok: false, error: "The replacement image could not be saved.", storagePath: null, oldFileCleanupFailed: false };
   }
 
   const { error: removeError } = await supabase.storage.from("public-content").remove([media.storage_path]);
