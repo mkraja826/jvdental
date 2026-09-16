@@ -27,7 +27,7 @@ export function HomeHeroVideo({ poster }: HomeHeroVideoProps) {
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reducedMotion) {
-      setNeedsPlay(true);
+      window.setTimeout(() => setNeedsPlay(true), 0);
       return;
     }
 
