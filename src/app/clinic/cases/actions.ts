@@ -159,9 +159,9 @@ export async function replaceCaseMedia(formData: FormData) {
   const { supabase } = await requireClinicalPublisher();
   const caseId = String(formData.get("case_id") ?? "");
   const mediaId = String(formData.get("media_id") ?? "");
-  const file = formData.get("file");
+  const fileEntry = formData.get("file");
 
-  if (!caseId || !mediaId || !(file instanceof File) || !ALLOWED_CASE_IMAGE_TYPES.has(file.type) || file.size > MAX_CASE_IMAGE_BYTES) {
+  if (!caseId || !mediaId || typeof fileEntry === "string" || !fileEntry || !ALLOWED_CASE_IMAGE_TYPES.has(fileEntry.type) || fileEntry.size > MAX_CASE_IMAGE_BYTES) {
     return { ok: false, error: "Choose a JPG, PNG or WebP image below 25 MB.", storagePath: null, oldFileCleanupFailed: false };
   }
 
@@ -174,9 +174,9 @@ export async function replaceCaseMedia(formData: FormData) {
 
   if (mediaError || !media) return { ok: false, error: "This case photo could not be found.", storagePath: null, oldFileCleanupFailed: false };
 
-  const newPath = `cases/${caseId}/${crypto.randomUUID()}-${safeFileName(file.name)}`;
-  const { error: uploadError } = await supabase.storage.from("public-content").upload(newPath, file, {
-    contentType: file.type,
+  const newPath = `cases/${caseId}/${crypto.randomUUID()}-${safeFileName(fileEntry.name)}`;
+  const { error: uploadError } = await supabase.storage.from("public-content").upload(newPath, fileEntry, {
+    contentType: fileEntry.type,
     upsert: false,
   });
   if (uploadError) return { ok: false, error: "The replacement image could not be uploaded.", storagePath: null, oldFileCleanupFailed: false };
