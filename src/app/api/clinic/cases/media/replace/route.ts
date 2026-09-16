@@ -24,7 +24,8 @@ export async function POST(request: Request) {
   if (!media) return NextResponse.json({ ok: false, error: "This case photo could not be found." }, { status: 404 });
 
   const newPath = `cases/${caseId}/${crypto.randomUUID()}-${safeFileName(fileEntry.name)}`;
-  const { error: uploadError } = await supabase.storage.from("public-content").upload(newPath, fileEntry, { contentType: fileEntry.type, upsert: false });
+  const fileBytes = await fileEntry.arrayBuffer();
+  const { error: uploadError } = await supabase.storage.from("public-content").upload(newPath, fileBytes, { contentType: fileEntry.type, upsert: false });
   if (uploadError) return NextResponse.json({ ok: false, error: "The replacement image could not be uploaded." }, { status: 400 });
 
   const { error: updateError } = await supabase.from("signature_case_media").update({ storage_path: newPath, media_type: "photo" }).eq("id", mediaId).eq("signature_case_id", caseId);
