@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
 import { requireClinicalPublisher } from "@/lib/content/permissions";
 
 const MAX_BYTES = 25 * 1024 * 1024;
