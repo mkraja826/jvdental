@@ -78,8 +78,8 @@ export default function SavedCaseMediaEditor({ items }: { items: MediaItem[] }) 
       setPhotos((current) => current.map((photo) => photo.id === item.id ? { ...photo, storage_path: result.storagePath! } : photo));
       setMessage(result.oldFileCleanupFailed ? "Photo replaced, but the old storage file could not be cleaned up." : "Photo replaced ✓");
       router.refresh();
-    } catch {
-      setMessage("Could not replace this photo. The original photo was kept.");
+    } catch (error) {
+      setMessage(error instanceof Error ? `Replacement request failed: ${error.message}` : "Could not replace this photo. The original photo was kept.");
     } finally {
       setBusyId(null);
     }
