@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import PendingSubmit from "@/components/pending-submit";
 import { requestMagicLink, signInPatientWithPassword } from "@/app/auth/actions";
@@ -17,7 +18,7 @@ export default async function PatientLoginPage({ searchParams }: LoginPageProps)
   return (
     <main className="login-shell">
       <section className="login-story">
-        <Link className="wordmark" href="/" aria-label="JV Dental home"><span>JV</span><span>Dental</span></Link>
+        <Link className="wordmark" href="/" aria-label="JV Dental home"><Image src="/jv-dental-logo.svg" alt="JV Dental & Implant Centre" width={180} height={91} priority /></Link>
         <div>
           <p className="eyebrow" style={{ color: "#b8cec5" }}>Secure patient access</p>
           <h1>Your treatment journey, in one place.</h1>
@@ -38,7 +39,7 @@ export default async function PatientLoginPage({ searchParams }: LoginPageProps)
 
           <form action={signInPatientWithPassword} style={{ display: "grid", gap: 16 }}>
             <input type="hidden" name="next" value={next} />
-            <div className="field"><label htmlFor="email">Email address</label><input id="email" name="email" type="email" inputMode="email" autoComplete="email" required /></div>
+            <div className="field"><label htmlFor="email">Email address for password sign-in</label><input id="email" name="email" type="email" inputMode="email" autoComplete="email" required /></div>
             <div className="field"><label htmlFor="password">Password</label><input id="password" name="password" type="password" autoComplete="current-password" required /></div>
             <PendingSubmit className="button login-submit" label="Sign in →" pendingLabel="Signing in…" />
           </form>
@@ -50,7 +51,7 @@ export default async function PatientLoginPage({ searchParams }: LoginPageProps)
             <p className="form-note" style={{ marginTop: 0 }}>Prefer passwordless sign-in?</p>
             <form action={requestMagicLink} style={{ display: "grid", gap: 12 }}>
               <input type="hidden" name="next" value={next} />
-              <div className="field"><label htmlFor="magic-email">Email address</label><input id="magic-email" name="email" type="email" inputMode="email" autoComplete="email" required /></div>
+              <div className="field"><label htmlFor="magic-email">Email address for secure link</label><input id="magic-email" name="email" type="email" inputMode="email" autoComplete="email" required /></div>
               <PendingSubmit className="button button--ghost login-submit" label="Email me a secure link" pendingLabel="Sending secure link…" />
             </form>
           </div>
