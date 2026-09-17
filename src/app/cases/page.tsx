@@ -29,6 +29,7 @@ export default async function CasesPage() {
     .eq("consent_for_website", true)
     .order("featured", { ascending: false })
     .order("published_at", { ascending: false });
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   return (
     <main>
