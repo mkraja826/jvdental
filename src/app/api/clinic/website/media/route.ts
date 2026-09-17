@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 
@@ -54,12 +53,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "The website image could not be saved." }, { status: 400 });
     }
 
-    if (currentPath && currentPath !== path) {
-      await supabase.storage.from("public-content").remove([currentPath]);
-    }
-
-    revalidatePath("/clinic/website");
-    revalidatePath("/");
     return NextResponse.json({ ok: true, path });
   } catch {
     return NextResponse.json({ ok: false, error: "The website image could not be published." }, { status: 500 });
