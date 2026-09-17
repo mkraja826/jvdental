@@ -10,6 +10,7 @@ function safeFileName(name: string) {
 }
 
 export async function POST(request: Request) {
+  try {
   const { supabase } = await requireClinicalPublisher();
   const formData = await request.formData();
   const caseId = String(formData.get("case_id") ?? "");
@@ -39,4 +40,7 @@ export async function POST(request: Request) {
   revalidatePath(`/clinic/cases/${caseId}`);
   revalidatePath("/cases");
   return NextResponse.json({ ok: true, storagePath: newPath, oldFileCleanupFailed: Boolean(removeError) });
+  } catch {
+    return NextResponse.json({ ok: false, error: "The replacement image could not be processed." }, { status: 500 });
+  }
 }
