@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
 import { requireClinicalPublisher } from "@/lib/content/permissions";
 
 const MAX_BYTES = 25 * 1024 * 1024;
@@ -36,10 +35,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "The replacement image could not be saved." }, { status: 400 });
   }
 
-  const { error: removeError } = await supabase.storage.from("public-content").remove([media.storage_path]);
-  revalidatePath(`/clinic/cases/${caseId}`);
-  revalidatePath("/cases");
-  return NextResponse.json({ ok: true, storagePath: newPath, oldFileCleanupFailed: Boolean(removeError) });
+  return NextResponse.json({ ok: true, storagePath: newPath, oldFileCleanupFailed: false });
   } catch {
     return NextResponse.json({ ok: false, error: "The replacement image could not be processed." }, { status: 500 });
   }
