@@ -221,3 +221,32 @@ export async function deleteDoctorDetail(formData: FormData) {
   await supabase.from(table).delete().eq("id", id).eq("doctor_profile_id", doctorId);
   refreshDoctor(undefined, doctorId);
 }
+
+
+export async function deleteDoctorProfile(formData: FormData) {
+  const { supabase } = await requirePortfolioAdmin();
+  const id = String(formData.get("id") ?? "").trim();
+  const confirmation = String(formData.get("confirmation") ?? "").trim();
+  if (!id || confirmation !== "DELETE") return;
+
+  const { data: profile, error: profileError } = await supabase
+    .from("doctor_profiles")
+    .select("slug,profile_image_path,hero_image_path")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (profileError || !profile) redirect("/clinic/doctors/" + id + "?error=delete");
+
+  const { error: deleteError } = await supabase.from("doctor_profiles").delete().eq("id", id);
+  if (deleteError) redirect("/clinic/doctors/" + id + "?error=delete");
+
+  const paths = [profile.profile_image_path, profile.hero_image_path].filter(
+    (path): path is string => Boolean(path),
+  );
+  if (paths.length) await supabase.storage.from("public-content").remove(paths);
+
+  revalidatePath("/clinic/doctors");
+  revalidatePath("/doctors");
+  if (profile.slug) revalidatePath("/doctors/" + profile.slug);
+  redirect("/clinic/doctors?deleted=1");
+}
