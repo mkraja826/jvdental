@@ -4,6 +4,7 @@ import { ChangeEvent, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { publishWebsiteMedia } from "@/app/clinic/website/actions";
 
 type Props = {
   slotKey: string;
@@ -107,36 +108,15 @@ export default function WebsiteMediaUploader({ slotKey, label, description, widt
       if (!altText.trim()) throw new Error("Add a short image description for accessibility and SEO.");
 
       const blob = await cropToWebp();
-      const supabase = createClient();
-      const path = `website/${slotKey}/${crypto.randomUUID()}.webp`;
-      const { error: uploadError } = await supabase.storage.from("public-content").upload(path, blob, {
-        contentType: "image/webp",
-        upsert: false,
-        cacheControl: "31536000",
-      });
-      if (uploadError) throw uploadError;
-
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-
-      const { error: dbError } = await supabase.from("website_media").upsert({
-        slot_key: slotKey,
-        storage_path: path,
-        alt_text: altText.trim(),
-        output_width: width,
-        output_height: height,
-        updated_by: userData.user?.id ?? null,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: "slot_key" });
-
-      if (dbError) {
-        await supabase.storage.from("public-content").remove([path]);
-        throw dbError;
-      }
-
-      if (currentPath && currentPath !== path) {
-        await supabase.storage.from("public-content").remove([currentPath]);
-      }
+      const formData = new FormData();
+      formData.set("slot_key", slotKey);
+      formData.set("alt_text", altText.trim());
+      formData.set("output_width", String(width));
+      formData.set("output_height", String(height));
+      formData.set("current_path", currentPath ?? "");
+      formData.set("file", blob, `${slotKey}.webp`);
+      const result = await publishWebsiteMedia(formData);
+      if (!result.ok) throw new Error(result.error);
 
       setMessage("Published. The website now uses this image.");
       setSourceFile(null);
