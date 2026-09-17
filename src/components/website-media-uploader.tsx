@@ -4,7 +4,6 @@ import { ChangeEvent, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { publishWebsiteMedia } from "@/app/clinic/website/actions";
 
 type Props = {
   slotKey: string;
@@ -115,8 +114,9 @@ export default function WebsiteMediaUploader({ slotKey, label, description, widt
       formData.set("output_height", String(height));
       formData.set("current_path", currentPath ?? "");
       formData.set("file", blob, `${slotKey}.webp`);
-      const result = await publishWebsiteMedia(formData);
-      if (!result.ok) throw new Error(result.error);
+      const response = await fetch("/api/clinic/website/media", { method: "POST", body: formData });
+      const result = await response.json() as { ok: boolean; error?: string };
+      if (!response.ok || !result.ok) throw new Error(result.error ?? "The website image could not be published.");
 
       setMessage("Published. The website now uses this image.");
       setSourceFile(null);
