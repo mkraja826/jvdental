@@ -1,4 +1,5 @@
 import ClinicNavigation from "@/components/clinic-navigation";
+import { signOut } from "@/app/auth/actions";
 import { requireStaff } from "@/lib/auth/guards";
 import "../clinic-ux.css";
 import "../clinic-navigation.css";
@@ -33,6 +34,9 @@ export default async function ClinicLayout({ children }: Readonly<{ children: Re
           canManageWebsite={canManage}
           unreadNotifications={unreadNotifications ?? 0}
         />
+        <form action={signOut} className="clinic-signout-form">
+          <button type="submit">Sign out</button>
+        </form>
       </aside>
       <div className="clinic-workspace-content">{children}</div>
     </div>
