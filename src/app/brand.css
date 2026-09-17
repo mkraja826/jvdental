@@ -62,3 +62,6 @@ body{background:var(--brand-off-white);color:var(--brand-navy)}
 .journey-step,.portal-card,.metric,.doctor-card,.login-form,.field input,.field textarea,.field select{border-color:var(--line)}.journey-step{background:#fff;border-top:3px solid var(--brand-blue)}.journey-step:hover,.portal-card:hover,.doctor-card:hover{border-color:rgba(64,114,175,.52)}
 .status-pill{border-color:rgba(64,114,175,.28);background:rgba(218,226,239,.58);color:var(--brand-navy)}.portal-header,.portal-sidebar{background:var(--brand-navy);color:var(--white)}.portal-header .text-link,.portal-sidebar a{color:#e3ecf7}.portal-sidebar a:hover,.portal-sidebar a:focus-visible,.portal-header .text-link:hover{color:#fff;background:rgba(64,114,175,.22)}.portal-main,.login-form-wrap{background:var(--brand-off-white)}.metric,.portal-card,.doctor-card,.login-form{background:#fff}:focus-visible{outline-color:var(--brand-blue)}::selection{background:var(--brand-blue);color:#fff}
 @media(max-width:800px){.treatment-steps{grid-template-columns:1fr}.treatment-hero__copy::after{display:none}.treatment-visual__marker{width:56%}}
+
+.wordmark img{display:block;width:180px;height:auto;max-width:100%}
+@media(max-width:720px){.wordmark img{width:148px}}

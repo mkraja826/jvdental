@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import PendingSubmit from "@/components/pending-submit";
 import { signInStaffWithPassword } from "@/app/auth/actions";
@@ -17,7 +18,7 @@ export default async function StaffLoginPage({ searchParams }: { searchParams: P
   return (
     <main className="login-shell">
       <section className="login-story">
-        <Link className="wordmark" href="/" aria-label="JV Dental home"><span>JV</span><span>Dental</span></Link>
+        <Link className="wordmark" href="/" aria-label="JV Dental home"><Image src="/jv-dental-logo.svg" alt="JV Dental & Implant Centre" width={180} height={91} priority /></Link>
         <div>
           <p className="eyebrow" style={{ color: "#b8cec5" }}>Clinic team access</p>
           <h1>Secure access to the JV Dental clinic workspace.</h1>
