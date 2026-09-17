@@ -64,7 +64,7 @@ export default function SavedCaseMediaEditor({ items }: { items: MediaItem[] }) 
       formData.set("file", file);
 
       const result = await replaceCaseMedia(formData);
-      if (!response.ok || !result.ok || !result.storagePath) {
+      if (!result.ok || !result.storagePath) {
         setMessage(result.error ?? "Could not replace this photo. The original photo was kept.");
         return;
       }
