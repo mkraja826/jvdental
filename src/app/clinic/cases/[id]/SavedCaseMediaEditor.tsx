@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useMemo, useState } from "react";
+import { replaceCaseMedia } from "../actions";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -62,14 +63,7 @@ export default function SavedCaseMediaEditor({ items }: { items: MediaItem[] }) 
       formData.set("media_id", item.id);
       formData.set("file", file);
 
-      const response = await fetch("/api/clinic/cases/media/replace", { method: "POST", body: formData });
-      const responseText = await response.text();
-      let result: { ok: boolean; error?: string; storagePath?: string; oldFileCleanupFailed?: boolean };
-      try {
-        result = JSON.parse(responseText);
-      } catch {
-        result = { ok: false, error: `Replacement endpoint returned ${response.status}.` };
-      }
+      const result = await replaceCaseMedia(formData);
       if (!response.ok || !result.ok || !result.storagePath) {
         setMessage(result.error ?? "Could not replace this photo. The original photo was kept.");
         return;
