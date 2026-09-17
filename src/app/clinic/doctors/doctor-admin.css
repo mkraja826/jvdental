@@ -253,3 +253,12 @@
     margin-inline: auto;
   }
 }
+
+
+/* The shared clinic mobile rule hides the second child of generic status rows.
+   Doctor rows use that slot for the doctor's name and title, so keep it visible. */
+@media (max-width: 900px) {
+  .portal-main .status-row > .status-row__identity {
+    display: grid !important;
+  }
+}
