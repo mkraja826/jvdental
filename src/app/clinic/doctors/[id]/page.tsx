@@ -8,6 +8,7 @@ import {
   updateDoctorProfile,
 } from "@/app/clinic/doctors/actions";
 import DoctorPortraitUploader from "@/components/doctor-portrait-uploader";
+import DeleteDoctorProfileButton from "@/components/delete-doctor-profile-button";
 import { requireStaff } from "@/lib/auth/guards";
 
 type PageProps = {
@@ -104,6 +105,7 @@ export default async function DoctorProfileEditor({ params, searchParams }: Page
                 <label>SEO description<textarea name="seo_description" rows={3} maxLength={180} defaultValue={profile.seo_description ?? ""} /></label>
 
                 <button className="button" type="submit">Save doctor profile</button>
+                <DeleteDoctorProfileButton doctorId={profile.id} doctorName={profile.full_name} />
               </form>
             </div>
           </article>
