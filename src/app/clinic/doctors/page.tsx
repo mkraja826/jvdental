@@ -67,7 +67,7 @@ export default async function DoctorProfilesPage({ searchParams }: { searchParam
                     const imageUrl = doctor.profile_image_path
                       ? supabase.storage.from("public-content").getPublicUrl(doctor.profile_image_path).data.publicUrl
                       : null;
-                    const initial = doctor.full_name.split(/s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J";
+                    const initial = doctor.full_name.split(/\\s+/).filter(Boolean).slice(-1)[0]?.slice(0, 1) ?? "J";
 
                     return (
                       <Link className="status-row" href={`/clinic/doctors/${doctor.id}`} key={doctor.id} prefetch>
