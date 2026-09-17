@@ -176,7 +176,8 @@ export async function replaceCaseMedia(formData: FormData) {
 
   const newPath = `cases/${caseId}/${crypto.randomUUID()}-${safeFileName(fileEntry.name)}`;
   const fileBytes = await fileEntry.arrayBuffer();
-  const { error: uploadError } = await supabase.storage.from("public-content").upload(newPath, fileBytes, {
+  const fileBlob = new Blob([fileBytes], { type: fileEntry.type });
+  const { error: uploadError } = await supabase.storage.from("public-content").upload(newPath, fileBlob, {
     contentType: fileEntry.type,
     upsert: false,
   });
