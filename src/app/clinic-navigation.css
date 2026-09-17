@@ -130,3 +130,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+.clinic-signout-form{margin-top:auto;padding:16px 12px 0;border-top:1px solid rgba(203,220,213,.18)}
+.clinic-signout-form button{width:100%;min-height:42px;padding:10px 12px;border:1px solid rgba(203,220,213,.35);border-radius:9px;background:transparent;color:#dce9e4;font:inherit;font-size:.78rem;font-weight:700;text-align:left;cursor:pointer}
+.clinic-signout-form button:hover,.clinic-signout-form button:focus-visible{border-color:#b9d5ca;background:rgba(231,240,236,.12);color:#fff}
+@media(max-width:900px){.clinic-signout-form{margin-top:4px;padding:12px 0 0;border-top:1px solid #dbe4df}.clinic-signout-form button{border-color:#dbe4df;background:#fff;color:#4e5b56;text-align:center}.clinic-signout-form button:hover,.clinic-signout-form button:focus-visible{border-color:#cbdcd5;background:#e7f0ec;color:#173f37}}
