@@ -20,6 +20,7 @@ type Props = {
 export default function WebsiteMediaUploader({ slotKey, label, description, width, height, previewHref, currentPath, currentUrl, currentAlt }: Props) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const previewImageRef = useRef<HTMLImageElement | null>(null);
   const [sourceUrl, setSourceUrl] = useState<string | null>(null);
   const [sourceFile, setSourceFile] = useState<File | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -56,13 +57,15 @@ export default function WebsiteMediaUploader({ slotKey, label, description, widt
 
   async function cropToWebp(): Promise<Blob> {
     if (!sourceUrl) throw new Error("Choose a photo first.");
-    const image = new Image();
-    await new Promise<void>((resolve, reject) => {
-      image.onload = () => resolve();
-      image.onerror = () => reject(new Error("The selected image could not be decoded."));
-      image.src = sourceUrl;
-      if (image.complete && image.naturalWidth > 0) resolve();
-    });
+    const image = previewImageRef.current;
+    if (!image) throw new Error("The selected image preview is not ready.");
+    if (!image.complete || image.naturalWidth === 0) {
+      await new Promise<void>((resolve, reject) => {
+        image.onload = () => resolve();
+        image.onerror = () => reject(new Error("The selected image could not be decoded."));
+      });
+    }
+    if (image.naturalWidth === 0 || image.naturalHeight === 0) throw new Error("The selected image could not be decoded.");
 
     const targetAspect = width / height;
     const imageAspect = image.naturalWidth / image.naturalHeight;
@@ -182,7 +185,7 @@ export default function WebsiteMediaUploader({ slotKey, label, description, widt
         <p>{description}</p>
 
         <div style={{ width: "100%", aspectRatio: aspect, overflow: "hidden", borderRadius: 16, background: "#e8eceb", position: "relative" }}>
-          {sourceUrl ? <img src={sourceUrl} alt="Crop preview" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${x}% ${y}%`, transform: `scale(${zoom})`, transformOrigin: `${x}% ${y}%` }} /> : currentUrl ? <img src={currentUrl} alt={currentAlt ?? label} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ height: "100%", display: "grid", placeItems: "center", padding: 24, textAlign: "center", color: "var(--muted)" }}>The website is currently using its built-in default image.</div>}
+          {sourceUrl ? <img ref={previewImageRef} src={sourceUrl} alt="Crop preview" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${x}% ${y}%`, transform: `scale(${zoom})`, transformOrigin: `${x}% ${y}%` }} /> : currentUrl ? <img src={currentUrl} alt={currentAlt ?? label} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ height: "100%", display: "grid", placeItems: "center", padding: 24, textAlign: "center", color: "var(--muted)" }}>The website is currently using its built-in default image.</div>}
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
