@@ -22,7 +22,7 @@ const treatmentItems = [
 
 const navItems: readonly NavItem[] = [
   { label: "Treatments", href: "/dental-treatments", children: treatmentItems },
-  { label: "About Us", href: "/doctors" },
+  { label: "Doctors", href: "/doctors" },
   { label: "Cases", href: "/cases" },
   { label: "International", href: "/international" },
   { label: "Journal", href: "/journal" },
@@ -93,14 +93,15 @@ export function SiteHeader() {
                     className="site-nav__dropdown-toggle"
                     aria-label={`Toggle ${item.label} menu`}
                     aria-expanded={openDropdown === item.label}
+                    aria-controls="treatments-navigation-menu"
                     onClick={() => setOpenDropdown((current) => current === item.label ? null : item.label)}
                   >
                     <span aria-hidden="true">⌄</span>
                   </button>
                 </div>
-                <div className="site-nav__dropdown-menu" aria-label={`${item.label} links`}>
+                <div id="treatments-navigation-menu" className="site-nav__dropdown-menu" role="menu" aria-label={`${item.label} links`}>
                   {item.children.map((child) => (
-                    <Link href={child.href} key={child.href} onClick={closeMenus}>{child.label}</Link>
+                    <Link href={child.href} key={child.href} role="menuitem" onClick={closeMenus}>{child.label}</Link>
                   ))}
                 </div>
               </div>
