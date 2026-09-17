@@ -27,7 +27,8 @@ export async function publishWebsiteMedia(formData: FormData) {
   const supabase = await createClient();
   const path = `website/${slotKey}/${crypto.randomUUID()}.webp`;
   const fileBytes = await fileEntry.arrayBuffer();
-  const { error: uploadError } = await supabase.storage.from("public-content").upload(path, fileBytes, {
+  const fileBlob = new Blob([fileBytes], { type: fileEntry.type });
+  const { error: uploadError } = await supabase.storage.from("public-content").upload(path, fileBlob, {
     contentType: fileEntry.type,
     upsert: false,
     cacheControl: "31536000",
