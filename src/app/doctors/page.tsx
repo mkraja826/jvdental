@@ -60,7 +60,7 @@ export default async function DoctorsPage() {
               <div className="doctor-card__body">
                 <div className="doctor-card__meta">
                   <span>{doctor.featured ? "Lead clinician" : "Clinical team"}</span>
-                  <span>JV Dental</span>
+                  <span>Public profile</span>
                 </div>
                 <h2>{doctor.full_name}</h2>
                 <p className="doctor-card__title">{doctor.professional_title ?? "Dentist"}</p>
