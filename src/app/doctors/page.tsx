@@ -29,9 +29,11 @@ export default async function DoctorsPage() {
     <main>
       <SiteHeader />
       <section className="doctor-directory-hero">
-        <p className="eyebrow">JV DENTAL · CLINICAL TEAM</p>
-        <h1>Meet the dentists behind your treatment plan.</h1>
-        <p>Select a dentist to view their complete profile, experience, clinical interests, cases and professional background.</p>
+        <div className="doctor-directory-hero__copy">
+          <p className="eyebrow">JV DENTAL · CLINICAL TEAM</p>
+          <h1>Experienced clinicians.<br /><em>Personal care.</em></h1>
+        </div>
+        <p className="doctor-directory-hero__intro">Meet the dentists responsible for your care. Explore each clinician’s experience, clinical focus and selected work.</p>
       </section>
 
       <section className="section doctor-directory-grid" aria-label="JV Dental dentists">
@@ -56,10 +58,15 @@ export default async function DoctorsPage() {
               </Link>
 
               <div className="doctor-card__body">
-                {doctor.featured ? <p className="eyebrow">Featured dentist</p> : <p className="eyebrow">JV Dental team</p>}
+                <div className="doctor-card__meta">
+                  <span>{doctor.featured ? "Lead clinician" : "Clinical team"}</span>
+                  <span>JV Dental</span>
+                </div>
                 <h2>{doctor.full_name}</h2>
-                <p className="doctor-card__title">{doctor.professional_title ?? "JV Dental dentist"}</p>
-                <Link className="text-link" href={`/doctors/${doctor.slug}`}>View full profile →</Link>
+                <p className="doctor-card__title">{doctor.professional_title ?? "Dentist"}</p>
+                <Link className="doctor-card__link" href={`/doctors/${doctor.slug}`}>
+                  <span>View profile</span><span aria-hidden="true">↗</span>
+                </Link>
               </div>
             </article>
           );
