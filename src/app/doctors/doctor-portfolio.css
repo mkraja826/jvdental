@@ -165,22 +165,22 @@
   width: min(100% - 48px, 1440px);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(360px, .86fr) 1.14fr;
-  min-height: 760px;
+  grid-template-columns: minmax(300px, .78fr) 1.22fr;
+  min-height: 620px;
   border-left: 1px solid var(--line);
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
 
 .doctor-profile-hero__portrait {
-  min-height: 760px;
+  min-height: 620px;
 }
 
 .doctor-profile-hero__copy {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(52px, 7vw, 110px);
+  padding: clamp(38px, 5vw, 72px);
   border-left: 1px solid var(--line);
 }
 
@@ -188,30 +188,30 @@
   margin: 12px 0 8px;
   max-width: 800px;
   font-family: var(--serif);
-  font-size: clamp(4rem, 7.4vw, 8.5rem);
+  font-size: clamp(2.8rem, 5vw, 5.8rem);
   font-weight: 400;
-  line-height: .9;
+  line-height: .96;
   letter-spacing: -.06em;
 }
 
 .doctor-profile-intro {
   max-width: 680px;
-  margin: 26px 0 0;
+  margin: 20px 0 0;
   color: var(--muted);
-  font-size: 1.04rem;
-  line-height: 1.8;
+  font-size: .96rem;
+  line-height: 1.7;
 }
 
 .doctor-profile-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: 36px 0;
+  margin: 26px 0;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
 
 .doctor-profile-metrics > div {
-  padding: 22px 20px 22px 0;
+  padding: 18px 18px 18px 0;
 }
 
 .doctor-profile-metrics > div + div {
@@ -222,7 +222,7 @@
 .doctor-profile-metrics strong {
   display: block;
   font-family: var(--serif);
-  font-size: clamp(3rem, 5vw, 5rem);
+  font-size: clamp(2.2rem, 3.6vw, 3.8rem);
   font-weight: 400;
   line-height: 1;
 }
