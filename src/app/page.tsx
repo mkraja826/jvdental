@@ -42,6 +42,13 @@ const clinicVisuals = [
   { key: "cases", label: "Clinical evidence", title: "Documented dental cases", href: "/cases" },
 ];
 
+const featuredDoctor = {
+  name: "Dr. Jaya Prakash",
+  title: "Dental Surgeon · Implantologist",
+  description:
+    "Meet the clinician leading JV Dental’s implant-focused care in Hyderabad. Treatment is planned around diagnosis, restoration and long-term function—not around a device or a predetermined procedure.",
+};
+
 export default function Home() {
   return (
     <main className="home-page">
@@ -90,6 +97,22 @@ export default function Home() {
         <div className="data-strip__item"><span>Complete dentistry</span><strong>Routine to complex care</strong></div>
         <div className="data-strip__item"><span>Advanced speciality</span><strong>Dental implants</strong></div>
         <div className="data-strip__item"><span>International care</span><strong>Travel coordination</strong></div>
+      </section>
+
+      <section className="doctor-feature section" aria-labelledby="doctor-feature-title">
+        <div className="doctor-feature__portrait" aria-hidden="true">
+          <span>JV</span>
+          <small>Clinical team</small>
+        </div>
+        <div className="doctor-feature__copy">
+          <p className="section-kicker">The clinician behind your plan</p>
+          <h2 className="section-title" id="doctor-feature-title">Start with the dentist—not the technology.</h2>
+          <p className="section-intro">{featuredDoctor.description}</p>
+          <div className="doctor-feature__identity">
+            <div><strong>{featuredDoctor.name}</strong><span>{featuredDoctor.title}</span></div>
+            <Link className="text-link" href="/doctors/dr-jaya-prakash">View clinical profile →</Link>
+          </div>
+        </div>
       </section>
 
       <section className="clinic-evidence" aria-label="JV Dental clinical environment">
