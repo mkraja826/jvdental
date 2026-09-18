@@ -14,7 +14,7 @@ export default function BookAppointmentPage() {
       <section className="booking-hero">
         <div>
           <p className="eyebrow">Appointments · India & international</p>
-          <h1>Book a dental appointment or consultation.</h1>
+          <h1>Request a dental appointment or consultation.</h1>
           <p>JV Dental welcomes patients from Hyderabad, across India and overseas. Visit our Hyderabad clinic in person, or request a video consultation to discuss implants, dental concerns, records, treatment planning or a second opinion before you travel.</p>
         </div>
         <div className="booking-hero__facts">
@@ -26,14 +26,14 @@ export default function BookAppointmentPage() {
 
       <section className="booking-layout">
         <div className="booking-intro">
-          <p className="section-kicker">Choose your consultation</p>
-          <h2>Choose the consultation that suits you.</h2>
+          <p className="section-kicker">Choose your request</p>
+          <h2>Tell us how you would like to begin.</h2>
           <p>Whether you live nearby, are travelling to Hyderabad from another Indian city, or are contacting us from overseas, you can request a preferred date and time here. The clinic team will review availability and confirm the final appointment.</p>
           <div className="booking-steps">
             <span><b>01</b> Choose clinic appointment or video consultation</span>
             <span><b>02</b> Share your preferred date and dental concern</span>
-            <span><b>03</b> Complete secure payment when applicable</span>
-            <span><b>04</b> Receive appointment confirmation from the clinic</span>
+            <span><b>03</b> Complete secure payment if applicable</span>
+            <span><b>04</b> Receive confirmation from the clinic</span>
           </div>
         </div>
         <AppointmentBookingForm />

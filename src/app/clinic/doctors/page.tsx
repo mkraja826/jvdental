@@ -40,7 +40,10 @@ export default async function DoctorProfilesPage({ searchParams }: { searchParam
           <h1 className="portal-title">Every doctor gets a portfolio, not a template page.</h1>
           <p className="portal-subtitle">Create a reusable professional profile for each clinician, then connect their articles, selected cases, technologies and verified qualifications without developer work.</p>
 
-          {params.error ? <p className="form-note">The profile could not be created. Check the name and URL slug.</p> : null}
+          {params.error === "slug_taken" ? <p className="form-note">That portfolio URL is already in use. Choose a different slug, such as <em>dr-name-mumbai</em>.</p> : null}
+          {params.error === "permission" ? <p className="form-note">Your clinic account does not have permission to create doctor profiles. Ask an owner or admin to update your role.</p> : null}
+          {params.error === "invalid" ? <p className="form-note">Enter a doctor name with at least three characters.</p> : null}
+          {params.error === "save" ? <p className="form-note">The profile could not be saved. Please try again or contact an owner/admin if the problem continues.</p> : null}
 
           <div className="portal-grid">
             <article className="portal-card">

@@ -16,6 +16,10 @@
 }
 
 @media (min-width: 821px) {
+  .home-page .display-title { font-size: clamp(2.9rem, 5vw, 5.6rem); line-height: .94; }
+  .home-page .section { padding-top: 78px; padding-bottom: 78px; }
+  .home-page .section-title { font-size: clamp(2.45rem, 4.35vw, 4.9rem); line-height: .98; }
+  .home-page .hero__description { max-width: 520px; font-size: 1rem; line-height: 1.65; }
   .home-page .dark-band .section {
     padding-top: 96px;
     padding-bottom: 96px;

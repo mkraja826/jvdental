@@ -64,6 +64,13 @@ export async function createDoctorProfile(formData: FormData) {
 
   if (fullName.length < 3 || !slug) redirect("/clinic/doctors?error=invalid");
 
+  const { data: existing } = await supabase
+    .from("doctor_profiles")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (existing) redirect("/clinic/doctors?error=slug_taken");
+
   const { data, error } = await supabase
     .from("doctor_profiles")
     .insert({
@@ -78,7 +85,10 @@ export async function createDoctorProfile(formData: FormData) {
     .select("id")
     .single();
 
-  if (error || !data) redirect(`/clinic/doctors?error=${encodeURIComponent(error?.code ?? "save")}`);
+  if (error || !data) {
+    const errorCode = error?.code === "23505" ? "slug_taken" : error?.code === "42501" ? "permission" : "save";
+    redirect(`/clinic/doctors?error=${errorCode}`);
+  }
   redirect(`/clinic/doctors/${data.id}`);
 }
 

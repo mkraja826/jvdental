@@ -190,7 +190,7 @@ export default function AppointmentBookingForm() {
         data-state={busy ? "pending" : "idle"}
         type="submit"
       >
-        <span>{busy ? "Submitting…" : bookingKind === "video_consultation" ? "Book consultation →" : "Book appointment →"}</span>
+        <span>{busy ? "Submitting…" : bookingKind === "video_consultation" ? "Request consultation →" : "Request appointment →"}</span>
       </button>
       {message ? (
         <p

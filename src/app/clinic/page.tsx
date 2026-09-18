@@ -6,6 +6,7 @@ export default async function ClinicDashboard() {
   const { staff, supabase } = await requireStaff();
   const canManageAssistant = staff.role === "owner" || staff.role === "admin";
   const canManageDoctors = staff.role === "owner" || staff.role === "admin";
+  const canManageWebsite = canManageDoctors;
   const canManageStaff = staff.role === "owner" || staff.role === "admin";
   const canManageIntegrations = staff.role === "owner" || staff.role === "admin";
 
@@ -56,6 +57,7 @@ export default async function ClinicDashboard() {
             {canManageStaff ? <Link href="/clinic/staff">Staff access</Link> : null}
             {canManageIntegrations ? <Link href="/clinic/integrations">Integrations</Link> : null}
             {canManageDoctors ? <Link href="/clinic/doctors">Doctor portfolios</Link> : null}
+            {canManageWebsite ? <Link href="/clinic/website">Website Photos</Link> : null}
             <Link href="/clinic/cases">Signature cases</Link>
             <Link href="/clinic/publishing">Publishing</Link>
             {canManageAssistant ? <Link href="/clinic/assistant">Public AI assistant</Link> : null}
@@ -155,6 +157,16 @@ export default async function ClinicDashboard() {
                 </div>
               </div>
             </article>
+
+            {canManageWebsite ? (
+              <article className="portal-card">
+                <div className="portal-card__header"><h2>Website photos</h2><span className="status-pill">Owner / admin</span></div>
+                <div className="portal-card__body">
+                  <p>Replace homepage, treatment and international-patient images with built-in crop, alt text and publishing controls.</p>
+                  <Link className="button button--ghost" href="/clinic/website">Manage website photos →</Link>
+                </div>
+              </article>
+            ) : null}
 
             {canManageDoctors ? (
               <article className="portal-card">
