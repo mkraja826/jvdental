@@ -1,7 +1,7 @@
 .doctor-directory-hero {
   width: min(100% - 48px, 1340px);
   margin: 0 auto;
-  padding: clamp(88px, 10vw, 150px) 0 clamp(56px, 8vw, 110px);
+  padding: clamp(64px, 7vw, 104px) 0 clamp(38px, 5vw, 72px);
   border-bottom: 1px solid var(--line);
 }
 
@@ -9,7 +9,7 @@
   max-width: 940px;
   margin: 16px 0 22px;
   font-family: var(--serif);
-  font-size: clamp(3.5rem, 7vw, 7.5rem);
+  font-size: clamp(2.8rem, 5.2vw, 5.6rem);
   font-weight: 400;
   line-height: .92;
   letter-spacing: -.055em;
@@ -25,15 +25,15 @@
 .doctor-directory-grid {
   display: grid;
   gap: 1px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   background: var(--line);
   border: 1px solid var(--line);
 }
 
 .doctor-card {
   display: grid;
-  grid-template-columns: minmax(210px, .78fr) 1.2fr;
-  min-height: 470px;
+  grid-template-columns: 1fr;
+  min-height: 0;
   background: var(--paper);
 }
 
@@ -45,7 +45,8 @@
 }
 
 .doctor-card__portrait {
-  min-height: 100%;
+  min-height: 0;
+  aspect-ratio: 4 / 3;
 }
 
 .doctor-card__portrait img,
@@ -72,18 +73,34 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: clamp(30px, 4vw, 60px);
+  padding: clamp(20px, 2.2vw, 30px);
 }
 
 .doctor-card__body h2 {
   margin: 6px 0 8px;
   font-family: var(--serif);
-  font-size: clamp(2.1rem, 4vw, 4rem);
+  font-size: clamp(1.35rem, 1.7vw, 1.65rem);
+  line-height: 1.08;
   font-weight: 400;
   letter-spacing: -.04em;
 }
 
-.doctor-card__title,
+ .doctor-card__title {
+  margin: 0 0 18px;
+  font-size: .86rem;
+  line-height: 1.5;
+}
+
+.doctor-card__body .eyebrow {
+  margin-bottom: 8px;
+  font-size: .6rem;
+}
+
+.doctor-card__body .text-link {
+  margin-top: auto;
+  font-size: .74rem;
+}
+
 .doctor-profile-title {
   color: var(--mineral);
   font-weight: 600;
@@ -367,7 +384,10 @@
 }
 
 @media (max-width: 1100px) {
-  .doctor-directory-grid,
+  .doctor-directory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .doctor-work-grid {
     grid-template-columns: 1fr;
   }
@@ -390,7 +410,11 @@
     grid-template-columns: 1fr;
   }
 
-  .doctor-card__portrait,
+  .doctor-card__portrait {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
   .doctor-profile-hero__portrait {
     min-height: 520px;
   }
@@ -406,12 +430,19 @@
     padding-top: 64px;
   }
 
-  .doctor-card__portrait,
+  .doctor-card__portrait {
+    min-height: 0;
+    aspect-ratio: 16 / 11;
+  }
+
   .doctor-profile-hero__portrait {
     min-height: 420px;
   }
 
-  .doctor-card__body,
+  .doctor-card__body {
+    padding: 20px 18px 22px;
+  }
+
   .doctor-profile-hero__copy {
     padding: 28px 22px;
   }
