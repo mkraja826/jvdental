@@ -15,6 +15,56 @@
   color: #bcd2eb !important;
 }
 
+.doctor-feature {
+  display: grid;
+  grid-template-columns: minmax(240px, .7fr) minmax(0, 1.3fr);
+  gap: clamp(32px, 7vw, 108px);
+  align-items: center;
+  padding-top: clamp(64px, 8vw, 112px);
+  padding-bottom: clamp(64px, 8vw, 112px);
+}
+
+.doctor-feature__portrait {
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 28px;
+  color: var(--brand-navy);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.16), transparent 55%),
+    linear-gradient(160deg, #dae2ef 0%, #b9cbe0 48%, #eef3f8 100%);
+  border: 1px solid var(--line);
+  box-shadow: 0 20px 48px rgba(16,45,77,.08);
+}
+
+.doctor-feature__portrait span {
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  margin-bottom: auto;
+  border: 1px solid rgba(16,45,77,.28);
+  border-radius: 50%;
+  font-family: var(--serif);
+  font-size: 2rem;
+}
+
+.doctor-feature__portrait small,
+.doctor-feature__identity span {
+  color: var(--muted);
+  font-size: .68rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.doctor-feature__copy .section-title { max-width: 720px; margin-bottom: 24px; }
+.doctor-feature__copy .section-intro { max-width: 650px; }
+.doctor-feature__identity { margin-top: 34px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: end; gap: 20px; }
+.doctor-feature__identity div { display: grid; gap: 4px; }
+.doctor-feature__identity strong { color: var(--brand-navy); font-family: var(--serif); font-size: 1.5rem; font-weight: 500; }
+.doctor-feature__identity .text-link { white-space: nowrap; }
+
 @media (min-width: 821px) {
   .home-page .dark-band .section {
     padding-top: 96px;
@@ -27,6 +77,12 @@
 }
 
 @media (max-width: 820px) {
+  .doctor-feature { grid-template-columns: 1fr; gap: 28px; padding-top: 48px; padding-bottom: 48px; }
+  .doctor-feature__portrait { min-height: 220px; padding: 20px; }
+  .doctor-feature__portrait span { width: 72px; height: 72px; font-size: 1.55rem; }
+  .doctor-feature__copy .section-title { margin-bottom: 18px; }
+  .doctor-feature__identity { margin-top: 24px; align-items: start; flex-direction: column; }
+
   .home-page .hero__copy {
     padding-top: 30px;
     padding-bottom: 22px;
