@@ -132,3 +132,17 @@ body{background:var(--brand-off-white);color:var(--brand-navy)}
 .hero__visual-copy p,
 .hero__visual-copy strong { color: var(--brand-navy); }
 .hero__visual-copy p { opacity: .72; }
+
+/* Dark-section button contrast */
+.dark-band .button--ghost,
+.guided-case-band .button--ghost {
+  color: #fff;
+  border-color: rgba(255,255,255,.58);
+  background: transparent;
+}
+.dark-band .button--ghost:hover,
+.guided-case-band .button--ghost:hover {
+  color: var(--brand-navy);
+  border-color: #fff;
+  background: #fff;
+}
