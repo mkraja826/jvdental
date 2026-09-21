@@ -31,11 +31,13 @@ const dionaviMedia = [
 ] as const;
 
 const completeCare = [
-  { title: "General Dentistry", body: "Check-ups, cleaning, preventive care and fillings.", href: "/dental-treatments/general-dentistry", image: "https://images.pexels.com/photos/3845723/pexels-photo-3845723.jpeg?auto=compress&cs=tinysrgb&w=900" },
-  { title: "Root Canal & Restorative", body: "Root canal treatment, crowns and bridges.", href: "/dental-treatments/root-canal-treatment", image: "https://images.pexels.com/photos/6528869/pexels-photo-6528869.jpeg?auto=compress&cs=tinysrgb&w=900" },
-  { title: "Cosmetic Dentistry", body: "Smile-focused restorative care and professional whitening.", href: "/dental-treatments/cosmetic-dentistry", image: "https://images.pexels.com/photos/3764014/pexels-photo-3764014.jpeg?auto=compress&cs=tinysrgb&w=900" },
-  { title: "Orthodontics", body: "Clear aligners and braces for suitable cases.", href: "/dental-treatments/clear-aligners", image: "https://images.pexels.com/photos/6812520/pexels-photo-6812520.jpeg?auto=compress&cs=tinysrgb&w=900" },
-  { title: "Gum Care", body: "Periodontal assessment, scaling and gum maintenance.", href: "/dental-treatments/gum-care", image: "https://images.pexels.com/photos/13264624/pexels-photo-13264624.jpeg?auto=compress&cs=tinysrgb&w=900" },
+  { title: "General Dentistry", body: "Check-ups, cleaning, preventive care and fillings.", href: "/dental-treatments/general-dentistry", image: "/media/IMG-20260918-WA0025.jpg" },
+  { title: "Root Canal & Restorative", body: "Root canal treatment, crowns and bridges.", href: "/dental-treatments/root-canal-treatment", image: "/media/IMG-20260918-WA0023.jpg" },
+  { title: "Cosmetic Dentistry", body: "Smile-focused restorative care and professional whitening.", href: "/dental-treatments/cosmetic-dentistry", image: "/media/IMG-20260918-WA0024.jpg" },
+  { title: "Orthodontics", body: "Braces and orthodontic treatment for suitable cases.", href: "/dental-treatments/orthodontics", image: "/media/IMG-20260918-WA0029.jpg" },
+  { title: "Clear Aligners", body: "Discreet removable aligners for suitable cases.", href: "/dental-treatments/clear-aligners", image: "/media/IMG-20260918-WA0021.jpg" },
+  { title: "Oral Surgery", body: "Tooth removal and minor oral surgical procedures.", href: "/dental-treatments/oral-surgery", image: "/media/IMG-20260918-WA0022.jpg" },
+  { title: "Gum Care", body: "Periodontal assessment, scaling and gum maintenance.", href: "/dental-treatments/gum-care", image: "https://images.pexels.com/photos/13264624/pexels-photo-13264624.jpeg?auto=compress&dpr=1&w=900" },
 ] as const;
 
 const journey = ["Share your concern", "Remote dental review", "Online consultation", "Travel & stay coordination", "Dental treatment in Hyderabad", "Return & remote follow-up"];
