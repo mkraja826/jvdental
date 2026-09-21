@@ -36,6 +36,7 @@ export default async function CasesPage() {
       <SiteHeader />
 
       <section className="section public-listing-page">
+        <nav className="case-breadcrumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">/</span><span>Cases</span></nav>
         <p className="section-kicker">Selected clinical work</p>
         <h1 className="section-title">Cases that show how dental treatment is actually planned.</h1>
         <p className="section-intro">Approved, anonymised clinical stories from diagnosis through treatment planning, restorative care, guided surgery where used and follow-up. Individual outcomes vary and every treatment plan begins with assessment.</p>
@@ -60,11 +61,12 @@ export default async function CasesPage() {
                     sizes="(max-width: 820px) 100vw, 240px"
                   />
                 ) : null}
-                <div>
+                <div className="public-case-card__content">
                   <p className="eyebrow public-listing-eyebrow">{item.dionavi_used ? "DIOnavi guided implant case" : item.guided_implant ? "Guided implant case" : item.treatment_type}</p>
                   <h3>{item.title}</h3>
                   <p>{item.short_summary ?? item.treatment_type}</p>
                   <p className="public-listing-meta">{[item.patient_age_band ? `Age ${item.patient_age_band}` : null, item.patient_country, item.full_arch ? "Full arch" : null].filter(Boolean).join(" · ")}</p>
+                  <span className="public-case-card__action">View case <span aria-hidden="true">→</span></span>
                 </div>
               </Link>
             );

@@ -38,3 +38,168 @@
     aspect-ratio: 4 / 3;
   }
 }
+
+/* Premium case experience — Version A / Quiet Clinical Luxury */
+.case-breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 30px;
+  color: var(--muted);
+  font-size: .68rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.case-breadcrumbs a { color: var(--brand-blue); }
+.case-breadcrumbs a:hover { color: var(--brand-navy); }
+.public-listing-list {
+  max-width: 1120px;
+  margin-top: 58px;
+}
+.public-case-card {
+  grid-template-columns: 48px minmax(280px, 360px) minmax(0, 1fr);
+  gap: 32px;
+  padding: 28px 0;
+  align-items: center;
+}
+.public-case-card__image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 18px 36px rgba(16,45,77,.12);
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+.public-case-card:hover .public-case-card__image {
+  transform: scale(1.025);
+  box-shadow: 0 24px 46px rgba(16,45,77,.18);
+}
+.public-case-card__content { min-width: 0; }
+.public-case-card h3 {
+  max-width: 620px;
+  margin: 0;
+  color: var(--brand-navy);
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -.035em;
+}
+.public-case-card__content > p:not(.eyebrow):not(.public-listing-meta) {
+  max-width: 620px;
+  margin-top: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.public-case-card__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+  color: var(--brand-navy);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.public-case-card__action span { color: var(--brand-blue); transition: transform 180ms ease; }
+.public-case-card:hover .public-case-card__action span { transform: translateX(4px); }
+.public-listing-cta { max-width: 1120px; }
+.case-detail-overview .section-intro { max-width: 720px; }
+.case-detail-consent {
+  max-width: 720px;
+  margin: 24px 0 0;
+  color: rgba(228,221,209,.78);
+  font-size: .82rem;
+  line-height: 1.6;
+}
+.case-detail-inline-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 34px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(238,232,221,.24);
+  color: rgba(228,221,209,.84);
+  font-size: .82rem;
+}
+.case-detail-inline-cta .button { flex: 0 0 auto; }
+.case-stage__media {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-left: 114px;
+}
+.case-stage__media figure:first-child { grid-column: span 2; }
+.case-stage__media figure:first-child img { aspect-ratio: 16 / 10; }
+.case-stage__media img {
+  height: clamp(220px, 22vw, 360px);
+}
+@media (max-width: 1100px) {
+  .public-case-card {
+    grid-template-columns: 40px minmax(240px, 300px) minmax(0, 1fr);
+    gap: 24px;
+  }
+  .case-stage__media { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .case-stage__media figure:first-child { grid-column: span 2; }
+}
+@media (max-width: 820px) {
+  .case-breadcrumbs { margin-bottom: 22px; font-size: .6rem; }
+  .public-listing-list {
+    max-width: none;
+    margin-top: 30px;
+  }
+  .public-listing-list .public-case-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 14px 0 22px;
+    border-radius: 16px;
+  }
+  .public-case-card__image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border-radius: 14px;
+    margin-bottom: 20px;
+  }
+  .public-case-card .principle__number {
+    position: absolute;
+    z-index: 1;
+    margin: 12px;
+    padding: 7px 9px;
+    border-radius: 999px;
+    background: rgba(251,250,247,.92);
+    box-shadow: 0 6px 16px rgba(16,45,77,.1);
+  }
+  .public-case-card h3 { font-size: clamp(1.65rem, 7.6vw, 2.25rem); }
+  .public-case-card__content > p:not(.eyebrow):not(.public-listing-meta) {
+    font-size: .92rem;
+    line-height: 1.58;
+  }
+  .public-case-card__action { margin-top: 18px; min-height: 44px; }
+  .public-listing-cta { max-width: none; }
+  .case-detail-overview .section-title { max-width: 14ch; }
+  .case-detail-consent { font-size: .76rem; }
+  .case-detail-inline-cta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 26px;
+    padding-top: 22px;
+  }
+  .case-detail-inline-cta .button { width: 100%; }
+  .case-stage__media {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin: 18px 0 0 36px;
+  }
+  .case-stage__media figure:first-child { grid-column: auto; }
+  .case-stage__media img { height: min(78vw, 360px); }
+}
+@media (max-width: 420px) {
+  .public-case-card__image { margin-bottom: 16px; }
+  .case-stage__media { margin-left: 32px; }
+}
