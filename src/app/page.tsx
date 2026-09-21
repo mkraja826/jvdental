@@ -37,7 +37,7 @@ const completeCare = [
   { title: "Orthodontics", body: "Braces and orthodontic treatment for suitable cases.", href: "/dental-treatments/clear-aligners", image: "/media/IMG-20260918-WA0025.jpg" },
   { title: "Clear Aligners", body: "Discreet removable aligners for suitable cases.", href: "/dental-treatments/clear-aligners", image: "/media/IMG-20260918-WA0024.jpg" },
   { title: "Oral Surgery", body: "Tooth removal and minor oral surgical procedures.", href: "/dental-treatments/oral-surgery", image: "/media/IMG-20260918-WA0023.jpg" },
-  { title: "Gum Care", body: "Periodontal assessment, scaling and gum maintenance.", href: "/dental-treatments/gum-care", image: "https://images.pexels.com/photos/3845723/pexels-photo-3845723.jpeg?auto=compress&cs=tinysrgb&w=900" },
+  { title: "Gum Care", body: "Periodontal assessment, scaling and gum maintenance.", href: "/dental-treatments/gum-care", image: "/media/file_000000007394821184a2a923bc754f48.png" },
 ] as const;
 
 const journey = ["Share your concern", "Remote dental review", "Online consultation", "Travel & stay coordination", "Dental treatment in Hyderabad", "Return & remote follow-up"];
