@@ -109,7 +109,8 @@ body{background:var(--brand-off-white);color:var(--brand-navy)}
   letter-spacing: .08em;
   text-transform: uppercase;
 }
-.home-hero-video__media { position: relative; z-index: 1; opacity: .28 !important; mix-blend-mode: multiply; }\n.home-page .home-hero-video__media { opacity: .28 !important; }
+.home-hero-video__media { position: relative; z-index: 1; opacity: .28 !important; mix-blend-mode: multiply; }
+.home-page .home-hero-video__media { opacity: .28 !important; }
 .hero__visual-label, .hero__visual-copy { z-index: 2; }
 .hero__visual { isolation: isolate; }
 .doctor-card { border-radius: 14px; }
