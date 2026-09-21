@@ -45,7 +45,8 @@ export default async function CaseDetailPage({ params }: PageProps) {
 
   return <main className="case-detail-page">
     <SiteHeader />
-    <section className="section">
+    <section className="section case-detail-overview">
+      <nav className="case-breadcrumbs" aria-label="Breadcrumb"><Link href="/cases">Cases</Link><span aria-hidden="true">/</span><span>{item.title}</span></nav>
       <p className="section-kicker">Real patient case {item.dionavi_used ? "· DIOnavi guided" : ""}</p>
       <h1 className="section-title">{item.title}</h1>
       <p className="section-intro">{item.short_summary ?? `Follow this ${item.treatment_type.toLowerCase()} journey from assessment and planning through treatment.`}</p>
@@ -56,13 +57,15 @@ export default async function CaseDetailPage({ params }: PageProps) {
       </div>
     </section>
 
-    <section className="dark-band case-detail-sequence"><div className="section">
+    <section className="dark-band case-detail-sequence" id="treatment-journey"><div className="section">
       <p className="section-kicker">Treatment journey</p><h2 className="section-title">See how the treatment progressed.</h2>
-      {unassigned.length ? <div className="case-stage"><div className="treatment-row case-stage__heading"><span>01</span><strong>Treatment journey</strong><b>{unassigned.length} photos</b></div>{renderMedia(unassigned, item.title)}</div> : null}
+      <p className="case-detail-consent">A consent-led, anonymised clinical record. The sequence is presented for education; every treatment plan depends on individual assessment.</p>
+      {unassigned.length ? <div className="case-stage"><div className="treatment-row case-stage__heading"><span>01</span><strong>Documented treatment journey</strong><b>{unassigned.length} photos</b></div>{renderMedia(unassigned, item.title)}</div> : null}
       {(stages ?? []).map((stage, index) => {
         const stageMedia = (media ?? []).filter((asset) => asset.stage_id === stage.id);
         return <div className="case-stage" key={stage.id}><div className="treatment-row case-stage__heading"><span>{String(index + (unassigned.length ? 2 : 1)).padStart(2, "0")}</span><strong>{stage.title}</strong><b>{stage.stage_type === "dionavi_planning" ? "DIOnavi" : ""}</b></div>{stage.body ? <p className="case-stage__body">{stage.body}</p> : null}{renderMedia(stageMedia, stage.title)}</div>;
       })}
+      <div className="case-detail-inline-cta"><span>Want to discuss a similar treatment plan?</span><Link className="button button--light" href="/book">Request an implant assessment <span aria-hidden="true">→</span></Link></div>
     </div></section>
 
     {doctor?.slug ? <section className="section section--tight"><p className="section-kicker">Treating clinician</p><h2 className="section-title">{doctor.full_name}</h2><p className="section-intro">{doctor.professional_title}</p><Link className="button button--ghost" href={`/doctors/${doctor.slug}`}>View doctor portfolio →</Link></section> : null}
