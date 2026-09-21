@@ -120,3 +120,15 @@ body{background:var(--brand-off-white);color:var(--brand-navy)}
   .hero-visual-fallback { padding: 28px; }
   .hero-visual-fallback strong { font-size: clamp(2.2rem, 10vw, 3.3rem); }
 }
+
+/* Version A contrast refinement */
+.hero__visual-label,
+.hero__visual-copy {
+  color: var(--brand-navy);
+  background: rgba(251,250,247,.92);
+  border-left-color: var(--brand-blue);
+}
+.hero__visual-label { text-shadow: none; }
+.hero__visual-copy p,
+.hero__visual-copy strong { color: var(--brand-navy); }
+.hero__visual-copy p { opacity: .72; }
