@@ -34,7 +34,7 @@ const completeCare = [
   { title: "General Dentistry", body: "Check-ups, cleaning, preventive care and fillings.", href: "/dental-treatments/general-dentistry", image: "/media/IMG-20260918-WA0025.jpg" },
   { title: "Root Canal & Restorative", body: "Root canal treatment, crowns and bridges.", href: "/dental-treatments/root-canal-treatment", image: "/media/IMG-20260918-WA0023.jpg" },
   { title: "Cosmetic Dentistry", body: "Smile-focused restorative care and professional whitening.", href: "/dental-treatments/cosmetic-dentistry", image: "/media/IMG-20260918-WA0024.jpg" },
-  { title: "Orthodontics", body: "Braces and orthodontic treatment for suitable cases.", href: "/dental-treatments/orthodontics", image: "/media/IMG-20260918-WA0029.jpg" },
+  { title: "Orthodontics", body: "Braces and orthodontic treatment for suitable cases.", href: "/dental-treatments/clear-aligners", image: "/media/IMG-20260918-WA0029.jpg" },
   { title: "Clear Aligners", body: "Discreet removable aligners for suitable cases.", href: "/dental-treatments/clear-aligners", image: "/media/IMG-20260918-WA0021.jpg" },
   { title: "Oral Surgery", body: "Tooth removal and minor oral surgical procedures.", href: "/dental-treatments/oral-surgery", image: "/media/IMG-20260918-WA0022.jpg" },
   { title: "Gum Care", body: "Periodontal assessment, scaling and gum maintenance.", href: "/dental-treatments/gum-care", image: "https://images.pexels.com/photos/13264624/pexels-photo-13264624.jpeg?auto=compress&dpr=1&w=900" },
