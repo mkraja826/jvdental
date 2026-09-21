@@ -1,4 +1,5 @@
 :root {
+  --visual-accent: #b48643;
   --bone: #eee8dd;
   --paper: #fbfaf7;
   --ink: #102d4d;
@@ -65,3 +66,55 @@ body{background:var(--brand-off-white);color:var(--brand-navy)}
 
 .wordmark img{display:block;width:180px;height:auto;max-width:100%}
 @media(max-width:720px){.wordmark img{width:148px}}
+
+
+/* Visual Version A — Quiet Clinical Luxury */
+.hero-visual-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  padding: clamp(34px, 5vw, 82px);
+  background:
+    radial-gradient(circle at 78% 28%, rgba(180,134,67,.24), transparent 26%),
+    linear-gradient(145deg, #f5efe4 0%, #e8ddcb 52%, #c8b18b 100%);
+  color: var(--brand-navy);
+}
+.hero-visual-fallback__mark {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 1px solid rgba(16,45,77,.32);
+  border-radius: 50%;
+  font-size: .7rem;
+  letter-spacing: .16em;
+}
+.hero-visual-fallback strong {
+  max-width: 420px;
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 4.5vw, 5.2rem);
+  font-weight: 400;
+  line-height: .94;
+  letter-spacing: -.055em;
+}
+.hero-visual-fallback small {
+  max-width: 290px;
+  color: rgba(16,45,77,.68);
+  font-size: .7rem;
+  line-height: 1.5;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.home-hero-video__media { position: relative; z-index: 1; opacity: .28; mix-blend-mode: multiply; }
+.hero__visual-label, .hero__visual-copy { z-index: 2; }
+.hero__visual { isolation: isolate; }
+.doctor-card { border-radius: 14px; }
+.doctor-card__portrait { border-bottom-color: rgba(169,120,50,.28); }
+@media (max-width: 620px) {
+  .hero-visual-fallback { padding: 28px; }
+  .hero-visual-fallback strong { font-size: clamp(2.2rem, 10vw, 3.3rem); }
+}
