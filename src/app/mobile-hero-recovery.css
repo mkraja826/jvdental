@@ -172,3 +172,8 @@
 .home-page .home-hero-video { background-image: none !important; background-color: #071f35 !important; }
 .home-page .home-hero-video::before, .home-page .home-hero-video::after, .home-page .home-hero-video .hero-visual-fallback, .home-page .home-hero-video .hero__visual-copy, .home-page .home-hero-video .hero__visual-label { display: none !important; }
 .home-page .home-hero-video__media { opacity: 1 !important; filter: none !important; mix-blend-mode: normal !important; }
+
+/* Final media visibility override: native playback, no masks or image poster. */
+.home-page .home-hero-video { isolation: isolate !important; background: #071f35 !important; }
+.home-page .home-hero-video__media { display: block !important; position: relative !important; inset: auto !important; z-index: 3 !important; width: 100% !important; height: 100% !important; opacity: 1 !important; visibility: visible !important; object-fit: contain !important; filter: none !important; pointer-events: auto !important; }
+@media (max-width: 900px) { .home-page .home-hero-video__media { position: absolute !important; inset: 0 !important; } }
