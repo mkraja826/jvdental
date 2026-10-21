@@ -732,3 +732,17 @@
 .doctor-directory-grid .doctor-card__portrait { aspect-ratio: 4 / 5; }
 .doctor-directory-grid .doctor-card__portrait img { object-fit: cover; object-position: center 24%; }
 @media (max-width: 820px) { .doctor-directory-grid .doctor-card__portrait { aspect-ratio: 4 / 5; } }
+
+/* Doctor directory mobile card repair: avoid overlapping image and clipped text. */
+@media (max-width: 767px) {
+  .doctor-directory-grid { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; width: calc(100% - 32px) !important; margin-inline: auto !important; gap: 18px !important; }
+  .doctor-directory-grid .doctor-card { display: flex !important; flex-direction: column !important; width: 100% !important; min-width: 0 !important; height: auto !important; overflow: hidden !important; border-radius: 18px !important; }
+  .doctor-directory-grid .doctor-card__portrait { display: block !important; position: relative !important; flex: none !important; width: 100% !important; height: auto !important; min-height: 0 !important; aspect-ratio: 4 / 3 !important; overflow: hidden !important; }
+  .doctor-directory-grid .doctor-card__portrait img { display: block !important; width: 100% !important; height: 100% !important; object-fit: contain !important; object-position: center center !important; }
+  .doctor-directory-grid .doctor-card__body { display: flex !important; flex-direction: column !important; flex: 1 !important; width: 100% !important; min-width: 0 !important; padding: 18px 20px 20px !important; overflow: visible !important; }
+  .doctor-directory-grid .doctor-card__meta { margin: 0 0 10px !important; }
+  .doctor-directory-grid .doctor-card__body h2 { margin: 0 0 8px !important; font-size: clamp(1.35rem, 5.5vw, 1.75rem) !important; line-height: 1.18 !important; overflow-wrap: anywhere !important; }
+  .doctor-directory-grid .doctor-card__title { font-size: .9rem !important; line-height: 1.5 !important; min-height: 0 !important; overflow-wrap: anywhere !important; }
+  .doctor-directory-grid .doctor-card__link { margin-top: 18px !important; padding-top: 14px !important; }
+  .doctor-directory-grid .doctor-card__portrait > span { font-size: 2rem !important; }
+}
