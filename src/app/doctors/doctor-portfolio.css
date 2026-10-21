@@ -727,3 +727,8 @@
   .doctor-card__title { min-height: 0; font-size: .78rem; }
   .doctor-card__link { margin-top: 16px; padding-top: 12px; font-size: .66rem; }
 }
+
+/* Keep clinical headshots in a consistent portrait crop across devices. */
+.doctor-directory-grid .doctor-card__portrait { aspect-ratio: 4 / 5; }
+.doctor-directory-grid .doctor-card__portrait img { object-fit: cover; object-position: center 24%; }
+@media (max-width: 820px) { .doctor-directory-grid .doctor-card__portrait { aspect-ratio: 4 / 5; } }
