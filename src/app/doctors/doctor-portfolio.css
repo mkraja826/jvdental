@@ -746,3 +746,17 @@
   .doctor-directory-grid .doctor-card__link { margin-top: 18px !important; padding-top: 14px !important; }
   .doctor-directory-grid .doctor-card__portrait > span { font-size: 2rem !important; }
 }
+
+/* 2026-10 mobile typography and layout: override legacy oversized rules. */
+@media (max-width: 767px) {
+  .doctor-directory-hero { width: calc(100% - 40px) !important; padding: 42px 0 28px !important; gap: 14px !important; display: block !important; }
+  .doctor-directory-hero .eyebrow { font-size: .66rem !important; line-height: 1.5 !important; letter-spacing: .12em !important; margin-bottom: 14px !important; }
+  .doctor-directory-hero h1 { font-size: clamp(2.05rem, 8.3vw, 2.9rem) !important; line-height: 1.08 !important; letter-spacing: -.045em !important; margin: 0 0 18px !important; overflow-wrap: normal !important; }
+  .doctor-directory-hero__intro, .doctor-directory-hero > p:last-child { font-size: .92rem !important; line-height: 1.6 !important; max-width: 36rem !important; margin: 0 !important; }
+  .doctor-directory-grid .doctor-card { display: flex !important; flex-direction: column !important; }
+  .doctor-directory-grid .doctor-card__body h2 { font-size: 1.45rem !important; line-height: 1.2 !important; letter-spacing: -.025em !important; }
+  .doctor-directory-grid .doctor-card__title { font-size: .88rem !important; line-height: 1.45 !important; }
+  .doctor-directory-grid .doctor-card__meta { font-size: .61rem !important; letter-spacing: .09em !important; }
+  .doctor-directory-grid .doctor-card__link { font-size: .74rem !important; }
+  .final-cta h2 { font-size: clamp(1.95rem, 8vw, 2.8rem) !important; line-height: 1.12 !important; overflow-wrap: break-word !important; }
+}
