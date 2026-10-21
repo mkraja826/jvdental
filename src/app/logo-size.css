@@ -11,14 +11,14 @@
 
 @media (max-width: 720px) {
   .clinic-wordmark {
-    width: 156px;
-    max-width: 45vw;
+    width: 184px;
+    max-width: 52vw;
   }
 }
 
 @media (max-width: 420px) {
   .clinic-wordmark {
-    width: 138px;
-    max-width: 42vw;
+    width: 168px;
+    max-width: 50vw;
   }
 }
