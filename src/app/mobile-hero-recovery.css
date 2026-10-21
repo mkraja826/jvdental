@@ -181,8 +181,8 @@
 /* Larger centered clinic logo on portrait phones only. */
 @media (max-width: 600px) and (orientation: portrait) {
   body .site-header .clinic-wordmark {
-    width: min(156px, 43vw) !important;
-    max-width: 43vw !important;
+    width: min(149.76px, 41.28vw) !important;
+    max-width: 41.28vw !important;
     height: auto !important;
   }
 }
