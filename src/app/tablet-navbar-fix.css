@@ -1,0 +1,135 @@
+/* Keep tablet navigation available when desktop links are hidden. */
+@media (min-width: 901px) and (max-width: 1100px) {
+  .site-header { position: sticky; }
+  .site-header__inner {
+    width: calc(100% - 20px);
+    min-height: 72px;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+  }
+  .clinic-wordmark {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    width: 104px;
+    max-width: 30vw;
+    border-radius: 4px;
+  }
+  .header-actions { display: contents; }
+  .header-logins { display: none; }
+  .header-assessment {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    min-height: 40px;
+    padding: 0 10px;
+    font-size: .62rem;
+    background: var(--brand-mist);
+  }
+  .header-assessment span { display: none; }
+
+  .mobile-menu-toggle {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border: 1px solid rgba(218,226,239,.28);
+    border-radius: 7px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .mobile-menu-toggle span {
+    width: 19px;
+    height: 2px;
+    border-radius: 999px;
+    background: #fff;
+    transition: transform 180ms ease, opacity 180ms ease;
+  }
+  .site-header--menu-open .mobile-menu-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .site-header--menu-open .mobile-menu-toggle span:nth-child(2) { opacity: 0; }
+  .site-header--menu-open .mobile-menu-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .site-nav {
+    display: none;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin: 0 -10px -7px;
+    padding: 10px 10px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    overflow: visible;
+    border-top: 1px solid rgba(218,226,239,.16);
+    background: var(--brand-navy);
+  }
+  .site-header--menu-open .site-nav { display: flex; }
+  .site-nav > a,
+  .site-nav__dropdown-trigger > a {
+    min-height: 46px;
+    width: 100%;
+    padding: 12px 8px;
+    display: flex;
+    align-items: center;
+    font-size: .78rem;
+    border-bottom: 1px solid rgba(218,226,239,.11);
+  }
+  .site-nav > a::after,.site-nav__dropdown-trigger > a::after { display: none; }
+  .site-nav__dropdown { width: 100%; }
+  .site-nav__dropdown-trigger { width: 100%; gap: 0; }
+  .site-nav__dropdown-toggle {
+    flex: 0 0 46px;
+    height: 46px;
+    border-bottom: 1px solid rgba(218,226,239,.11);
+    color: #fff;
+  }
+  .site-nav__dropdown:hover .site-nav__dropdown-menu { display: none; }
+  .site-nav__dropdown:focus-within .site-nav__dropdown-menu { display: none; }
+  .site-nav__dropdown[data-open="true"] .site-nav__dropdown-menu {
+    position: static;
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    padding: 5px 8px 10px 18px;
+    border: 0;
+    border-radius: 0;
+    background: rgba(218,226,239,.06);
+    box-shadow: none;
+  }
+  .site-nav__dropdown-menu a {
+    min-height: 40px;
+    padding: 9px 10px;
+    border-bottom: 1px solid rgba(218,226,239,.08);
+    border-radius: 0;
+    color: rgba(249,247,248,.86);
+    font-size: .73rem;
+  }
+  .site-nav__dropdown-menu a:hover,.site-nav__dropdown-menu a:focus-visible { background: rgba(218,226,239,.08); color: #fff; }
+  .mobile-menu-portals {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding-top: 10px;
+  }
+  .mobile-menu-portals a {
+    justify-content: center;
+    min-height: 42px;
+    border: 1px solid rgba(218,226,239,.24);
+    border-radius: 6px;
+    background: rgba(218,226,239,.08);
+  }
+
+  .site-header__inner { width: calc(100% - 32px); grid-template-columns: 52px minmax(0, 1fr) 170px; min-height: 84px; }
+  .clinic-wordmark { width: 190px; max-width: 35vw; }
+  .header-assessment { min-width: 156px; font-size: .72rem; }
+  .mobile-menu-toggle { width: 46px; height: 46px; }
+}
