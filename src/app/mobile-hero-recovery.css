@@ -177,3 +177,12 @@
 .home-page .home-hero-video { isolation: isolate !important; background: #071f35 !important; }
 .home-page .home-hero-video__media { display: block !important; position: relative !important; inset: auto !important; z-index: 3 !important; width: 100% !important; height: 100% !important; opacity: 1 !important; visibility: visible !important; object-fit: contain !important; filter: none !important; pointer-events: auto !important; }
 @media (max-width: 900px) { .home-page .home-hero-video__media { position: absolute !important; inset: 0 !important; } }
+
+/* Larger centered clinic logo on portrait phones only. */
+@media (max-width: 600px) and (orientation: portrait) {
+  body .site-header .clinic-wordmark {
+    width: min(156px, 43vw) !important;
+    max-width: 43vw !important;
+    height: auto !important;
+  }
+}
