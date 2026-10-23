@@ -34,6 +34,7 @@ import "./root-canal-refinement.css";
 import "./treatment-media-refinement.css";
 import "./cases-visual-refinement.css";
 import "./form-responsive-refinement.css";
+import "./nav-assistant-overlap-refinement.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://jvdental.com");
 
