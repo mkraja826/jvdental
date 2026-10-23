@@ -104,3 +104,37 @@
   .root-canal-page .international-grid .portal-card__header { padding: 13px 16px; }
   .root-canal-page .international-grid .portal-card__body { padding: 15px 16px 17px; }
 }
+
+/* Fix 4: keep the configured clinical image and protect its legibility at each width.
+   Never replace/crop the source asset in the CMS. */
+.root-canal-page .hero__visual {
+  isolation: isolate;
+  background-repeat: no-repeat;
+  background-position: center center !important;
+  overflow: hidden;
+}
+.root-canal-page .hero__visual::before,
+.root-canal-page .hero__visual::after { display: none; }
+.root-canal-page .hero__visual-label,
+.root-canal-page .hero__visual-copy {
+  z-index: 2;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .55);
+}
+.root-canal-page .hero__visual-label { color: #fff; }
+.root-canal-page .hero__visual-copy { color: #fff; }
+@media (max-width: 820px) {
+  .root-canal-page .hero__visual {
+    background-position: center 40% !important;
+    min-height: clamp(245px, 65vw, 385px);
+  }
+  .root-canal-page .hero__visual-copy {
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    max-width: calc(100% - 40px);
+  }
+  .root-canal-page .hero__visual-copy strong {
+    font-size: clamp(1.8rem, 7vw, 2.6rem);
+    line-height: 1.08;
+  }
+}
