@@ -1,0 +1,39 @@
+/* Fix 8 — navigation/assistant collision guards. Scoped to public UI only. */
+@media (max-width: 1100px) {
+  .site-header__inner { min-width: 0; }
+  .site-nav { max-width: 100%; }
+  .site-nav a, .site-nav__dropdown-toggle { overflow-wrap: anywhere; }
+  .mobile-menu-toggle { min-width: 44px; min-height: 44px; }
+  .site-nav__dropdown-toggle { min-width: 44px; min-height: 44px; }
+}
+.public-assistant { max-width: calc(100vw - 24px); }
+.public-assistant__panel { min-width: 0; }
+.public-assistant__header, .public-assistant__form { min-width: 0; }
+@media (max-width: 640px) {
+  .public-assistant {
+    z-index: 45; /* Below site header/menu when closed. */
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+  .public-assistant--open { z-index: 100; }
+  .public-assistant__panel {
+    width: 100%;
+    max-width: 100%;
+    height: min(620px, calc(100dvh - 96px - env(safe-area-inset-bottom, 0px)));
+    max-height: calc(100dvh - 96px - env(safe-area-inset-bottom, 0px));
+  }
+  .public-assistant__launcher { width: 48px; height: 48px; min-width: 48px; }
+  .public-assistant__close { min-height: 44px; min-width: 44px; }
+  .public-assistant__header { gap: 10px; }
+  .public-assistant__header > div { min-width: 0; }
+  .public-assistant__header strong { overflow-wrap: anywhere; }
+  .public-assistant__form { grid-template-columns: minmax(0,1fr) auto; }
+  .public-assistant__form textarea { min-width: 0; font-size: 16px; }
+}
+@media (max-width: 380px) {
+  .public-assistant { left: 10px; right: 10px; }
+  .public-assistant__header { padding: 12px; }
+  .public-assistant__log { padding: 12px; }
+  .public-assistant__quick { padding-inline: 12px; }
+  .public-assistant__form { margin-inline: 12px; }
+  .public-assistant__disclaimer { padding-inline: 12px; }
+}
