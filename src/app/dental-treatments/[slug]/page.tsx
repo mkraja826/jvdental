@@ -248,7 +248,7 @@ export default async function TreatmentPage({ params }: { params: Promise<{ slug
     }
   }
 
-  return <main>
+  return <main className={slug === "root-canal-treatment" ? "root-canal-page" : undefined}>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
     <SiteHeader />
