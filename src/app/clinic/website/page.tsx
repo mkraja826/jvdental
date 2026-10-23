@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import WebsiteMediaUploader from "@/components/website-media-uploader";
+import WebsiteThemePicker from "@/components/website-theme-picker";
+import { DEFAULT_WEBSITE_THEME, getWebsiteTheme } from "@/content/website-themes";
 import { requireStaff } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 
@@ -48,47 +50,62 @@ export default async function WebsiteMediaPage() {
   if (staff.role !== "owner" && staff.role !== "admin") redirect("/clinic");
 
   const supabase = await createClient();
-  const { data } = await supabase.from("website_media").select("slot_key,storage_path,alt_text");
-  const current = new Map((data ?? []).map((row) => [row.slot_key, row]));
+  const [{ data: mediaData }, { data: themeData }] = await Promise.all([
+    supabase.from("website_media").select("slot_key,storage_path,alt_text"),
+    supabase.from("website_theme_settings").select("theme_key").eq("id", true).maybeSingle(),
+  ]);
+
+  const current = new Map((mediaData ?? []).map((row) => [row.slot_key, row]));
+  const currentTheme = getWebsiteTheme(themeData?.theme_key ?? DEFAULT_WEBSITE_THEME).key;
 
   return (
     <main className="clinic-page-shell">
       <header className="clinic-page-header">
-        <div><p className="portal-overline">Website</p><h1>Website photos</h1></div>
-        <p>Change public website images without touching code. Upload any suitable photo, crop it to the fixed frame, publish it, or restore the website default image at any time.</p>
+        <div><p className="portal-overline">Website</p><h1>Website art</h1></div>
+        <p>Control the public website&apos;s approved visual style from one place. Choose a preset theme or manage website photography without touching code.</p>
       </header>
 
-      <div style={{ display: "grid", gap: 36 }}>
-        {groups.map((group) => (
-          <section key={group.title} aria-labelledby={`media-${group.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}>
-            <div style={{ marginBottom: 16 }}>
-              <p className="portal-overline">Website media</p>
-              <h2 id={`media-${group.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} style={{ marginBottom: 6 }}>{group.title}</h2>
-              <p style={{ margin: 0, color: "var(--muted)" }}>{group.description}</p>
-            </div>
-            <div className="portal-grid" style={{ alignItems: "start" }}>
-              {group.slots.map((slot) => {
-                const item = current.get(slot.key);
-                const currentUrl = item?.storage_path
-                  ? supabase.storage.from("public-content").getPublicUrl(item.storage_path).data.publicUrl
-                  : null;
-                return <WebsiteMediaUploader
-                  key={slot.key}
-                  slotKey={slot.key}
-                  label={slot.label}
-                  description={slot.description}
-                  width={slot.width}
-                  height={slot.height}
-                  previewHref={slot.previewHref}
-                  currentPath={item?.storage_path ?? null}
-                  currentUrl={currentUrl}
-                  currentAlt={item?.alt_text ?? null}
-                />;
-              })}
-            </div>
-          </section>
-        ))}
-      </div>
+      <WebsiteThemePicker currentTheme={currentTheme} />
+
+      <section aria-labelledby="website-photos-heading">
+        <div style={{ marginBottom: 22 }}>
+          <p className="portal-overline">Website art</p>
+          <h2 id="website-photos-heading" style={{ marginBottom: 6 }}>Website photos</h2>
+          <p style={{ margin: 0, color: "var(--muted)" }}>Upload any suitable photo, crop it to the fixed frame, publish it, or restore the website default image at any time.</p>
+        </div>
+
+        <div style={{ display: "grid", gap: 36 }}>
+          {groups.map((group) => (
+            <section key={group.title} aria-labelledby={`media-${group.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}>
+              <div style={{ marginBottom: 16 }}>
+                <p className="portal-overline">Website media</p>
+                <h3 id={`media-${group.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} style={{ marginBottom: 6 }}>{group.title}</h3>
+                <p style={{ margin: 0, color: "var(--muted)" }}>{group.description}</p>
+              </div>
+              <div className="portal-grid" style={{ alignItems: "start" }}>
+                {group.slots.map((slot) => {
+                  const item = current.get(slot.key);
+                  const currentUrl = item?.storage_path
+                    ? supabase.storage.from("public-content").getPublicUrl(item.storage_path).data.publicUrl
+                    : null;
+                  return <WebsiteMediaUploader
+                    key={slot.key}
+                    slotKey={slot.key}
+                    label={slot.label}
+                    description={slot.description}
+                    width={slot.width}
+                    height={slot.height}
+                    previewHref={slot.previewHref}
+                    currentPath={item?.storage_path ?? null}
+                    currentUrl={currentUrl}
+                    currentAlt={item?.alt_text ?? null}
+                  />;
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
