@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { generateFromProviderPool } from "../_shared/ai-provider-pool.ts";
 
 type KnowledgeRow = {
   id: string;
@@ -130,16 +131,9 @@ function fallbackAnswer(rows: KnowledgeRow[], classification: string, highIntent
   return highIntent ? `${answer}\n\nIf you’d like a patient-specific preliminary review, you can start an implant assessment and upload your available OPG or CBCT.` : answer;
 }
 
-async function generateWithProvider(message: string, rows: KnowledgeRow[], classification: string, highIntent: boolean) {
-  const endpoint = Deno.env.get("AI_CHAT_COMPLETIONS_URL");
-  const apiKey = Deno.env.get("AI_API_KEY");
-  const model = Deno.env.get("AI_MODEL");
-  const provider = Deno.env.get("AI_PROVIDER_NAME") ?? "compatible";
-
-  if (!endpoint || !apiKey || !model) return null;
-
+function buildSystemPrompt(rows: KnowledgeRow[], highIntent: boolean) {
   const context = rows.map((row) => `[${row.category}] ${row.title}\n${row.content}`).join("\n\n");
-  const system = `You are the public digital assistant for JV Dental. Answer only questions about JV Dental, dental care, dental implants, DIOnavi guided implant treatment, international-patient logistics, appointments, and general dental education.
+  return `You are the public digital assistant for JV Dental. Answer only questions about JV Dental, dental care, dental implants, DIOnavi guided implant treatment, international-patient logistics, appointments, and general dental education.
 
 Clinic-specific facts MUST come only from the APPROVED KNOWLEDGE below. Never invent doctor credentials, treatment prices, success rates, technologies, services, airport pickup, hotel arrangements, opening hours, or guarantees.
 
@@ -156,29 +150,6 @@ ${highIntent ? "- The visitor appears to have treatment intent. End with a short
 
 APPROVED KNOWLEDGE:
 ${context}`;
-
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: message },
-        ],
-        temperature: 0.2,
-        max_tokens: 550,
-      }),
-    });
-    if (!response.ok) return null;
-    const payload = await response.json();
-    const content = payload?.choices?.[0]?.message?.content;
-    if (typeof content !== "string" || !content.trim()) return null;
-    return { text: content.trim().slice(0, 4000), provider, model };
-  } catch {
-    return null;
-  }
 }
 
 Deno.serve(async (req: Request) => {
@@ -269,7 +240,12 @@ Deno.serve(async (req: Request) => {
   if (["emergency", "medication_request", "diagnosis_request", "dental_pain"].includes(classification)) {
     answer = fallbackAnswer(ranked, classification, highIntent);
   } else {
-    const generated = await generateWithProvider(message, ranked, classification, highIntent);
+    const generated = await generateFromProviderPool({
+      supabase,
+      system: buildSystemPrompt(ranked, highIntent),
+      message,
+      maxTokens: 550,
+    });
     answer = generated?.text ?? fallbackAnswer(ranked, classification, highIntent);
     provider = generated?.provider ?? null;
     modelName = generated?.model ?? null;
