@@ -1,0 +1,63 @@
+/* Fix 7: presentation-only polish for booking and public login forms.
+   No changes to auth, submissions, validation, or payment flow. */
+.booking-page .booking-hero {
+  padding-top: clamp(44px, 5vw, 76px);
+  padding-bottom: clamp(28px, 3vw, 44px);
+  gap: clamp(24px, 4vw, 58px);
+}
+.booking-page .booking-hero h1 {
+  font-size: clamp(2.4rem, 4vw, 4.5rem);
+  line-height: 1.06;
+  letter-spacing: -.038em;
+  text-wrap: balance;
+}
+.booking-page .booking-layout {
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  margin-bottom: clamp(60px, 6vw, 92px);
+}
+.booking-page .booking-intro { padding: clamp(28px, 3.5vw, 52px); }
+.booking-page .booking-form {
+  min-width: 0;
+  gap: 19px;
+  padding: clamp(24px, 3.5vw, 48px);
+}
+.booking-page .booking-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.booking-page .booking-form .field { min-width: 0; }
+.booking-page .booking-form input,
+.booking-page .booking-form select,
+.booking-page .booking-form textarea {
+  max-width: 100%;
+  min-width: 0;
+  border-radius: 9px;
+}
+.booking-page .booking-note,
+.booking-page .booking-message { line-height: 1.6; overflow-wrap: anywhere; }
+.booking-page .booking-submit { min-height: 48px; }
+.login-form-wrap { min-width: 0; }
+.login-form { min-width: 0; }
+.login-form input:not([type="checkbox"]):not([type="radio"]) {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 46px;
+  border-radius: 9px;
+}
+.login-form :is(button[type="submit"], .login-submit) { min-height: 46px; }
+.login-form :is([role="alert"], .form-error) { overflow-wrap: anywhere; line-height: 1.55; }
+@media (max-width: 900px) {
+  .booking-page .booking-layout { grid-template-columns: minmax(0,1fr); }
+  .booking-page .booking-hero { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 600px) {
+  .booking-page .booking-hero { width: calc(100% - 32px); padding-top: 32px; }
+  .booking-page .booking-hero h1 { font-size: clamp(2.25rem, 9vw, 3.1rem); }
+  .booking-page .booking-layout { width: calc(100% - 24px); }
+  .booking-page .booking-form { padding: 22px 16px; gap: 16px; }
+  .booking-page .booking-grid { grid-template-columns: minmax(0,1fr); gap: 14px; }
+  .booking-page .booking-type { grid-template-columns: minmax(0,1fr); }
+  .booking-page .booking-type button { min-height: 48px; }
+  .booking-page .booking-submit { width: 100%; }
+  .login-form-wrap { padding-inline: 18px; }
+  .login-form input:not([type="checkbox"]):not([type="radio"]),
+  .booking-page .booking-form :is(input,select,textarea) { font-size: 16px; }
+}
