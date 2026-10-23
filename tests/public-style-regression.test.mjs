@@ -29,3 +29,16 @@ test("original hero video and CMS treatment images remain selected", () => {
   assert.match(treatments, /managedImage\?\.storage_path/);
   assert.match(treatments, /getPublicUrl\(managedImage\.storage_path\)/);
 });
+
+test("clinical case stages and images use explicit ascending order", () => {
+  const cases = read("../src/app/cases/[slug]/page.tsx");
+  const listing = read("../src/app/cases/page.tsx");
+  assert.match(cases, /signature_case_stages"\)\.select\([^\n]+\.order\("sort_order", \{ ascending: true \}\)/);
+  assert.match(cases, /signature_case_media"\)\.select\([^\n]+\.order\("sort_order", \{ ascending: true \}\)/);
+  assert.match(listing, /sort\(\(a, b\) => \(a\.sort_order \?\? 0\) - \(b\.sort_order \?\? 0\)\)/);
+});
+
+test("guided case labels require database flags, not keyword guesses", () => {
+  const cases = read("../src/app/cases/[slug]/page.tsx");
+  assert.match(cases, /item\.dionavi_used \? "DIOnavi guided" : item\.guided_implant \? "Guided" : "Individual treatment plan"/);
+});
