@@ -23,7 +23,7 @@ export default async function JournalPage() {
     .sort((a, b) => new Date(b.published_at ?? 0).getTime() - new Date(a.published_at ?? 0).getTime());
 
   return (
-    <main>
+    <main className="journal-listing-page">
       <SiteHeader />
       <section className="section public-listing-page">
         <p className="section-kicker">JV Dental Journal</p>
