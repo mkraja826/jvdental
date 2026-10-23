@@ -248,7 +248,7 @@ export default async function TreatmentPage({ params }: { params: Promise<{ slug
     }
   }
 
-  return <main className={slug === "root-canal-treatment" ? "root-canal-page" : undefined}>
+  return <main className={["root-canal-treatment", "gum-care", "crowns-bridges", "cosmetic-dentistry"].includes(slug) ? `treatment-media-review-page ${slug === "root-canal-treatment" ? "root-canal-page" : ""}` : undefined}>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
     <SiteHeader />
