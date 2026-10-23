@@ -1,0 +1,41 @@
+/* Fix 5: consistent clinical hero presentation for four verified treatment routes.
+   Keep CMS media, image URLs, artwork, brand and patient-facing copy unchanged. */
+.treatment-media-review-page .hero__visual {
+  isolation: isolate;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-position: center center;
+  min-width: 0;
+}
+.treatment-media-review-page .hero__visual-label,
+.treatment-media-review-page .hero__visual-copy {
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,.62);
+}
+.treatment-media-review-page .hero__visual-copy {
+  max-width: min(480px, calc(100% - 48px));
+}
+.treatment-media-review-page .hero__visual-copy strong {
+  overflow-wrap: anywhere;
+  line-height: 1.06;
+}
+@media (max-width: 820px) {
+  .treatment-media-review-page .hero__visual {
+    min-height: clamp(240px, 67vw, 390px);
+    background-position: center 40%;
+  }
+  .treatment-media-review-page .hero__visual-label {
+    top: 18px;
+    left: 18px;
+    width: min(180px, calc(100% - 36px));
+  }
+  .treatment-media-review-page .hero__visual-copy {
+    bottom: 20px;
+    left: 20px;
+    max-width: calc(100% - 40px);
+  }
+  .treatment-media-review-page .hero__visual-copy strong {
+    font-size: clamp(1.65rem, 7.2vw, 2.7rem);
+  }
+}
