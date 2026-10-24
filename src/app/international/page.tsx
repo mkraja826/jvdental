@@ -18,6 +18,7 @@ export const metadata: Metadata = {
       ...internationalMarkets.map((market) => [market.hreflang, `${siteUrl}/international/${market.slug}`]),
     ]),
   },
+  openGraph: { title: "Dental Treatment in India for International Patients | JV Dental", description: "Plan dental treatment in Hyderabad with remote case review, coordinated appointments and international patient assistance.", url: "/international", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }] },
   robots: { index: true, follow: true },
 };
 
