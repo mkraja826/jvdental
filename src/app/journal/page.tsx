@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { researchArticles } from "@/content/research-articles";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Dental Journal & Patient Education in Hyderabad",
+  description: "Explore dental health articles, implant treatment guidance and patient education from the clinical team at JV Dental & Implant Centre in Hyderabad.",
+  alternates: { canonical: "/journal" },
+};
 
 export default async function JournalPage() {
   const supabase = await createClient();
