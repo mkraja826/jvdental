@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         url: `/journal/${article.slug}`,
         publishedTime: article.publishedAt,
         modifiedTime: article.updatedAt,
+        images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }],
       },
       robots: { index: true, follow: true },
     };
@@ -60,6 +61,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: `/journal/${post.slug}`,
       ...(post.published_at ? { publishedTime: post.published_at } : {}),
       ...(post.updated_at ? { modifiedTime: post.updated_at } : {}),
+      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }],
     },
     robots: { index: true, follow: true },
   };
