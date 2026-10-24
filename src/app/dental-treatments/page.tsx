@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Dental Treatments in Ameerpet, Hyderabad",
   description: "Dental treatments at JV Dental in Hyderabad including dental implants, root canal treatment, crowns and bridges, cosmetic dentistry, oral surgery, gum treatment, preventive and general dentistry, aligners and braces.",
   alternates: { canonical: "/dental-treatments" },
+  openGraph: { title: "Dental Treatments in Hyderabad | JV Dental", description: "Explore implants, root canal treatment, crowns, gum care, oral surgery and general dentistry at JV Dental.", url: "/dental-treatments", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }] },
 };
 
 const groups = [
