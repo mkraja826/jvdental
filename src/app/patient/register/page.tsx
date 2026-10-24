@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Patient Registration | JV Dental",
+  description: "Create a JV Dental patient account to manage appointments and communication with the clinic.",
+  robots: { index: false, follow: false },
+};
+
 import Link from "next/link";
 import PendingSubmit from "@/components/pending-submit";
 import { signUpPatientWithPassword } from "@/app/auth/actions";
