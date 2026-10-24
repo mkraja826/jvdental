@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Staff Sign In | JV Dental",
   description: "Secure staff sign-in for authorized JV Dental clinic team members.",
+  openGraph: { title: "Staff Sign In | JV Dental", description: "Secure access for authorized JV Dental clinic team members.", url: "/staff/login", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }] },
   robots: { index: false, follow: false },
 };
 
