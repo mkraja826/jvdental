@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     title: "Dental Treatment Cases in Hyderabad | JV Dental",
     description: "See how selected dental cases are assessed, planned and treated at JV Dental & Implant Centre in Hyderabad.",
     url: "/cases",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre — Dental care in Hyderabad" }],
   },
 };
 
