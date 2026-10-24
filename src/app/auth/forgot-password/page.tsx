@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Reset Account Password | JV Dental",
+  description: "Request a password reset for your JV Dental patient or staff account.",
+  robots: { index: false, follow: false },
+};
+
 import Link from "next/link";
 import PendingSubmit from "@/components/pending-submit";
 import { requestPasswordReset } from "@/app/auth/actions";
