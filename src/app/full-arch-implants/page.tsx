@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Full-Arch Dental Implants in Hyderabad",
   description: "Full-arch implant rehabilitation at JV Dental near Ameerpet, Hyderabad, with diagnosis-led surgical and prosthetic planning for complex tooth replacement.",
   alternates: { canonical: "/full-arch-implants" },
+  openGraph: { title: "Full-Arch Dental Implants in Hyderabad | JV Dental", description: "Learn about complete arch implant rehabilitation and individualized restorative planning at JV Dental.", url: "/full-arch-implants", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }] },
 };
 
 export default function FullArchImplantsPage() {
