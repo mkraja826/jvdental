@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Dental Journal & Patient Education in Hyderabad",
   description: "Explore dental health articles, implant treatment guidance and patient education from the clinical team at JV Dental & Implant Centre in Hyderabad.",
   alternates: { canonical: "/journal" },
+  openGraph: { title: "Dental Journal & Patient Education | JV Dental", description: "Dental health articles and treatment guidance from the clinical team at JV Dental in Hyderabad.", url: "/journal", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }] },
 };
 
 export default async function JournalPage() {
