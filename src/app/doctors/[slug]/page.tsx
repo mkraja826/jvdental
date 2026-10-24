@@ -24,7 +24,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { doctor } = await getDoctor(slug);
   if (!doctor) return { title: "Doctor | JV Dental" };
 
-  const professionalTitle = doctor.professional_title ?? "Dentist";
+  const rawProfessionalTitle = doctor.professional_title?.trim() || "Dentist";
+  // Normalize all-caps imported credentials for search previews only; leave mixed-case titles untouched.
+  const professionalTitle = /[A-Z]/.test(rawProfessionalTitle) && rawProfessionalTitle === rawProfessionalTitle.toUpperCase()
+    ? rawProfessionalTitle.toLowerCase().replace(/\b[a-z]/g, (letter) => letter.toUpperCase())
+    : rawProfessionalTitle;
   const title = doctor.seo_title || `${doctor.full_name} | ${professionalTitle} in Hyderabad`;
   const description = doctor.seo_description || doctor.short_intro || `${doctor.full_name} is part of the clinical team at JV Dental & Implant Centre in S R Nagar, near Ameerpet, Hyderabad.`;
 
