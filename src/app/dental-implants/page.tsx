@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Dental Implants in Hyderabad | Near Ameerpet",
   description: "Dental implant treatment at JV Dental near Ameerpet and S R Nagar, Hyderabad, including conventional and DIOnavi guided surgery, digital planning, full-mouth rehabilitation, bone grafting, Malo bridge concepts and implant prosthesis.",
   alternates: { canonical: "/dental-implants" },
+  openGraph: { title: "Dental Implants in Hyderabad | JV Dental", description: "Explore conventional and guided dental implants, planning and full-mouth rehabilitation at JV Dental in Hyderabad.", url: "/dental-implants", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }] },
 };
 
 export default function DentalImplantsPage() {
