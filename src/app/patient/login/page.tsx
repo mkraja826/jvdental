@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Patient Sign In | JV Dental",
+  description: "Secure patient account sign-in for JV Dental appointments, documents and treatment information.",
+  robots: { index: false, follow: false },
+};
+
 import Image from "next/image";
 import Link from "next/link";
 import PendingSubmit from "@/components/pending-submit";
