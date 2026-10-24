@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Reset Account Password | JV Dental",
   description: "Request a password reset for your JV Dental patient or staff account.",
+  openGraph: { title: "Reset Account Password | JV Dental", description: "Request a secure JV Dental account password reset.", url: "/auth/forgot-password", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }] },
   robots: { index: false, follow: false },
 };
 
