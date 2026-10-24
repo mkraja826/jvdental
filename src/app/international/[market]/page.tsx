@@ -37,6 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: market.title,
       description: market.description,
       url: `/international/${market.slug}`,
+      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }],
     },
   };
 }
