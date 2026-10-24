@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Update Account Password | JV Dental",
+  description: "Set a new password for your secure JV Dental patient or staff account.",
+  robots: { index: false, follow: false },
+};
+
 import Link from "next/link";
 import PendingSubmit from "@/components/pending-submit";
 import { updatePassword } from "@/app/auth/actions";
