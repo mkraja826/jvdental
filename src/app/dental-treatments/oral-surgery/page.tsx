@@ -11,6 +11,8 @@ export const metadata: Metadata = {
     title: "Oral Surgery in Hyderabad | JV Dental",
     description: "Oral surgery at JV Dental in Hyderabad including extractions, impactions and fracture treatment where clinically indicated.",
     type: "website",
+    url: "/dental-treatments/oral-surgery",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }],
   },
 };
 
