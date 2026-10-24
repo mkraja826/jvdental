@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     title: "Dentists in Ameerpet & S R Nagar, Hyderabad | JV Dental",
     description: "Meet the dentists behind complete dental care and advanced implant dentistry at JV Dental in Hyderabad.",
     url: "/doctors",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre — Dental care in Hyderabad" }],
   },
 };
 
