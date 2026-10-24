@@ -198,7 +198,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${treatment.title} in Hyderabad | JV Dental`,
     description: treatment.summary,
     alternates: { canonical: `/dental-treatments/${slug}` },
-    openGraph: { title: `${treatment.title} in Hyderabad | JV Dental`, description: treatment.summary, type: "website" },
+    openGraph: { title: `${treatment.title} in Hyderabad | JV Dental`, description: treatment.summary, type: "website", url: `/dental-treatments/${slug}`, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }] },
   };
 }
 
