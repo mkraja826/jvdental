@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 export const metadata = {
   title: "Book a Dental Appointment or Video Consultation | JV Dental Hyderabad",
   description: "Book an in-clinic dental appointment in Hyderabad or request a video consultation from anywhere in India or overseas with JV Dental.",
+  alternates: { canonical: "/book" },
 };
 
 export default function BookAppointmentPage() {
