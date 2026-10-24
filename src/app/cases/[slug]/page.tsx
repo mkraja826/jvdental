@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!item) return { title: "Dental Case | JV Dental" };
   const title = `${item.title} | Dental Case in Hyderabad`;
   const description = item.short_summary || `A ${item.treatment_type} treatment journey from JV Dental & Implant Centre in Hyderabad.`;
-  return { title, description, alternates: { canonical: `/cases/${item.slug}` }, openGraph: { type: "article", title, description, url: `/cases/${item.slug}`, ...(item.published_at ? { publishedTime: item.published_at } : {}) }, robots: { index: true, follow: true } };
+  return { title, description, alternates: { canonical: `/cases/${item.slug}` }, openGraph: { type: "article", title, description, url: `/cases/${item.slug}`, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }], ...(item.published_at ? { publishedTime: item.published_at } : {}) }, robots: { index: true, follow: true } };
 }
 
 export default async function CaseDetailPage({ params }: PageProps) {
