@@ -5,8 +5,8 @@ import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "digital Guided Dental Implants in Hyderabad",
-  description: "Learn how JV Dental uses digital digital implant planning and guided surgery for selected implant and full-arch cases in Hyderabad.",
+  title: "Guided Dental Implants in Hyderabad",
+  description: "Learn how JV Dental uses digital implant planning and guided surgery for selected implant and full-arch cases in Hyderabad.",
   alternates: { canonical: "/guided-implants" },
 };
 
