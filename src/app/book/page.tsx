@@ -6,6 +6,7 @@ export const metadata = {
   title: "Book a Dental Appointment or Video Consultation | JV Dental Hyderabad",
   description: "Book an in-clinic dental appointment in Hyderabad or request a video consultation from anywhere in India or overseas with JV Dental.",
   alternates: { canonical: "/book" },
+  openGraph: { title: "Book a Dental Appointment | JV Dental", description: "Request an in-clinic dental appointment or video consultation with JV Dental in Hyderabad.", url: "/book", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JV Dental & Implant Centre" }] },
 };
 
 export default function BookAppointmentPage() {
